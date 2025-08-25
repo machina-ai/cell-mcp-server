@@ -1518,6 +1518,10 @@ class BaseWorkflowMixin(ABC):
                 images=list(set(self.consolidated_findings.images)) if self.consolidated_findings.images else None,
             )
 
+            # Add token usage to the current OpenTelemetry span
+            from utils.telemetry_utils import add_token_usage_to_span
+            add_token_usage_to_span(model_response)
+
             if model_response.content:
                 content = model_response.content.strip()
 

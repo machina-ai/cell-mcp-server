@@ -695,6 +695,24 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     logger.info(f"MCP tool call: {name}")
     logger.debug(f"MCP tool arguments: {list(arguments.keys())}")
 
+     # --- BEGIN ADDED TELEMETRY CODE ---                                                                                                                                   │
+ │  try:                                                                                                                                                                   │
+ │      from opentelemetry import trace                                                                                                                                    │
+ │      from utils.auth import extract_user_id_from_headers, set_current_user_id                                                                                           │
+ │                                                                                                                                                                        │
+ │      user_id = extract_user_id_from_headers(arguments)                                                                                                                  │
+ │      # 2. Set it in the context for the duration of the request                                                                                                         │
+ │      set_current_user_id(user_id)                                                                                                                                       │
+ │                                                                                                                                                                        │
+ │      # 3. Get the current span and enrich it with the user ID                                                                                                           │
+ │      span = trace.get_current_span()                                                                                                                                    │
+ │      if span.is_recording() and user_id:                                                                                                                                │
+ │          span.set_attribute("user.id", user_id)                                                                                                                         │
+ │  except Exception as e:                                                                                                                                                 │
+ │      # Best-effort: don't let telemetry/auth errors break the request                                                                                                   │
+ │      logger.warning(f"Failed to set user_id for telemetry: {e}")                                                                                                        │
+ │  # --- END ADDED TELEMETRY CODE ---                                                                                                                                   │
+
     # Log to activity file for monitoring
     try:
         mcp_activity_logger = logging.getLogger("mcp_activity")

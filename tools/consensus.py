@@ -569,6 +569,10 @@ of the evidence, even when it strongly points in one direction.""",
                 images=request.images if request.images else None,
             )
 
+            # Add token usage to the current OpenTelemetry span
+            from utils.telemetry_utils import add_token_usage_to_span
+            add_token_usage_to_span(response)
+
             return {
                 "model": model_name,
                 "stance": stance,

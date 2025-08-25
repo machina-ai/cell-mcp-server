@@ -438,6 +438,10 @@ class SimpleTool(BaseTool):
                 images=images if images else None,
             )
 
+            # Add token usage to the current OpenTelemetry span
+            from utils.telemetry_utils import add_token_usage_to_span
+            add_token_usage_to_span(model_response)
+
             logger.info(f"Received response from {provider.get_provider_type().value} API for {self.get_name()}")
 
             # Process the model's response
