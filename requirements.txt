@@ -6,6 +6,11 @@ python-dotenv>=1.0.0
 importlib-resources>=5.0.0; python_version<"3.9"
 PyJWT>=2.8.0  # For decoding JWTs for telemetry
 
+# OpenTelemetry dependencies for Langfuse integration
+opentelemetry-api>=1.25.0
+opentelemetry-sdk>=1.25.0
+opentelemetry-exporter-otlp>=1.25.0
+
 # Development dependencies (install with pip install -r requirements-dev.txt)
 # pytest>=7.4.0
 # pytest-asyncio>=0.21.0

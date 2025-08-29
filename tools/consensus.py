@@ -559,7 +559,7 @@ of the evidence, even when it strongly points in one direction.""",
             for warning in temp_warnings:
                 logger.warning(warning)
 
-            # Call the model with validated temperature
+            # Call the model with validated temperature (telemetry handled by provider)
             response = provider.generate_content(
                 prompt=prompt,
                 model_name=model_name,
@@ -568,10 +568,6 @@ of the evidence, even when it strongly points in one direction.""",
                 thinking_mode="medium",
                 images=request.images if request.images else None,
             )
-
-            # Add token usage to the current OpenTelemetry span
-            from utils.telemetry_utils import add_token_usage_to_span
-            add_token_usage_to_span(response)
 
             return {
                 "model": model_name,

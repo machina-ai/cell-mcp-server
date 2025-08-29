@@ -1,84 +1,48 @@
-# ===========================================
-# STAGE 1: Build dependencies
-# ===========================================
-FROM python:3.11-slim AS builder
+# =========================
+# STAGE 1: build de wheels
+# =========================
+FROM python:3.11-alpine AS builder
 
-# Install system dependencies for building
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Toolchain de build para wheels (se descarta al final)
+RUN apk add --no-cache build-base libffi-dev openssl-dev cargo
 
-# Set working directory
-WORKDIR /app
+WORKDIR /wheels
+COPY requirements.txt .
 
-# Copy requirements files
-COPY requirements.txt ./
+# Construye wheels de TODAS las dependencias
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip wheel --no-cache-dir --wheel-dir=/wheels -r requirements.txt
 
-# Create virtual environment and install dependencies
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Si tienes dependencias locales en el repo (opcional):
+# COPY . /src
+# (y si existiera un pyproject/setup puedes wheelar tu paquete también)
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+# =========================
+# STAGE 2: runtime con mcp-proxy
+# =========================
+FROM ghcr.io/sparfenyuk/mcp-proxy:v0.8.2 AS runtime
 
-# ===========================================
-# STAGE 2: Runtime image
-# ===========================================
-FROM python:3.11-slim AS runtime
+# Libs runtime para wheels compiladas (sin toolchain)
+RUN apk add --no-cache libstdc++
 
-# Add metadata labels for traceability
-LABEL maintainer="Zen MCP Server Team"
-LABEL version="1.0.0"
-LABEL description="Zen MCP Server - AI-powered Model Context Protocol server"
-LABEL org.opencontainers.image.title="zen-mcp-server"
-LABEL org.opencontainers.image.description="AI-powered Model Context Protocol server with multi-provider support"
-LABEL org.opencontainers.image.version="1.0.0"
-LABEL org.opencontainers.image.source="https://github.com/BeehiveInnovations/zen-mcp-server"
-LABEL org.opencontainers.image.documentation="https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/README.md"
-LABEL org.opencontainers.image.licenses="Apache 2.0 License"
-
-# Create non-root user for security
-RUN groupadd -r zenuser && useradd -r -g zenuser zenuser
-
-# Install minimal runtime dependencies
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    procps \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
-
-# Copy virtual environment from builder
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Set working directory
-WORKDIR /app
-
-# Copy application code
-COPY --chown=zenuser:zenuser . .
-
-# Create logs directory with proper permissions
-RUN mkdir -p logs && chown -R zenuser:zenuser logs
-
-# Create tmp directory for container operations
-RUN mkdir -p tmp && chown -R zenuser:zenuser tmp
-
-# Copy health check script
-COPY --chown=zenuser:zenuser docker/scripts/healthcheck.py /usr/local/bin/healthcheck.py
-RUN chmod +x /usr/local/bin/healthcheck.py
-
-# Switch to non-root user
-USER zenuser
-
-# Health check configuration
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python /usr/local/bin/healthcheck.py
-
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
+WORKDIR /opt/zen
 
-# Default command
-CMD ["python", "server.py"]
+# Crea venv e instala desde wheels construidas
+COPY --from=builder /wheels /wheels
+RUN python3 -m venv /opt/zen/.venv \
+ && /opt/zen/.venv/bin/pip install --no-cache-dir --upgrade pip \
+ && /opt/zen/.venv/bin/pip install --no-cache-dir /wheels/* \
+ && rm -rf /wheels
+
+# Copia tu Zen “custodiado” (código fuente)
+COPY . /opt/zen
+ENV PYTHONPATH=/opt/zen
+
+# Shim para que exista el ejecutable "zen-mcp-server"
+RUN printf '#!/bin/sh\nexec /opt/zen/.venv/bin/python /opt/zen/server.py "$@"\n' \
+      > /usr/local/bin/zen-mcp-server \
+ && chmod +x /usr/local/bin/zen-mcp-server
+
+# mcp-proxy queda como entrypoint; zen se lanza como subproceso STDIO
+ENTRYPOINT ["mcp-proxy"]

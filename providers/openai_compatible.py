@@ -11,6 +11,8 @@ from urllib.parse import urlparse
 
 from openai import OpenAI
 
+from utils.telemetry_utils import instrument_generate_content
+
 from .base import (
     ModelCapabilities,
     ModelProvider,
@@ -58,6 +60,9 @@ class OpenAICompatibleProvider(ModelProvider):
                 f"Using external URL '{self.base_url}' without API key. "
                 "This may be insecure. Consider setting an API key for authentication."
             )
+
+        # Instrument generate_content once per instance (idempotent wrapper)
+        self.generate_content = instrument_generate_content(self.generate_content)
 
     def _parse_allowed_models(self) -> Optional[set[str]]:
         """Parse allowed models from environment variable.

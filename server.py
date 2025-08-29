@@ -163,7 +163,68 @@ except Exception as e:
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# OpenTelemetry SDK Initialization for Langfuse
+# ---------------------------------------------------------------------------
+def setup_telemetry():
+    """
+    Configures OpenTelemetry to export traces to an OTLP collector.
 
+    This function sets up the global TracerProvider. It should be called
+    once at application startup. Telemetry is enabled only if the
+    OTEL_EXPORTER_OTLP_ENDPOINT environment variable is set.
+    """
+    otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    logger.debug(f"################################Entrando a la funcion de telemetria con endpoint {otel_endpoint}")
+
+    if not otel_endpoint:
+        logger.info("OTEL_EXPORTER_OTLP_ENDPOINT not set, telemetry is disabled.")
+        return
+
+    try:
+        from opentelemetry import trace
+        from opentelemetry.sdk.trace import TracerProvider
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        from opentelemetry.sdk.resources import Resource
+
+        # Set up a resource for the service name
+        resource = Resource(attributes={"service.name": "zen-mcp-server"})
+
+        # Elegir exporter según el endpoint: HTTP (4318) vs gRPC (4317)
+        ep = os.getenv("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT") or otel_endpoint
+        if ep and (ep.startswith("http://") or ep.startswith("https://")):
+            # HTTP/4318 — NO acepta 'insecure'
+            from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as HttpOTLPSpanExporter
+            http_ep = ep.rstrip("/")
+            if not http_ep.endswith("/v1/traces"):
+                http_ep = http_ep + "/v1/traces"
+            exporter = HttpOTLPSpanExporter(endpoint=http_ep)
+            logger.info("OTLP HTTP exporter configurado: %s", http_ep)
+        else:
+            # gRPC/4317 — aquí sí aplica 'insecure' si no tienes TLS
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter as GrpcOTLPSpanExporter
+            grpc_ep = ep or "localhost:4317"
+            exporter = GrpcOTLPSpanExporter(endpoint=grpc_ep, insecure=True)
+            logger.info("OTLP gRPC exporter configurado: %s", grpc_ep)
+
+        # Set up a batch span processor
+        processor = BatchSpanProcessor(exporter)
+
+        # Set the global tracer provider
+        provider = TracerProvider(resource=resource)
+        provider.add_span_processor(processor)
+        trace.set_tracer_provider(provider)
+
+        logger.info(f"Telemetry enabled. Exporting traces to {otel_endpoint}")
+    except ImportError:
+        logger.warning(
+            "OpenTelemetry packages not found. "
+            "Please install them with 'pip install -r requirements.txt' to enable telemetry."
+        )
+    except Exception as e:
+        logger.error(f"Failed to initialize OpenTelemetry: {e}", exc_info=True)
+# ---------------------------------------------------------------------------
 # Create the MCP server instance with a unique name identifier
 # This name is used by MCP clients to identify and connect to this specific server
 server: Server = Server("zen-server")
@@ -696,22 +757,22 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     logger.debug(f"MCP tool arguments: {list(arguments.keys())}")
 
      # --- BEGIN ADDED TELEMETRY CODE ---                                                                                                                                   │
- │  try:                                                                                                                                                                   │
- │      from opentelemetry import trace                                                                                                                                    │
- │      from utils.auth import extract_user_id_from_headers, set_current_user_id                                                                                           │
- │                                                                                                                                                                        │
- │      user_id = extract_user_id_from_headers(arguments)                                                                                                                  │
- │      # 2. Set it in the context for the duration of the request                                                                                                         │
- │      set_current_user_id(user_id)                                                                                                                                       │
- │                                                                                                                                                                        │
- │      # 3. Get the current span and enrich it with the user ID                                                                                                           │
- │      span = trace.get_current_span()                                                                                                                                    │
- │      if span.is_recording() and user_id:                                                                                                                                │
- │          span.set_attribute("user.id", user_id)                                                                                                                         │
- │  except Exception as e:                                                                                                                                                 │
- │      # Best-effort: don't let telemetry/auth errors break the request                                                                                                   │
- │      logger.warning(f"Failed to set user_id for telemetry: {e}")                                                                                                        │
- │  # --- END ADDED TELEMETRY CODE ---                                                                                                                                   │
+    try:                                                                                                                                                                 
+        from opentelemetry import trace                                                                                                                                  
+        from utils.auth import extract_user_id_from_headers, set_current_user_id                                                                                         
+                                                                                                                                                                        
+        user_id = extract_user_id_from_headers(arguments)                                                                                                                
+        # 2. Set it in the context for the duration of the request                                                                                                       
+        set_current_user_id(user_id)                                                                                                                                     
+                                                                                                                                                                        
+        # 3. Get the current span and enrich it with the user ID                                                                                                         
+        span = trace.get_current_span()                                                                                                                                  
+        if span.is_recording() and user_id:                                                                                                                              
+            span.set_attribute("user.id", user_id)                                                                                                                       
+    except Exception as e:                                                                                                                                               
+        # Best-effort: don't let telemetry/auth errors break the request                                                                                                 
+        logger.warning(f"Failed to set user_id for telemetry: {e}")                                                                                                      
+    # --- END ADDED TELEMETRY CODE ---                                                                                                                                   
 
     # Log to activity file for monitoring
     try:
@@ -1324,9 +1385,11 @@ async def main():
     The server communicates via standard input/output streams using the
     MCP protocol's JSON-RPC message format.
     """
+    setup_telemetry()
+    
     # Validate and configure providers based on available API keys
     configure_providers()
-
+    
     # Log startup message
     logger.info("Zen MCP Server starting up...")
     logger.info(f"Log level: {log_level}")

@@ -429,18 +429,25 @@ class SimpleTool(BaseTool):
             logger.debug(f"Prompt length: {len(prompt)} characters (~{estimated_tokens:,} tokens)")
 
             # Generate content with provider abstraction
-            model_response = provider.generate_content(
-                prompt=prompt,
-                model_name=self._current_model_name,
-                system_prompt=system_prompt,
-                temperature=temperature,
-                thinking_mode=thinking_mode if provider.supports_thinking_mode(self._current_model_name) else None,
-                images=images if images else None,
-            )
-
-            # Add token usage to the current OpenTelemetry span
-            from utils.telemetry_utils import add_token_usage_to_span
-            add_token_usage_to_span(model_response)
+            from utils.telemetry_utils import create_llm_span, annotate_llm_io_and_usage
+            provider_name = provider.get_provider_type().value
+            with create_llm_span(self._current_model_name, provider_name, prompt) as span:
+                model_response = provider.generate_content(
+                    prompt=prompt,
+                    model_name=self._current_model_name,
+                    system_prompt=system_prompt,
+                    temperature=temperature,
+                    thinking_mode=thinking_mode if provider.supports_thinking_mode(self._current_model_name) else None,
+                    images=images if images else None,
+                )
+                # Consolidated telemetry: input, output and token usage (non-invasive)
+                annotate_llm_io_and_usage(
+                    span,
+                    prompt=prompt,
+                    response=model_response,
+                    provider_name=provider_name,
+                    model_name=self._current_model_name,
+                )
 
             logger.info(f"Received response from {provider.get_provider_type().value} API for {self.get_name()}")
 

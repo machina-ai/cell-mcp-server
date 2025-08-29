@@ -4,6 +4,8 @@ import logging
 import os
 from typing import Optional
 
+from opentelemetry import trace
+
 from .base import (
     FixedTemperatureConstraint,
     ModelCapabilities,
@@ -13,6 +15,7 @@ from .base import (
 )
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
+from utils.telemetry_utils import annotate_llm_io_and_usage
 
 # Temperature inference patterns
 _TEMP_UNSUPPORTED_PATTERNS = [
@@ -315,7 +318,7 @@ class CustomProvider(OpenAICompatibleProvider):
         resolved_model = self._resolve_model_name(model_name)
 
         # Call parent method with resolved model name
-        return super().generate_content(
+        response = super().generate_content(
             prompt=prompt,
             model_name=resolved_model,
             system_prompt=system_prompt,
@@ -323,6 +326,23 @@ class CustomProvider(OpenAICompatibleProvider):
             max_output_tokens=max_output_tokens,
             **kwargs,
         )
+
+        # Minimal, non-invasive telemetry: annotate the current span if one exists
+        try:
+            cur_span = trace.get_current_span()
+            if cur_span is not None and getattr(cur_span, "is_recording", lambda: False)():
+                annotate_llm_io_and_usage(
+                    cur_span,
+                    prompt=prompt,
+                    response=response,
+                    provider_name=self.get_provider_type().value,
+                    model_name=resolved_model,
+                )
+        except Exception:
+            # Telemetry must never affect provider logic
+            pass
+
+        return response
 
     def supports_thinking_mode(self, model_name: str) -> bool:
         """Check if the model supports extended thinking mode.

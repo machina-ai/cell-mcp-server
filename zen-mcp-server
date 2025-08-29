@@ -7,5 +7,6 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 # Change to the zen-mcp-server directory
 cd "$DIR"
 
+source .env
 # Execute the Python server with all arguments passed through
 exec .zen_venv/bin/python server.py "$@"

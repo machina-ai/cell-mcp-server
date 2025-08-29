@@ -1508,19 +1508,30 @@ class BaseWorkflowMixin(ABC):
                 logger.warning(warning)
 
             # Generate AI response - use request parameters if available
-            model_response = provider.generate_content(
-                prompt=prompt,
-                model_name=model_name,
-                system_prompt=system_prompt,
-                temperature=validated_temperature,
-                thinking_mode=self.get_request_thinking_mode(request),
-                use_websearch=self.get_request_use_websearch(request),
-                images=list(set(self.consolidated_findings.images)) if self.consolidated_findings.images else None,
-            )
-
-            # Add token usage to the current OpenTelemetry span
-            from utils.telemetry_utils import add_token_usage_to_span
-            add_token_usage_to_span(model_response)
+            try:
+                from utils.telemetry_utils import create_llm_span, annotate_llm_io_and_usage
+            except ImportError:
+                # Fallback if import fails
+                create_llm_span = None
+                annotate_llm_io_and_usage = None
+            provider_name = provider.get_provider_type().value
+            with create_llm_span(model_name, provider_name, prompt) as span:
+                model_response = provider.generate_content(
+                    prompt=prompt,
+                    model_name=model_name,
+                    system_prompt=system_prompt,
+                    temperature=validated_temperature,
+                    thinking_mode=self.get_request_thinking_mode(request),
+                    use_websearch=self.get_request_use_websearch(request),
+                    images=list(set(self.consolidated_findings.images)) if self.consolidated_findings.images else None,
+                )
+                annotate_llm_io_and_usage(
+                    span,
+                    prompt=prompt,
+                    response=model_response,
+                    provider_name=provider_name,
+                    model_name=model_name,
+                )
 
             if model_response.content:
                 content = model_response.content.strip()
