@@ -175,7 +175,7 @@ def setup_telemetry():
     OTEL_EXPORTER_OTLP_ENDPOINT environment variable is set.
     """
     otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-    logger.debug(f"################################Entrando a la funcion de telemetria con endpoint {otel_endpoint}")
+    logger.debug(f"#########Entrando a la funcion de telemetria con endpoint {otel_endpoint} !!")
 
     if not otel_endpoint:
         logger.info("OTEL_EXPORTER_OTLP_ENDPOINT not set, telemetry is disabled.")
@@ -185,16 +185,14 @@ def setup_telemetry():
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor
-        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
         from opentelemetry.sdk.resources import Resource
 
         # Set up a resource for the service name
         resource = Resource(attributes={"service.name": "zen-mcp-server"})
 
         # Elegir exporter según el endpoint: HTTP (4318) vs gRPC (4317)
-        ep = os.getenv("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT") or otel_endpoint
+        ep = otel_endpoint
         if ep and (ep.startswith("http://") or ep.startswith("https://")):
-            # HTTP/4318 — NO acepta 'insecure'
             from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as HttpOTLPSpanExporter
             http_ep = ep.rstrip("/")
             if not http_ep.endswith("/v1/traces"):

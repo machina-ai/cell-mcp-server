@@ -1,21 +1,20 @@
 services:
-  zen-mcp:
+  cell-mcp:
     build:
       context: .
       dockerfile: Dockerfile
       target: runtime
-    image: zen-mcp-server:latest
-    container_name: zen-mcp-server
+    image: cell-mcp-server:0.0.1
+    container_name: cell-mcp-server
+    ports:
+      - "8080:8080"
     
-    # Container labels for traceability
-    labels:
-      - "com.zen-mcp.service=zen-mcp-server"
-      - "com.zen-mcp.version=1.0.0"
-      - "com.zen-mcp.environment=production"
-      - "com.zen-mcp.description=AI-powered Model Context Protocol server"
-    
+    env_file:
+      - .env
     # Environment variables
     environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://host.docker.internal:4318
+      - BASE_PATH=/mcp/v1/cell
       # Default model configuration
       - DEFAULT_MODEL=${DEFAULT_MODEL:-auto}
       
@@ -56,7 +55,13 @@ services:
     
     # Network configuration
     networks:
-      - zen-network
+      - cell-infra-network
+    command: >
+      --pass-environment
+      --host=0.0.0.0
+      --port=8080
+      --allow-origin "*"
+      -- zen-mcp-server
     
     # Resource limits
     deploy:
@@ -70,11 +75,10 @@ services:
     
     # Health check
     healthcheck:
-      test: ["CMD", "python", "/usr/local/bin/healthcheck.py"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/status >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     
     # Restart policy
     restart: unless-stopped
@@ -94,8 +98,5 @@ volumes:
 
 # Networks
 networks:
-  zen-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+  cell-infra-network:
+    external: true
