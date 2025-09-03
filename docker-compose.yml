@@ -36,6 +36,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - LOG_MAX_SIZE=${LOG_MAX_SIZE:-10MB}
       - LOG_BACKUP_COUNT=${LOG_BACKUP_COUNT:-5}
+      - LOG_LEVEL=DEBUG
 
       # Advanced configuration
       - DEFAULT_THINKING_MODE_THINKDEEP=${DEFAULT_THINKING_MODE_THINKDEEP:-high}
@@ -49,7 +50,7 @@ services:
 
     # Volumes for persistent data
     volumes:
-      - ./logs:/app/logs
+      - ./logs:/opt/zen/logs
       - zen-mcp-config:/app/conf
       - /etc/localtime:/etc/localtime:ro
 
