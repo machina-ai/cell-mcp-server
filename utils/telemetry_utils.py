@@ -19,7 +19,7 @@ from typing import Any, Optional
 from opentelemetry import trace
 from opentelemetry.trace import Span
 
-from utils.auth import current_user_id
+from utils.session_context import get_session_id, get_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -185,9 +185,15 @@ def create_llm_span(
                 except Exception:
                     span.set_attribute("input", str(prompt))
 
-                user_id = current_user_id()
+                # Add user and session IDs from context at creation time
+                user_id = get_user_id()
                 if user_id:
                     span.set_attribute("user.id", user_id)
+                
+                session_id = get_session_id()
+                if session_id:
+                    span.set_attribute("session.id", session_id)
+
             except Exception as e:
                 logger.warning(f"Failed to set pre-call OTEL attributes: {e}")
 
@@ -385,3 +391,37 @@ def instrument_generate_content(fn):
 
     _wrapped._telemetry_wrapped = True
     return _wrapped
+
+
+def enrich_span_with_context(envelope: dict[str, Any]) -> None:
+    """
+    Extracts user_id and session_id from the request envelope
+    and adds them to the current OpenTelemetry span.
+
+    This is a best-effort operation and will not raise exceptions.
+
+    Args:
+        envelope: The request envelope (e.g., tool arguments).
+    """
+    try:
+        from utils.cell_otel_context import extract_ctx
+
+        ctx = extract_ctx(envelope)
+        user_id = ctx.get("user_id")
+        session_id = ctx.get("session_id")
+
+        # Log extracted values at debug level
+        logger.debug(f"Extracted telemetry context: user_id='{user_id}', session_id='{session_id}'")
+
+        if not user_id and not session_id:
+            return
+
+        span = trace.get_current_span()
+        if span and span.is_recording():
+            if user_id:
+                span.set_attribute("user.id", user_id)
+            if session_id:
+                span.set_attribute("session.id", session_id)
+
+    except Exception as e:
+        logger.warning(f"Failed to enrich span with context: {e}", exc_info=True)

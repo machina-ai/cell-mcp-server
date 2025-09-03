@@ -81,10 +81,11 @@ from tools import (  # noqa: E402
     VersionTool,
 )
 from tools.models import ToolOutput  # noqa: E402
+from utils.telemetry_utils import enrich_span_with_context
 
 # Configure logging for server operations
 # Can be controlled via LOG_LEVEL environment variable (DEBUG, INFO, WARNING, ERROR)
-log_level = os.getenv("LOG_LEVEL", "DEBUG").upper()
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
 # Create timezone-aware formatter
 
@@ -673,6 +674,16 @@ async def handle_list_tools() -> list[Tool]:
 
     # Add all registered AI-powered tools from the TOOLS registry
     for tool in TOOLS.values():
+        schema = tool.get_input_schema()
+        # Dynamically add the internal context field to every tool's schema.
+        # This informs the MCP client/framework that this field is expected,
+        # preventing validation errors before our handler is called.
+        if "properties" in schema:
+            schema["properties"]["_ctx"] = {
+                "type": "object",
+                "description": "Internal context for telemetry and session management.",
+            }
+
         # Get optional annotations from the tool
         annotations = tool.get_annotations()
         tool_annotations = ToolAnnotations(**annotations) if annotations else None
@@ -681,7 +692,7 @@ async def handle_list_tools() -> list[Tool]:
             Tool(
                 name=tool.name,
                 description=tool.description,
-                inputSchema=tool.get_input_schema(),
+                inputSchema=schema,  # Use the modified schema
                 annotations=tool_annotations,
             )
         )
@@ -751,26 +762,26 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         3. Claude continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
     """
-    logger.info(f"MCP tool call: {name}")
-    logger.debug(f"MCP tool arguments: {list(arguments.keys())}")
+    
 
-     # --- BEGIN ADDED TELEMETRY CODE ---                                                                                                                                   │
-    try:                                                                                                                                                                 
-        from opentelemetry import trace                                                                                                                                  
-        from utils.auth import extract_user_id_from_headers, set_current_user_id                                                                                         
-                                                                                                                                                                        
-        user_id = extract_user_id_from_headers(arguments)                                                                                                                
-        # 2. Set it in the context for the duration of the request                                                                                                       
-        set_current_user_id(user_id)                                                                                                                                     
-                                                                                                                                                                        
-        # 3. Get the current span and enrich it with the user ID                                                                                                         
-        span = trace.get_current_span()                                                                                                                                  
-        if span.is_recording() and user_id:                                                                                                                              
-            span.set_attribute("user.id", user_id)                                                                                                                       
-    except Exception as e:                                                                                                                                               
-        # Best-effort: don't let telemetry/auth errors break the request                                                                                                 
-        logger.warning(f"Failed to set user_id for telemetry: {e}")                                                                                                      
-    # --- END ADDED TELEMETRY CODE ---                                                                                                                                   
+    try:
+        from utils.cell_otel_context import extract_ctx
+        from utils.session_context import set_session_context
+
+        # Extract, remove, and set the context for this request's lifecycle.
+        ctx = extract_ctx(arguments)
+        logger.debug(f"############   CTX Object: {ctx}")
+        set_session_context(ctx.get("user_id"), ctx.get("session_id"))
+        logger.debug(f"############   UserId: {ctx.get('user_id')}   SessionId:{ctx.get('session_id')}")
+        
+    except Exception as e:
+        logger.warning(f"Failed to set session context: {e}", exc_info=True)
+        # Ensure context is cleared if it fails midway
+        from utils.session_context import set_session_context
+        set_session_context(None, None)
+
+    # Best-effort telemetry enrichment for the main span.
+    enrich_span_with_context(arguments)
 
     # Log to activity file for monitoring
     try:
@@ -1384,10 +1395,8 @@ async def main():
     MCP protocol's JSON-RPC message format.
     """
     setup_telemetry()
-    
     # Validate and configure providers based on available API keys
     configure_providers()
-    
     # Log startup message
     logger.info("Zen MCP Server starting up...")
     logger.info(f"Log level: {log_level}")

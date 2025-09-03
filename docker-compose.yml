@@ -4,11 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runtime
-    image: cell-mcp-server:0.0.1
+    image: cell-mcp-server:0.0.2
     container_name: cell-mcp-server
     ports:
       - "8080:8080"
-    
+
     env_file:
       - .env
     # Environment variables
@@ -17,7 +17,7 @@ services:
       - BASE_PATH=/mcp/v1/cell
       # Default model configuration
       - DEFAULT_MODEL=${DEFAULT_MODEL:-auto}
-      
+
       # API Keys (use Docker secrets in production)
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
@@ -31,28 +31,28 @@ services:
       - CUSTOM_API_URL=${CUSTOM_API_URL}
       - CUSTOM_API_KEY=${CUSTOM_API_KEY}
       - CUSTOM_MODEL_NAME=${CUSTOM_MODEL_NAME}
-      
+
       # Logging configuration
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - LOG_MAX_SIZE=${LOG_MAX_SIZE:-10MB}
       - LOG_BACKUP_COUNT=${LOG_BACKUP_COUNT:-5}
-      
+
       # Advanced configuration
       - DEFAULT_THINKING_MODE_THINKDEEP=${DEFAULT_THINKING_MODE_THINKDEEP:-high}
       - DISABLED_TOOLS=${DISABLED_TOOLS}
       - MAX_MCP_OUTPUT_TOKENS=${MAX_MCP_OUTPUT_TOKENS}
-      
+
       # Server configuration
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app
       - TZ=${TZ:-UTC}
-    
+
     # Volumes for persistent data
     volumes:
       - ./logs:/app/logs
       - zen-mcp-config:/app/conf
       - /etc/localtime:/etc/localtime:ro
-    
+
     # Network configuration
     networks:
       - cell-infra-network
@@ -60,29 +60,31 @@ services:
       --pass-environment
       --host=0.0.0.0
       --port=8080
+      --debug
       --allow-origin "*"
       -- zen-mcp-server
-    
+
     # Resource limits
     deploy:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
-    
+          cpus: "0.25"
+
     # Health check
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/status >/dev/null || exit 1"]
+      
       interval: 10s
       timeout: 3s
       retries: 10
-    
+
     # Restart policy
     restart: unless-stopped
-    
+
     # Security
     security_opt:
       - no-new-privileges:true
