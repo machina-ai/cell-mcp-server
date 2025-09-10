@@ -100,16 +100,9 @@ class XAIModelProvider(OpenAICompatibleProvider):
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize X.AI provider with API key."""
-        from utils.telemetry_utils import instrument_generate_content
         # Set X.AI base URL
         kwargs.setdefault("base_url", "https://api.x.ai/v1")
         super().__init__(api_key, **kwargs)
-
-        # Instrument generate_content for this provider (idempotent):
-        if not getattr(self.generate_content, "_is_instrumented", False):
-            _unbound = self.__class__.generate_content
-            _wrapped = instrument_generate_content(_unbound)
-            self.generate_content = _wrapped.__get__(self, self.__class__)
 
     def get_capabilities(self, model_name: str) -> ModelCapabilities:
         """Get capabilities for a specific X.AI model."""

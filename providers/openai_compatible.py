@@ -62,7 +62,10 @@ class OpenAICompatibleProvider(ModelProvider):
             )
 
         # Instrument generate_content once per instance (idempotent wrapper)
-        self.generate_content = instrument_generate_content(self.generate_content)
+        if not getattr(self.generate_content, "_telemetry_wrapped", False):
+            _unbound = self.__class__.generate_content
+            _wrapped = instrument_generate_content(_unbound)
+            self.generate_content = _wrapped.__get__(self, self.__class__)
 
     def _parse_allowed_models(self) -> Optional[set[str]]:
         """Parse allowed models from environment variable.

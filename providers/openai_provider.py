@@ -175,11 +175,6 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
         # Set default OpenAI base URL, allow override for regions/custom endpoints
         kwargs.setdefault("base_url", "https://api.openai.com/v1")
         super().__init__(api_key, **kwargs)
-        # Instrument generate_content for this provider (idempotent):
-        # wrap the unbound class function, then bind the wrapped function to this instance
-        _unbound = self.__class__.generate_content
-        _wrapped = instrument_generate_content(_unbound)
-        self.generate_content = _wrapped.__get__(self, self.__class__)
 
     def get_capabilities(self, model_name: str) -> ModelCapabilities:
         """Get capabilities for a specific OpenAI model."""
