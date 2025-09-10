@@ -24,6 +24,24 @@ class XAIModelProvider(OpenAICompatibleProvider):
 
     # Model configurations using ModelCapabilities objects
     SUPPORTED_MODELS = {
+        "grok-code-fast": ModelCapabilities(
+            provider=ProviderType.XAI,
+            model_name="grok-code-fast-1",
+            friendly_name="X.AI (Grok Code Fast 1)",
+            context_window=256_000,            # 256K tokens context
+            max_output_tokens=256_000,         # 256K tokens max output
+            supports_extended_thinking=True,   # Supports reasoning trace mode (Plan/Act)
+            supports_system_prompts=True,
+            supports_streaming=True,
+            supports_function_calling=True,    # Function calling is supported
+            supports_json_mode=True,           # Structured outputs (JSON) supported
+            supports_images=False,             # No multimodal input in this model
+            max_image_size_mb=20.0,            # (Irrelevant since images are not supported)
+            supports_temperature=True,
+            temperature_constraint=create_temperature_constraint("range"),
+            description="Grok Code Fast 1 (256K context) – modelo de razonamiento veloz y económico optimizado para codificación agentiva",
+            aliases=["grok-code-fast", "grok-code-fast-1-0825"],
+        ),
         "grok-4": ModelCapabilities(
             provider=ProviderType.XAI,
             model_name="grok-4",
@@ -82,9 +100,16 @@ class XAIModelProvider(OpenAICompatibleProvider):
 
     def __init__(self, api_key: str, **kwargs):
         """Initialize X.AI provider with API key."""
+        from utils.telemetry_utils import instrument_generate_content
         # Set X.AI base URL
         kwargs.setdefault("base_url", "https://api.x.ai/v1")
         super().__init__(api_key, **kwargs)
+
+        # Instrument generate_content for this provider (idempotent):
+        if not getattr(self.generate_content, "_is_instrumented", False):
+            _unbound = self.__class__.generate_content
+            _wrapped = instrument_generate_content(_unbound)
+            self.generate_content = _wrapped.__get__(self, self.__class__)
 
     def get_capabilities(self, model_name: str) -> ModelCapabilities:
         """Get capabilities for a specific X.AI model."""

@@ -1,7 +1,7 @@
 """
-Version Tool - Display Zen MCP Server version and system information
+Version Tool - Display Cell MCP Server version and system information
 
-This tool provides version information about the Zen MCP Server including
+This tool provides version information about the Cell MCP Server including
 version number, last update date, author, and basic system information.
 It also checks for updates from the GitHub repository.
 """
@@ -126,7 +126,7 @@ def fetch_github_version() -> Optional[tuple[str, str]]:
 
 class VersionTool(BaseTool):
     """
-    Tool for displaying Zen MCP Server version and system information.
+    Tool for displaying Cell MCP Server version and system information.
 
     This tool provides:
     - Current server version
@@ -175,7 +175,7 @@ class VersionTool(BaseTool):
 
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
         """
-        Display Zen MCP Server version and system information.
+        Display Cell MCP Server version and system information.
 
         This overrides the base class execute to provide direct output without AI model calls.
 
@@ -185,7 +185,7 @@ class VersionTool(BaseTool):
         Returns:
             Formatted version and system information
         """
-        output_lines = ["# Zen MCP Server Version\n"]
+        output_lines = ["# Cell MCP Server Version\n"]
 
         # Server version information
         output_lines.append("## Server Information")

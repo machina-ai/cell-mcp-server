@@ -18,7 +18,7 @@ __version__ = "5.10.3"
 # Last update date in ISO format
 __updated__ = "2025-08-24"
 # Primary maintainer
-__author__ = "Fahad Gilani"
+__author__ = "machina.ai"
 
 # Model configuration
 # DEFAULT_MODEL: The default model used for all AI operations

@@ -10,7 +10,7 @@ COPY requirements.txt .
 
 # Construye wheels en /dist
 RUN pip install --no-cache-dir --upgrade pip \
- && pip wheel --no-cache-dir --wheel-dir=/dist -r requirements.txt
+    && pip wheel --no-cache-dir --wheel-dir=/dist -r requirements.txt
 
 # =========================
 # STAGE 2: runtime con mcp-proxy
@@ -28,9 +28,9 @@ COPY --from=builder /build/requirements.txt /wheels/requirements.txt
 
 # Crea venv e instala EXCLUSIVAMENTE desde /wheels (sin acceder a PyPI)
 RUN python3 -m venv /opt/zen/.venv \
- && /opt/zen/.venv/bin/pip install --no-cache-dir --upgrade pip \
- && /opt/zen/.venv/bin/pip install --no-index --find-links=/wheels -r /wheels/requirements.txt \
- && rm -rf /wheels
+    && /opt/zen/.venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/zen/.venv/bin/pip install --no-index --find-links=/wheels -r /wheels/requirements.txt \
+    && rm -rf /wheels
 
 # Copia tu Zen “custodiado”
 COPY . /opt/zen
@@ -38,7 +38,7 @@ ENV PYTHONPATH=/opt/zen
 
 # Shim ejecutable para que el proxy pueda spawnnear "zen-mcp-server"
 RUN printf '#!/bin/sh\nexec /opt/zen/.venv/bin/python /opt/zen/server.py "$@"\n' \
-      > /usr/local/bin/zen-mcp-server \
- && chmod +x /usr/local/bin/zen-mcp-server
+    > /usr/local/bin/zen-mcp-server \
+    && chmod +x /usr/local/bin/zen-mcp-server
 
 ENTRYPOINT ["mcp-proxy"]

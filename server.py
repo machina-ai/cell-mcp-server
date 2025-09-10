@@ -65,7 +65,7 @@ from config import (  # noqa: E402
 from tools import (  # noqa: E402
     AnalyzeTool,
     ChallengeTool,
-    ChatTool,
+    TalkTool,
     CodeReviewTool,
     ConsensusTool,
     DebugIssueTool,
@@ -323,7 +323,7 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 # Each tool provides specialized functionality for different development tasks
 # Tools are instantiated once and reused across requests (stateless design)
 TOOLS = {
-    "chat": ChatTool(),  # Interactive development chat and brainstorming
+    "talk": TalkTool(),  # Interactive development talk and brainstorming
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
     "planner": PlannerTool(),  # Interactive sequential planner using workflow architecture
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
@@ -344,10 +344,10 @@ TOOLS = filter_disabled_tools(TOOLS)
 
 # Rich prompt templates for all tools
 PROMPT_TEMPLATES = {
-    "chat": {
-        "name": "chat",
-        "description": "Chat and brainstorm ideas",
-        "template": "Chat with {model} about this",
+    "talk": {
+        "name": "talk",
+        "description": "Talk and brainstorm ideas",
+        "template": "Talk with {model} about this",
     },
     "thinkdeep": {
         "name": "thinkdeeper",
@@ -422,7 +422,7 @@ PROMPT_TEMPLATES = {
     "version": {
         "name": "version",
         "description": "Show server version and system information",
-        "template": "Show Zen MCP Server version",
+        "template": "Show Cell MCP Server version",
     },
 }
 
@@ -739,7 +739,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     - Supporting conversation chains across different tool types
 
     Args:
-        name: The name of the tool to execute (e.g., "analyze", "chat", "codereview")
+        name: The name of the tool to execute (e.g., "analyze", "talk", "codereview")
         arguments: Dictionary of arguments to pass to the tool, potentially including:
                   - continuation_id: UUID for conversation thread resumption
                   - files: File paths for analysis (subject to deduplication)
@@ -762,7 +762,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         3. Claude continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
     """
-    
+
 
     try:
         from utils.cell_otel_context import extract_ctx
@@ -773,7 +773,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         logger.debug(f"############   CTX Object: {ctx}")
         set_session_context(ctx.get("user_id"), ctx.get("session_id"))
         logger.debug(f"############   UserId: {ctx.get('user_id')}   SessionId:{ctx.get('session_id')}")
-        
+
     except Exception as e:
         logger.warning(f"Failed to set session context: {e}", exc_info=True)
         # Ensure context is cleared if it fails midway
@@ -1040,7 +1040,7 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
     CROSS-TOOL CONTINUATION SUPPORT:
     This function enables seamless handoffs between different tools:
     - Analyze tool → Debug tool: Full file context and analysis preserved
-    - Chat tool → CodeReview tool: Conversation context maintained
+    - Talk tool → CodeReview tool: Conversation context maintained
     - Any tool → Any tool: Complete cross-tool knowledge transfer
 
     ERROR HANDLING & RECOVERY:
@@ -1266,7 +1266,7 @@ async def handle_list_prompts() -> list[Prompt]:
     prompts.append(
         Prompt(
             name="continue",
-            description="Continue the previous conversation using the chat tool",
+            description="Continue the previous conversation using the talk tool",
             arguments=[],
         )
     )
@@ -1280,16 +1280,16 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
     """
     Get prompt details and generate the actual prompt text.
 
-    This handler is called when a user invokes a prompt (e.g., /zen:thinkdeeper or /zen:chat:gpt5).
+    This handler is called when a user invokes a prompt (e.g., /zen:thinkdeeper or /zen:talk:gpt5).
     It generates the appropriate text that Claude will then use to call the
     underlying tool.
 
-    Supports structured prompt names like "chat:gpt5" where:
-    - "chat" is the tool name
+    Supports structured prompt names like "talk:gpt5" where:
+    - "talk" is the tool name
     - "gpt5" is the model to use
 
     Args:
-        name: The name of the prompt to execute (can include model like "chat:gpt5")
+        name: The name of the prompt to execute (can include model like "talk:gpt5")
         arguments: Optional arguments for the prompt (e.g., model, thinking_mode)
 
     Returns:
@@ -1302,14 +1302,14 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
 
     # Handle special "continue" case
     if name.lower() == "continue":
-        # This is "/zen:continue" - use chat tool as default for continuation
-        tool_name = "chat"
+        # This is "/zen:continue" - use talk tool as default for continuation
+        tool_name = "talk"
         template_info = {
             "name": "continue",
             "description": "Continue the previous conversation",
             "template": "Continue the conversation",
         }
-        logger.debug("Using /zen:continue - defaulting to chat tool")
+        logger.debug("Using /zen:continue - defaulting to talk tool")
     else:
         # Find the corresponding tool by checking prompt names
         tool_name = None

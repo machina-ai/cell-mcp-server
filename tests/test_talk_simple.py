@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.chat import ChatRequest, ChatTool
+from tools.talk import TalkRequest, TalkTool
 
 
 class TestChatTool:
@@ -21,7 +21,7 @@ class TestChatTool:
 
     def test_tool_metadata(self):
         """Test that tool metadata matches requirements"""
-        assert self.tool.get_name() == "chat"
+        assert self.tool.get_name() == "talk"
         assert "collaborative thinking" in self.tool.get_description()
         assert self.tool.get_system_prompt() is not None
         assert self.tool.get_default_temperature() > 0
@@ -124,7 +124,7 @@ class TestChatTool:
 
     def test_tool_name(self):
         """Test tool name is correct"""
-        assert self.tool.get_name() == "chat"
+        assert self.tool.get_name() == "talk"
 
     def test_websearch_guidance(self):
         """Test web search guidance matches Chat tool style"""

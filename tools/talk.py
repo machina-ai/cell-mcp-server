@@ -1,5 +1,5 @@
 """
-Chat tool - General development chat and collaborative thinking
+Talk tool - General development chat and collaborative thinking
 
 This tool provides a conversational interface for general development assistance,
 brainstorming, problem-solving, and collaborative thinking. It supports file context,
@@ -14,13 +14,13 @@ if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
 from config import TEMPERATURE_BALANCED
-from systemprompts import CHAT_PROMPT
+from systemprompts import TALK_PROMPT
 from tools.shared.base_models import COMMON_FIELD_DESCRIPTIONS, ToolRequest
 
 from .simple.base import SimpleTool
 
-# Field descriptions matching the original Chat tool exactly
-CHAT_FIELD_DESCRIPTIONS = {
+# Field descriptions matching the original Talk tool exactly
+TALK_FIELD_DESCRIPTIONS = {
     "prompt": (
         "Your question or idea for collaborative thinking. Provide detailed context, including your goal, what you've tried, and any specific challenges. "
         "CRITICAL: To discuss code, provide file paths using the 'files' parameter instead of pasting large code blocks here."
@@ -32,27 +32,27 @@ CHAT_FIELD_DESCRIPTIONS = {
 }
 
 
-class ChatRequest(ToolRequest):
-    """Request model for Chat tool"""
+class TalkRequest(ToolRequest):
+    """Request model for Talk tool"""
 
-    prompt: str = Field(..., description=CHAT_FIELD_DESCRIPTIONS["prompt"])
-    files: Optional[list[str]] = Field(default_factory=list, description=CHAT_FIELD_DESCRIPTIONS["files"])
-    images: Optional[list[str]] = Field(default_factory=list, description=CHAT_FIELD_DESCRIPTIONS["images"])
+    prompt: str = Field(..., description=TALK_FIELD_DESCRIPTIONS["prompt"])
+    files: Optional[list[str]] = Field(default_factory=list, description=TALK_FIELD_DESCRIPTIONS["files"])
+    images: Optional[list[str]] = Field(default_factory=list, description=TALK_FIELD_DESCRIPTIONS["images"])
 
 
-class ChatTool(SimpleTool):
+class TalkTool(SimpleTool):
     """
     General development chat and collaborative thinking tool using SimpleTool architecture.
 
-    This tool provides identical functionality to the original Chat tool but uses the new
+    This tool provides identical functionality to the original Talk tool but uses the new
     SimpleTool architecture for cleaner code organization and better maintainability.
 
     Migration note: This tool is designed to be a drop-in replacement for the original
-    Chat tool with 100% behavioral compatibility.
+    Talk tool with 100% behavioral compatibility.
     """
 
     def get_name(self) -> str:
-        return "chat"
+        return "talk"
 
     def get_description(self) -> str:
         return (
@@ -61,29 +61,29 @@ class ChatTool(SimpleTool):
         )
 
     def get_system_prompt(self) -> str:
-        return CHAT_PROMPT
+        return TALK_PROMPT
 
     def get_default_temperature(self) -> float:
         return TEMPERATURE_BALANCED
 
     def get_model_category(self) -> "ToolModelCategory":
-        """Chat prioritizes fast responses and cost efficiency"""
+        """Talk prioritizes fast responses and cost efficiency"""
         from tools.models import ToolModelCategory
 
         return ToolModelCategory.FAST_RESPONSE
 
     def get_request_model(self):
-        """Return the Chat-specific request model"""
-        return ChatRequest
+        """Return the Talk-specific request model"""
+        return TalkRequest
 
     # === Schema Generation ===
-    # For maximum compatibility, we override get_input_schema() to match the original Chat tool exactly
+    # For maximum compatibility, we override get_input_schema() to match the original Talk tool exactly
 
     def get_input_schema(self) -> dict[str, Any]:
         """
-        Generate input schema matching the original Chat tool exactly.
+        Generate input schema matching the original Talk tool exactly.
 
-        This maintains 100% compatibility with the original Chat tool by using
+        This maintains 100% compatibility with the original Talk tool by using
         the same schema generation approach while still benefiting from SimpleTool
         convenience methods.
         """
@@ -92,17 +92,17 @@ class ChatTool(SimpleTool):
             "properties": {
                 "prompt": {
                     "type": "string",
-                    "description": CHAT_FIELD_DESCRIPTIONS["prompt"],
+                    "description": TALK_FIELD_DESCRIPTIONS["prompt"],
                 },
                 "files": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": CHAT_FIELD_DESCRIPTIONS["files"],
+                    "description": TALK_FIELD_DESCRIPTIONS["files"],
                 },
                 "images": {
                     "type": "array",
                     "items": {"type": "string"},
-                    "description": CHAT_FIELD_DESCRIPTIONS["images"],
+                    "description": TALK_FIELD_DESCRIPTIONS["images"],
                 },
                 "model": self.get_model_field_schema(),
                 "temperature": {
@@ -137,48 +137,48 @@ class ChatTool(SimpleTool):
 
     def get_tool_fields(self) -> dict[str, dict[str, Any]]:
         """
-        Tool-specific field definitions for ChatSimple.
+        Tool-specific field definitions for TalkSimple.
 
         Note: This method isn't used since we override get_input_schema() for
-        exact compatibility, but it demonstrates how ChatSimple could be
+        exact compatibility, but it demonstrates how TalkSimple could be
         implemented using automatic schema building.
         """
         return {
             "prompt": {
                 "type": "string",
-                "description": CHAT_FIELD_DESCRIPTIONS["prompt"],
+                "description": TALK_FIELD_DESCRIPTIONS["prompt"],
             },
             "files": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": CHAT_FIELD_DESCRIPTIONS["files"],
+                "description": TALK_FIELD_DESCRIPTIONS["files"],
             },
             "images": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": CHAT_FIELD_DESCRIPTIONS["images"],
+                "description": TALK_FIELD_DESCRIPTIONS["images"],
             },
         }
 
     def get_required_fields(self) -> list[str]:
-        """Required fields for ChatSimple tool"""
+        """Required fields for TalkSimple tool"""
         return ["prompt"]
 
     # === Hook Method Implementations ===
 
-    async def prepare_prompt(self, request: ChatRequest) -> str:
+    async def prepare_prompt(self, request: TalkRequest) -> str:
         """
-        Prepare the chat prompt with optional context files.
+        Prepare the talk prompt with optional context files.
 
-        This implementation matches the original Chat tool exactly while using
+        This implementation matches the original Talk tool exactly while using
         SimpleTool convenience methods for cleaner code.
         """
-        # Use SimpleTool's Chat-style prompt preparation
+        # Use SimpleTool's Talk-style prompt preparation
         return self.prepare_chat_style_prompt(request)
 
-    def format_response(self, response: str, request: ChatRequest, model_info: Optional[dict] = None) -> str:
+    def format_response(self, response: str, request: TalkRequest, model_info: Optional[dict] = None) -> str:
         """
-        Format the chat response to match the original Chat tool exactly.
+        Format the talk response to match the original Talk tool exactly.
         """
         return (
             f"{response}\n\n---\n\nAGENT'S TURN: Evaluate this perspective alongside your analysis to "
@@ -187,6 +187,6 @@ class ChatTool(SimpleTool):
 
     def get_websearch_guidance(self) -> str:
         """
-        Return Chat tool-style web search guidance.
+        Return Talk tool-style web search guidance.
         """
         return self.get_chat_style_websearch_guidance()

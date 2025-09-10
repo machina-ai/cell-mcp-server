@@ -4,7 +4,7 @@ Tool implementations for Zen MCP Server
 
 from .analyze import AnalyzeTool
 from .challenge import ChallengeTool
-from .chat import ChatTool
+from .talk import TalkTool
 from .codereview import CodeReviewTool
 from .consensus import ConsensusTool
 from .debug import DebugIssueTool
@@ -25,7 +25,7 @@ __all__ = [
     "DebugIssueTool",
     "DocgenTool",
     "AnalyzeTool",
-    "ChatTool",
+    "TalkTool",
     "ConsensusTool",
     "ListModelsTool",
     "PlannerTool",
