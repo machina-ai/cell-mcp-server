@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runtime
-    image: cell-mcp-server:0.0.4
+    image: cell-mcp-server:0.0.5
     container_name: cell-mcp-server
     ports:
       - "8080:8080"

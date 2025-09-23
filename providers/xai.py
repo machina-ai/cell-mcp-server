@@ -39,7 +39,7 @@ class XAIModelProvider(OpenAICompatibleProvider):
             max_image_size_mb=20.0,            # (Irrelevant since images are not supported)
             supports_temperature=True,
             temperature_constraint=create_temperature_constraint("range"),
-            description="Grok Code Fast 1 (256K context) – modelo de razonamiento veloz y económico optimizado para codificación agentiva",
+            description="Grok Code Fast 1 (256K context) – Fast and economical reasoning model optimized for agentive coding, excelent for algorithms and code tasks",
             aliases=["grok-code-fast", "grok-code-fast-1-0825"],
         ),
         "grok-4": ModelCapabilities(
