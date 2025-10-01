@@ -245,3 +245,36 @@ LOG_LEVEL=INFO
 - **[Advanced Usage Guide](advanced-usage.md)** - Advanced model usage patterns, thinking modes, and power user workflows
 - **[Context Revival Guide](context-revival.md)** - Conversation persistence and context revival across sessions
 - **[AI-to-AI Collaboration Guide](ai-collaboration.md)** - Multi-model coordination and conversation threading
+---
+
+### State Management with Redis
+
+For tools that require multiple steps and context continuation (like `consensus` or `planner`), the server must store the state of the conversation thread.
+
+-   **Default (In-Memory):** By default, this state is stored in the servers memory. This is simple and requires no setup, making it ideal for local development or single-user instances. However, this state is ephemeral and will be lost if the server restarts. It also prevents horizontal scaling (running multiple server containers).
+
+-   **Redis Backend (Recommended for Production):** For production, multi-container, or resilient setups, you can configure the server to use Redis for state management. This externalizes the conversation state, providing several key benefits:
+    -   **Scalability:** You can run multiple `zen-mcp-server` containers behind a load balancer, and any container can continue a conversation started by another.
+    -   **Persistence:** Conversation threads survive server restarts, allowing long-running, complex tasks to complete without interruption.
+    -   **Resilience:** If a container crashes, the state is not lost, and another container can pick up the work.
+
+#### Configuration
+
+To enable the Redis backend, set the following environment variable:
+
+-   `REDIS_URL`: The connection string for your Redis instance.
+
+**Example `.env` configuration:**
+
+```bash
+# Optional: State Management for Multi-Turn Tools
+# For production or multi-container setups, using Redis is recommended.
+# If you provide a REDIS_URL, the server will use it for state persistence.
+REDIS_URL=redis://localhost:6379/0
+
+# Example with password authentication
+# REDIS_URL=redis://:your-password@localhost:6379/0
+```
+
+If the `REDIS_URL` is not set, the server will automatically and silently fall back to the in-memory storage. If the URL is set but the server cannot connect to Redis, it will log an error and fall back to in-memory storage to ensure the application continues to function.
+

@@ -148,3 +148,14 @@ LOCALE = os.getenv("LOCALE", "")
 # Threading configuration
 # Simple in-memory conversation threading for stateless MCP environment
 # Conversations persist only during the Claude session
+
+# State Management Configuration
+# If REDIS_HOST is set, the server will connect to Redis for conversation state
+# persistence. Otherwise, it defaults to a simple in-memory storage.
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_AUTH = os.getenv("REDIS_AUTH")
+
+# TTL for Redis keys, defaulting to 3 hours (10800 seconds)
+REDIS_TTL_SECONDS = int(os.getenv("REDIS_TTL_SECONDS", "10800"))
+

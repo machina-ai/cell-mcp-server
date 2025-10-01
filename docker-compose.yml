@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: runtime
-    image: cell-mcp-server:0.0.5
+    image: cell-mcp-server:0.0.7
     container_name: cell-mcp-server
     ports:
       - "8080:8080"
@@ -31,6 +31,12 @@ services:
       - CUSTOM_API_URL=${CUSTOM_API_URL}
       - CUSTOM_API_KEY=${CUSTOM_API_KEY}
       - CUSTOM_MODEL_NAME=${CUSTOM_MODEL_NAME}
+
+      # State Management for conversation persistence
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_AUTH=${REDIS_AUTH}
+      - REDIS_TTL_SECONDS=${REDIS_TTL_SECONDS}
 
       # Logging configuration
       - LOG_LEVEL=${LOG_LEVEL:-INFO}

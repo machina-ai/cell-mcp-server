@@ -203,14 +203,14 @@ class ThreadContext(BaseModel):
 
 def get_storage():
     """
-    Get in-memory storage backend for conversation persistence.
+    Get the configured storage backend (Redis or InMemory).
 
     Returns:
-        InMemoryStorage: Thread-safe in-memory storage backend
+        StateBackend: The configured state management backend.
     """
-    from .storage_backend import get_storage_backend
+    from state_manager import state_manager
 
-    return get_storage_backend()
+    return state_manager
 
 
 def create_thread(tool_name: str, initial_request: dict[str, Any], parent_thread_id: Optional[str] = None) -> str:
