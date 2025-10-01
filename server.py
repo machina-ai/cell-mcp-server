@@ -162,6 +162,10 @@ try:
 except Exception as e:
     print(f"Warning: Could not set up file logging: {e}", file=sys.stderr)
 
+# Silence verbose library logging
+logging.getLogger("mcp.server.lowlevel.server").setLevel(logging.INFO)
+logging.getLogger("mcp.server.sse").setLevel(logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -793,6 +797,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     # Handle thread context reconstruction if continuation_id is present
     if "continuation_id" in arguments and arguments["continuation_id"]:
         continuation_id = arguments["continuation_id"]
+        logger.debug(f"TRACE_CONTINUATION_ID: Received tool call for '{name}' with continuation_id: {continuation_id}")
         logger.debug(f"Resuming conversation thread: {continuation_id}")
         logger.debug(
             f"[CONVERSATION_DEBUG] Tool '{name}' resuming thread {continuation_id} with {len(arguments)} arguments"
@@ -1082,10 +1087,11 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
     continuation_id = arguments["continuation_id"]
 
     # Get thread context from storage
-    logger.debug(f"[CONVERSATION_DEBUG] Looking up thread {continuation_id} in storage")
+    logger.debug(f"TRACE_CONTINUATION_ID: Looking up thread {continuation_id} in storage")
     context = get_thread(continuation_id)
     if not context:
         logger.warning(f"Thread not found: {continuation_id}")
+        logger.debug(f"TRACE_CONTINUATION_ID: Thread {continuation_id} not found in storage or expired")
         logger.debug(f"[CONVERSATION_DEBUG] Thread {continuation_id} not found in storage or expired")
 
         # Log to activity file for monitoring

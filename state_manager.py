@@ -6,11 +6,11 @@ from typing import Any, Optional
 import redis
 
 import time
-from config import REDIS_AUTH, REDIS_HOST, REDIS_PORT
+from config import REDIS_AUTH, REDIS_HOST, REDIS_PORT, REDIS_TTL_SECONDS
 
-# Default TTL for conversation threads in seconds (15 minutes)
+# Default TTL for conversation threads in seconds (e.g., 3 hours)
 # This is used by the Redis backend. The in-memory backend is ephemeral.
-CONVERSATION_TTL_SECONDS = 900
+CONVERSATION_TTL_SECONDS = REDIS_TTL_SECONDS
 
 logger = logging.getLogger(__name__)
 
@@ -58,72 +58,27 @@ class InMemoryStateBackend(StateBackend):
 
 
 class RedisStateBackend(StateBackend):
-    """Redis-backed state management with robust connection handling."""
+    """Redis-backed state management using a connection pool."""
 
     def __init__(self, redis_client: redis.Redis):
         self._client = redis_client
-        self._is_connected = False
-        self._lock = threading.Lock()
-        self._reconnect_interval = 30  # seconds
-
-        # Start a background thread for connection management
-        self._conn_thread = threading.Thread(target=self._connect_and_monitor, daemon=True)
-        self._conn_thread.start()
-        logger.info("RedisStateBackend initialized; attempting connection in background.")
-
-    def _connect_and_monitor(self):
-        """Runs in a background thread to connect and monitor Redis connection."""
-        while True:
-            try:
-                self._client.ping()
-                with self._lock:
-                    if not self._is_connected:
-                        self._is_connected = True
-                        logger.info("Successfully connected to Redis.")
-            except redis.exceptions.ConnectionError as e:
-                with self._lock:
-                    if self._is_connected:
-                        self._is_connected = False
-                        logger.error(f"Lost connection to Redis: {e}. Will attempt to reconnect.")
-                    else:
-                        # Log less verbosely if we haven't connected yet
-                        logger.warning(f"Failed to connect to Redis: {e}. Retrying in {self._reconnect_interval}s.")
-            except Exception as e:
-                with self._lock:
-                    self._is_connected = False
-                logger.error(f"An unexpected error occurred in Redis connection thread: {e}")
-
-            time.sleep(self._reconnect_interval)
-
-    @property
-    def is_connected(self) -> bool:
-        """Thread-safe check for Redis connection status."""
-        with self._lock:
-            return self._is_connected
+        logger.info("RedisStateBackend initialized and connected.")
 
     def get(self, key: str) -> Optional[str]:
-        if not self.is_connected:
-            logger.warning("Redis is not connected. Cannot GET.")
-            return None
         try:
             return self._client.get(key)
         except redis.exceptions.RedisError as e:
             logger.error(f"Redis GET failed for key '{key}': {e}")
+            # In a high-availability setup, you might trigger a reconnect here
             return None
 
     def setex(self, key: str, ttl_seconds: int, value: str):
-        if not self.is_connected:
-            logger.warning("Redis is not connected. Cannot SETEX.")
-            return
         try:
             self._client.setex(key, ttl_seconds, value)
         except redis.exceptions.RedisError as e:
             logger.error(f"Redis SETEX failed for key '{key}': {e}")
 
     def delete(self, key: str):
-        if not self.is_connected:
-            logger.warning("Redis is not connected. Cannot DELETE.")
-            return
         try:
             self._client.delete(key)
         except redis.exceptions.RedisError as e:
@@ -134,7 +89,7 @@ def _create_state_manager() -> StateBackend:
     """Factory function to create the appropriate state manager."""
     if REDIS_HOST:
         try:
-            # Best practice: Use a connection pool for thread-safe connection management
+            # Use a connection pool for efficient, thread-safe connection management
             pool = redis.ConnectionPool(
                 host=REDIS_HOST,
                 port=REDIS_PORT,
@@ -142,13 +97,20 @@ def _create_state_manager() -> StateBackend:
                 decode_responses=True,
                 socket_connect_timeout=5,
             )
-            # The Redis client will manage connections from this pool
             redis_client = redis.Redis(connection_pool=pool)
 
-            logger.info(f"Redis is configured. Initializing RedisStateBackend for {REDIS_HOST}:{REDIS_PORT} with a connection pool.")
+            # Synchronously verify the connection on startup
+            redis_client.ping()
+            
+            logger.info(f"Successfully connected to Redis at {REDIS_HOST}:{REDIS_PORT}.")
             return RedisStateBackend(redis_client)
+        except redis.exceptions.ConnectionError as e:
+            logger.error(
+                f"Could not connect to Redis at {REDIS_HOST}:{REDIS_PORT}. "
+                f"Falling back to in-memory state. Error: {e}"
+            )
+            return InMemoryStateBackend()
         except Exception as e:
-            # This would catch config errors, not connection errors
             logger.error(
                 f"An unexpected error occurred during Redis client setup. "
                 f"Falling back to in-memory state. Error: {e}"

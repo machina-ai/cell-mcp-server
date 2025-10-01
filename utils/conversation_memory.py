@@ -236,6 +236,7 @@ def create_thread(tool_name: str, initial_request: dict[str, Any], parent_thread
         - Parent thread creates a chain for conversation history traversal
     """
     thread_id = str(uuid.uuid4())
+    logger.debug(f"TRACE_CONTINUATION_ID: New thread created with ID: {thread_id} for tool: {tool_name}")
     now = datetime.now(timezone.utc).isoformat()
 
     # Filter out non-serializable parameters to avoid JSON encoding issues
@@ -285,7 +286,10 @@ def get_thread(thread_id: str) -> Optional[ThreadContext]:
         - Handles storage connection failures gracefully
         - No error information leakage on failure
     """
+    logger.debug(f"TRACE_CONTINUATION_ID: Attempting to get thread with ID: {thread_id}")
     if not thread_id or not _is_valid_uuid(thread_id):
+        logger.warning(f"Invalid UUID format for thread_id: {thread_id}")
+        logger.debug(f"TRACE_CONTINUATION_ID: Validation failed for ID: {thread_id}. Not a valid UUID.")
         return None
 
     try:

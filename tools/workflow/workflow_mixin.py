@@ -703,6 +703,7 @@ class BaseWorkflowMixin(ABC):
 
             # Create thread for first step
             if not continuation_id and request.step_number == 1:
+                logger.debug(f"TRACE_CONTINUATION_ID: Creating new thread for workflow tool '{self.get_name()}'")
                 clean_args = {k: v for k, v in arguments.items() if k not in ["_model_context", "_resolved_model_name"]}
                 continuation_id = create_thread(self.get_name(), clean_args)
                 self.initial_request = request.step
@@ -1130,6 +1131,7 @@ class BaseWorkflowMixin(ABC):
         """
         Store the conversation turn. Tools can override for custom memory storage.
         """
+        logger.debug(f"TRACE_CONTINUATION_ID: Storing conversation turn for tool '{self.get_name()}' with continuation_id: {continuation_id}")
         # CRITICAL: Extract clean content for conversation history (exclude internal workflow metadata)
         clean_content = self._extract_clean_workflow_content_for_history(response_data)
 

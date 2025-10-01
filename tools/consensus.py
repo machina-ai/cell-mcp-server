@@ -431,8 +431,12 @@ of the evidence, even when it strongly points in one direction.""",
 
         # Validate request
         request = self.get_workflow_request_model()(**arguments)
+        
+        continuation_id = self.get_request_continuation_id(request)
+        if continuation_id:
+            logger.debug(f"TRACE_CONTINUATION_ID: Consensus tool executing with continuation_id: {continuation_id}")
 
-        # On first step, store the models to consult
+        # On first step, store the models to consult and create the thread
         if request.step_number == 1:
             # Store the original proposal from step 1 - this is what all models should see
             self.original_proposal = request.step
@@ -441,6 +445,15 @@ of the evidence, even when it strongly points in one direction.""",
             self.accumulated_responses = []
             # Set total steps: len(models) (each step includes consultation + response)
             request.total_steps = len(self.models_to_consult)
+
+            # Create thread for the first step if no continuation_id is present
+            if not continuation_id:
+                logger.debug(f"TRACE_CONTINUATION_ID: Creating new thread for consensus tool")
+                from utils.conversation_memory import create_thread
+                clean_args = {k: v for k, v in arguments.items() if k not in ["_model_context", "_resolved_model_name"]}
+                continuation_id = create_thread(self.get_name(), clean_args)
+                self.initial_request = request.step
+                self.store_initial_issue(request.step)
 
         # For all steps (1 through total_steps), consult the corresponding model
         if request.step_number <= request.total_steps:
@@ -459,6 +472,7 @@ of the evidence, even when it strongly points in one direction.""",
                     "status": "model_consulted",
                     "step_number": request.step_number,
                     "total_steps": request.total_steps,
+                    "continuation_id": continuation_id,
                     "model_consulted": model_response["model"],
                     "model_stance": model_response.get("stance", "neutral"),
                     "model_response": model_response,
