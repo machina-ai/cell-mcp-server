@@ -429,7 +429,7 @@ class SimpleTool(BaseTool):
             logger.debug(f"Prompt length: {len(prompt)} characters (~{estimated_tokens:,} tokens)")
 
             # Generate content with provider abstraction
-            from utils.telemetry_utils import create_llm_span, annotate_llm_io_and_usage
+            from utils.telemetry_utils import annotate_llm_io_and_usage, create_llm_span
             provider_name = provider.get_provider_type().value
             with create_llm_span(self._current_model_name, provider_name, prompt) as span:
                 model_response = provider.generate_content(
@@ -713,7 +713,9 @@ class SimpleTool(BaseTool):
                     "remaining_turns": MAX_CONVERSATION_TURNS - 1,
                     "note": f"Claude can continue this conversation for {MAX_CONVERSATION_TURNS - 1} more exchanges.",
                 }
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to create continuation offer: {e}", exc_info=True)
             return None
 
     def _create_continuation_offer_response(

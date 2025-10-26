@@ -6,6 +6,8 @@ from typing import Optional
 
 from opentelemetry import trace
 
+from utils.telemetry_utils import annotate_llm_io_and_usage
+
 from .base import (
     FixedTemperatureConstraint,
     ModelCapabilities,
@@ -15,7 +17,6 @@ from .base import (
 )
 from .openai_compatible import OpenAICompatibleProvider
 from .openrouter_registry import OpenRouterModelRegistry
-from utils.telemetry_utils import annotate_llm_io_and_usage
 
 # Temperature inference patterns
 _TEMP_UNSUPPORTED_PATTERNS = [

@@ -23,7 +23,8 @@ import time
 from typing import Optional
 
 import redis
-from config import REDIS_HOST, REDIS_PORT, REDIS_AUTH, REDIS_TTL_SECONDS
+
+from config import REDIS_AUTH, REDIS_HOST, REDIS_PORT, REDIS_TTL_SECONDS
 
 logger = logging.getLogger(__name__)
 

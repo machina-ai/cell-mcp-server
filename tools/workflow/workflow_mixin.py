@@ -1511,7 +1511,7 @@ class BaseWorkflowMixin(ABC):
 
             # Generate AI response - use request parameters if available
             try:
-                from utils.telemetry_utils import create_llm_span, annotate_llm_io_and_usage
+                from utils.telemetry_utils import annotate_llm_io_and_usage, create_llm_span
             except ImportError:
                 # Fallback if import fails
                 create_llm_span = None

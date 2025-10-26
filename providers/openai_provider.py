@@ -3,8 +3,6 @@
 import logging
 from typing import TYPE_CHECKING, Optional
 
-from utils.telemetry_utils import instrument_generate_content
-
 if TYPE_CHECKING:
     from tools.models import ToolModelCategory
 
@@ -28,18 +26,18 @@ class OpenAIModelProvider(OpenAICompatibleProvider):
         #    provider=ProviderType.OPENAI,
         #    model_name="gpt-5-codex",
         #    friendly_name="OpenAI (GPT-5 Codex)",
-        #    context_window=400_000,        
-        #    max_output_tokens=128_000,        # 128K tokens 
-        #    supports_extended_thinking=True,  
-        #    supports_system_prompts=True,     
-        #    supports_streaming=True,          
-        #    supports_function_calling=True,   
-        #    supports_json_mode=True,          
-        #    supports_images=True,             
-        #    max_image_size_mb=20.0,           
-        #    supports_temperature=True,        
-        #    temperature_constraint=create_temperature_constraint("fixed"),  
-        #    description="GPT-5-Codex (400K context, 128K output) - Optimized for agentic coding tasks",  
+        #    context_window=400_000,
+        #    max_output_tokens=128_000,        # 128K tokens
+        #    supports_extended_thinking=True,
+        #    supports_system_prompts=True,
+        #    supports_streaming=True,
+        #    supports_function_calling=True,
+        #    supports_json_mode=True,
+        #    supports_images=True,
+        #    max_image_size_mb=20.0,
+        #    supports_temperature=True,
+        #    temperature_constraint=create_temperature_constraint("fixed"),
+        #    description="GPT-5-Codex (400K context, 128K output) - Optimized for agentic coding tasks",
         #    aliases=["gpt5-codex", "gpt-5-codex", "codex"]
         #),
         "gpt-5": ModelCapabilities(

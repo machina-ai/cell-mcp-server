@@ -1,11 +1,10 @@
 import abc
 import logging
 import threading
-from typing import Any, Optional
+from typing import Optional
 
 import redis
 
-import time
 from config import REDIS_AUTH, REDIS_HOST, REDIS_PORT, REDIS_TTL_SECONDS
 
 # Default TTL for conversation threads in seconds (e.g., 3 hours)
@@ -101,7 +100,7 @@ def _create_state_manager() -> StateBackend:
 
             # Synchronously verify the connection on startup
             redis_client.ping()
-            
+
             logger.info(f"Successfully connected to Redis at {REDIS_HOST}:{REDIS_PORT}.")
             return RedisStateBackend(redis_client)
         except redis.exceptions.ConnectionError as e:

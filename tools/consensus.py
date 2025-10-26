@@ -431,7 +431,7 @@ of the evidence, even when it strongly points in one direction.""",
 
         # Validate request
         request = self.get_workflow_request_model()(**arguments)
-        
+
         continuation_id = self.get_request_continuation_id(request)
         if continuation_id:
             logger.debug(f"TRACE_CONTINUATION_ID: Consensus tool executing with continuation_id: {continuation_id}")
@@ -448,7 +448,7 @@ of the evidence, even when it strongly points in one direction.""",
 
             # Create thread for the first step if no continuation_id is present
             if not continuation_id:
-                logger.debug(f"TRACE_CONTINUATION_ID: Creating new thread for consensus tool")
+                logger.debug("TRACE_CONTINUATION_ID: Creating new thread for consensus tool")
                 from utils.conversation_memory import create_thread
                 clean_args = {k: v for k, v in arguments.items() if k not in ["_model_context", "_resolved_model_name"]}
                 continuation_id = create_thread(self.get_name(), clean_args)

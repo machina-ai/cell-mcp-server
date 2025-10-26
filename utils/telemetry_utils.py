@@ -11,10 +11,9 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Iterator
-from typing import Optional
-from typing import Any, Optional
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.trace import Span
@@ -189,7 +188,7 @@ def create_llm_span(
                 user_id = get_user_id()
                 if user_id:
                     span.set_attribute("user.id", user_id)
-                
+
                 session_id = get_session_id()
                 if session_id:
                     span.set_attribute("session.id", session_id)
@@ -333,7 +332,7 @@ def annotate_llm_io_and_usage(
 
 # --- add near the other imports if missing ---
 import functools
-from opentelemetry import trace
+
 
 def instrument_generate_content(fn):
     """Wrap a provider's generate_content to auto-annotate telemetry.

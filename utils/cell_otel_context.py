@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+
 def extract_ctx(envelope: Dict[str, Any]) -> Dict[str, Any]:
     """
     Extracts the _ctx object from the request envelope.
