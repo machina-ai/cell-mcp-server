@@ -1,10 +1,7 @@
 services:
   cell-mcp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: runtime
-    image: cell-mcp-server:0.0.7
+    image: cell-mcp-server:0.1.2
+    platform: linux/amd64
     container_name: cell-mcp-server
     ports:
       - "8080:8080"
@@ -63,13 +60,6 @@ services:
     # Network configuration
     networks:
       - cell-infra-network
-    command: >
-      --pass-environment
-      --host=0.0.0.0
-      --port=8080
-      --debug
-      --allow-origin "*"
-      -- zen-mcp-server
 
     # Resource limits
     deploy:

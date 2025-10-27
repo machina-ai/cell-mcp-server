@@ -84,41 +84,38 @@ class RedisStateBackend(StateBackend):
             logger.error(f"Redis DELETE failed for key '{key}': {e}")
 
 
-def _create_state_manager() -> StateBackend:
-    """Factory function to create the appropriate state manager."""
-    if REDIS_HOST:
-        try:
-            # Use a connection pool for efficient, thread-safe connection management
-            pool = redis.ConnectionPool(
-                host=REDIS_HOST,
-                port=REDIS_PORT,
-                password=REDIS_AUTH,
-                decode_responses=True,
-                socket_connect_timeout=5,
-            )
-            redis_client = redis.Redis(connection_pool=pool)
+# --- Factory ---
 
-            # Synchronously verify the connection on startup
-            redis_client.ping()
-
-            logger.info(f"Successfully connected to Redis at {REDIS_HOST}:{REDIS_PORT}.")
-            return RedisStateBackend(redis_client)
-        except redis.exceptions.ConnectionError as e:
-            logger.error(
-                f"Could not connect to Redis at {REDIS_HOST}:{REDIS_PORT}. "
-                f"Falling back to in-memory state. Error: {e}"
-            )
-            return InMemoryStateBackend()
-        except Exception as e:
-            logger.error(
-                f"An unexpected error occurred during Redis client setup. "
-                f"Falling back to in-memory state. Error: {e}"
-            )
-            return InMemoryStateBackend()
-    else:
-        # REDIS_HOST is not set, use the default in-memory backend
-        return InMemoryStateBackend()
+_state_backend_instance: Optional[StateBackend] = None
+_state_backend_lock = threading.Lock()
 
 
-# Singleton instance of the state manager for the application to use
-state_manager = _create_state_manager()
+def get_state_backend() -> StateBackend:
+    """
+    Factory function to create and return the appropriate state backend singleton.
+    If REDIS_HOST is configured, it attempts to connect to Redis.
+    Otherwise, it falls back to the in-memory backend.
+    """
+    global _state_backend_instance
+    if _state_backend_instance is None:
+        with _state_backend_lock:
+            if _state_backend_instance is None:
+                if REDIS_HOST:
+                    try:
+                        client = redis.Redis(
+                            host=REDIS_HOST,
+                            port=REDIS_PORT,
+                            password=REDIS_AUTH,
+                            decode_responses=True
+                        )
+                        client.ping()
+                        _state_backend_instance = RedisStateBackend(client)
+                    except redis.exceptions.ConnectionError as e:
+                        logger.error(
+                            f"Could not connect to Redis at {REDIS_HOST}. "
+                            f"Falling back to in-memory storage. Error: {e}"
+                        )
+                        _state_backend_instance = InMemoryStateBackend()
+                else:
+                    _state_backend_instance = InMemoryStateBackend()
+    return _state_backend_instance
