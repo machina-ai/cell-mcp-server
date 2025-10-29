@@ -1,9 +1,9 @@
 # =========================
 # STAGE 1: build de wheels
 # =========================
-FROM python:3.12-alpine AS builder
+FROM python:3.12-slim-bookworm AS builder
 
-RUN apk add --no-cache build-base libffi-dev openssl-dev cargo
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libffi-dev libssl-dev cargo && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
 COPY requirements.txt .
@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # =========================
 # STAGE 2: Extraer mcp-proxy
 # =========================
-FROM --platform=$TARGETPLATFORM mcp-proxy2:0.41.1 AS proxy_extractor
+FROM --platform=$TARGETPLATFORM mcp-proxy2:v0.41.1 AS proxy_extractor
 # Solo usamos esta etapa para copiar el binario, no hacemos nada más.
 
 # =========================

@@ -62,17 +62,38 @@ The telemetry system is integrated into the core model provider logic, capturing
 
 This data is then formatted and logged, ready for analysis.
 
-## 4. Integration of xAI Models
+## 5. Standardized Context Propagation (`_ctx`)
 
 ### Overview
 
-To expand the range of available models, the `feat/cell` branch adds support for xAI's Grok models, including `grok-code-fast` and `grok-3`.
+To enable robust telemetry, session management, and security, a standardized mechanism for propagating context from the `mcp-proxy` to the `zen-mcp-server` has been implemented. This is achieved via a `_ctx` object injected into each tool call.
 
-### Key Enhancements
+### Expected `_ctx` Structure
 
--   **Expanded Model Selection:** Users can now leverage the unique capabilities of Grok models for their development tasks.
--   **Enhanced Performance:** The `grok-code-fast` model provides a high-performance option for code-related tasks.
+The `mcp-proxy` is responsible for injecting a `_ctx` object into the `arguments` of every tool call. This object must contain essential metadata for the request lifecycle.
 
-### Implementation Details
+**Key Fields:**
+-   `user_id`: The unique identifier for the user making the request.
+-   `session_id`: A unique identifier for the user's session.
 
-The `providers/xai.py` module was updated to include the new models, with their respective capabilities and configurations. This allows the server to seamlessly route requests to the xAI API when these models are selected.
+**Example JSON Payload:**
+The proxy should construct the `call_tool` request payload as follows:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "call_tool",
+  "params": {
+    "name": "name_of_the_tool",
+    "arguments": {
+      "_ctx": {
+        "user_id": "user_id_value",
+        "session_id": "session_id_value"
+      },
+      "other_tool_arguments": "..."
+    }
+  }
+}
+```
+
+This structure ensures that critical session and authentication information is consistently available to all tools, enabling better logging, debugging, and secure integration with other services.

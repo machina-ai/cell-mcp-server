@@ -833,7 +833,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         3. The CLI continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
     """
-
+    logger.info(f"Received tool call with arguments: {arguments}")
 
     try:
         from utils.cell_otel_context import extract_ctx

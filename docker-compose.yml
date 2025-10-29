@@ -1,6 +1,6 @@
 services:
   cell-mcp:
-    image: cell-mcp-server:0.1.2
+    image: cell-mcp-server:0.1.3
     platform: linux/amd64
     container_name: cell-mcp-server
     ports:
