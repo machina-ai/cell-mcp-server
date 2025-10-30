@@ -1,0 +1,50 @@
+{
+  "mcpProxy": {
+    "addr": "0.0.0.0:8080",
+    "type": "streamable-http",
+    "options": {
+      "logEnabled": true
+    }
+  },
+  "mcpServers": {
+    "cell": {
+      "transportType": "stdio",
+      "command": "./zen-mcp-server",
+      "args": [],
+      "workingDir": "./",
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "passEnv": [
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "XAI_API_KEY",
+        "DIAL_API_KEY",
+        "DIAL_API_HOST",
+        "DIAL_API_VERSION",
+        "OPENROUTER_API_KEY",
+        "CUSTOM_API_URL",
+        "CUSTOM_API_KEY",
+        "CUSTOM_MODEL_NAME",
+        "REDIS_HOST",
+        "REDIS_PORT",
+        "REDIS_AUTH",
+        "REDIS_TTL_SECONDS",
+        "LOG_LEVEL",
+        "LOG_MAX_SIZE",
+        "LOG_BACKUP_COUNT",
+        "DEFAULT_THINKING_MODE_THINKDEEP",
+        "DISABLED_TOOLS",
+        "MAX_MCP_OUTPUT_TOKENS",
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "BASE_PATH",
+        "DEFAULT_MODEL",
+        "PYTHONUNBUFFERED",
+        "PYTHONPATH",
+        "TZ"
+      ]
+    }
+  }
+}
