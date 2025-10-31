@@ -887,6 +887,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     if name in TOOLS:
         from opentelemetry import trace
         tracer = trace.get_tracer(__name__)
+        result = None
         with tracer.start_as_current_span(f"tool.execution:{name}") as span:
             span.set_attribute("tool.name", name)
             span.set_attribute("tool.arguments", str(arguments))
@@ -920,7 +921,8 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
                 if not tool.requires_model():
                     logger.debug(f"Tool {name} doesn't require model resolution - skipping model validation")
                     # Execute tool directly without model context
-                    return await tool.execute(arguments)
+                    result = await tool.execute(arguments)
+                    return result
 
                 # Handle auto mode at MCP boundary - resolve to specific model
                 if model_name.lower() == "auto":
@@ -984,13 +986,13 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
                     mcp_activity_logger.info(f"TOOL_COMPLETED: {name}")
                 except Exception:
                     pass
-                return result
             except Exception as e:
                 from opentelemetry.trace import Status, StatusCode
                 span.record_exception(e)
                 span.set_status(Status(StatusCode.ERROR, description=str(e)))
                 logger.error(f"Error executing tool '{name}': {e}", exc_info=True)
                 raise
+        return result
 
 
     # Handle unknown tool requests gracefully

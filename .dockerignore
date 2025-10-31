@@ -15,7 +15,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+mcp-proxy-test
 # IDE
 .vscode/
 .idea/
@@ -34,6 +34,7 @@ logs/*.log*
 Dockerfile*
 docker-compose*
 .dockerignore
+
 
 # Documentation
 docs/

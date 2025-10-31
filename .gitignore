@@ -113,7 +113,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-mcp-proxy
+mcp-proxy-test
 # Spyder project settings
 .spyderproject
 .spyproject
