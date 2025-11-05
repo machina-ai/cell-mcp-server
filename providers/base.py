@@ -350,6 +350,34 @@ class ModelProvider(ABC):
 
         return None
 
+    def get_sanitized_model_map(self) -> dict[str, str]:
+        """Create a map of sanitized model names/aliases to canonical names.
+
+        This is used by the registry to resolve model names that might be
+        provided without hyphens (e.g., "grokcodefast" -> "grok-code-fast").
+
+        Returns:
+            Dict mapping sanitized names to canonical model names.
+        """
+        sanitized_map = {}
+        model_configs = self.get_all_model_capabilities()
+
+        # First, map sanitized canonical names
+        for canonical_name in model_configs:
+            sanitized = canonical_name.replace("-", "")
+            sanitized_map[sanitized] = canonical_name
+
+        # Then, map sanitized aliases, avoiding overwriting canonical mappings
+        alias_map = ModelCapabilities.collect_aliases(model_configs)
+        for canonical_name, aliases in alias_map.items():
+            for alias in aliases:
+                sanitized = alias.replace("-", "")
+                # Only add if not already present from a canonical name
+                if sanitized not in sanitized_map:
+                    sanitized_map[sanitized] = canonical_name
+
+        return sanitized_map
+
     # ------------------------------------------------------------------
     # Capability lookup pipeline
     # ------------------------------------------------------------------

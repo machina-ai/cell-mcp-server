@@ -26,28 +26,28 @@ FROM python:3.12-slim-bookworm AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONUNBUFFERED=1
-WORKDIR /opt/zen
+WORKDIR /app
 
 # Copia el binario de mcp-proxy desde la etapa de extracción
-COPY --from=proxy_extractor /app/mcp-proxy /opt/zen/
+COPY --from=proxy_extractor /app/mcp-proxy /app/
 
 # Copia wheels y el requirements.txt
 COPY --from=builder /dist /wheels
 COPY --from=builder /build/requirements.txt /wheels/requirements.txt
 
 # Crea venv e instala EXCLUSIVAMENTE desde /wheels (sin acceder a PyPI)
-RUN python3 -m venv /opt/zen/.venv \
-    && /opt/zen/.venv/bin/pip install --no-cache-dir --upgrade pip \
-    && /opt/zen/.venv/bin/pip install --no-index --find-links=/wheels -r /wheels/requirements.txt \
+RUN python3 -m venv /app/.venv \
+    && /app/.venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /app/.venv/bin/pip install --no-index --find-links=/wheels -r /wheels/requirements.txt \
     && rm -rf /wheels
 
 # Copia tu Zen “custodiado” y el archivo de configuración del proxy
-COPY . /opt/zen
-COPY mcp-proxy.json /opt/zen/mcp-proxy.json
-ENV PYTHONPATH=/opt/zen
+COPY . /app
+COPY mcp-proxy.json /app/mcp-proxy.json
+ENV PYTHONPATH=/app
 
 # Shim ejecutable para que el proxy pueda spawnnear "zen-mcp-server"
-RUN printf '#!/bin/sh\nexec /opt/zen/.venv/bin/python /opt/zen/server.py "$@"\n' \
+RUN printf '#!/bin/sh\nexec /app/.venv/bin/python /app/server.py "$@"\n' \
     > /usr/local/bin/zen-mcp-server \
     && chmod +x /usr/local/bin/zen-mcp-server
 

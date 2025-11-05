@@ -449,16 +449,19 @@ class TestConversationFlow:
 
         thread_id = create_thread("chat", {"prompt": "Start conversation"})
 
-        # Simulate conversation up to MAX_CONVERSATION_TURNS - 1
-        for turn_num in range(MAX_CONVERSATION_TURNS - 1):
+        # Simulate conversation up to the turn limit
+        # Each loop iteration is one user-assistant exchange (2 turns)
+        num_exchanges = (MAX_CONVERSATION_TURNS // 2)
+        for i in range(num_exchanges):
+            turn_num = i * 2
             # Mock context with current turns
             turns = [
                 ConversationTurn(
-                    role="user" if i % 2 == 0 else "assistant",
-                    content=f"Turn {i + 1}",
+                    role="user" if j % 2 == 0 else "assistant",
+                    content=f"Turn {j + 1}",
                     timestamp="2023-01-01T00:00:00Z",
                 )
-                for i in range(turn_num)
+                for j in range(turn_num)
             ]
 
             context = ThreadContext(
@@ -472,8 +475,12 @@ class TestConversationFlow:
             mock_client.get.return_value = context.model_dump_json()
 
             # Should succeed
-            success = add_turn(thread_id, "user", f"User turn {turn_num + 1}")
-            assert success is True, f"Turn {turn_num + 1} should succeed"
+            success_user = add_turn(thread_id, "user", f"User turn {turn_num + 1}")
+            assert success_user is True, f"User turn {turn_num + 1} should succeed"
+
+            if turn_num + 2 <= MAX_CONVERSATION_TURNS:
+                success_assistant = add_turn(thread_id, "assistant", f"Assistant turn {turn_num + 2}")
+                assert success_assistant is True, f"Assistant turn {turn_num + 2} should succeed"
 
         # Now we should be at the limit - create final context
         final_turns = [

@@ -53,7 +53,7 @@ services:
 
     # Volumes for persistent data
     volumes:
-      - ./logs:/opt/zen/logs
+      - ./logs:/app/logs
       - zen-mcp-config:/app/conf
       - /etc/localtime:/etc/localtime:ro
 

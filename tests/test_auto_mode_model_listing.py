@@ -124,22 +124,26 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     model_restrictions._restriction_service = None
     server.configure_providers()
 
-    with pytest.raises(ToolExecutionError) as exc_info:
-        asyncio.run(
-            server.handle_call_tool(
-                "chat",
-                {
-                    "model": "gpt5mini",
-                    "prompt": "Tell me about your strengths",
-                },
-            )
-        )
+    # The tool should not raise an exception, but return a structured error
+    response = await chat_tool.execute(
+        {
+            "prompt": "Tell me about your strengths",
+            "model": "gpt5mini",  # Not in the allowed list
+        }
+    )
 
-    payload = json.loads(exc_info.value.payload)
-    assert payload["status"] == "error"
+    # Verify the response is a structured error
+    assert len(response) == 1
+    assert response[0].type == "text"
+    error_data = json.loads(response[0].text)
 
-    available_models = _extract_available_models(payload["content"])
-    assert set(available_models) == {"gemini-2.5-pro", "gpt-5", "gpt5nano", "openai/gpt-5-nano"}
+    assert error_data["status"] == "error"
+    content = error_data["content"]
+    assert "Model 'gpt5mini' is not available" in content
+    assert "gpt-5" in content
+    assert "gemini-2.5-pro" in content
+    assert "gpt5nano" in content
+    assert "Suggested model for brainstorm: 'gemini-2.5-flash'" in content
 
 
 @pytest.mark.no_mock_provider

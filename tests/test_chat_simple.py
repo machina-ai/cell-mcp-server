@@ -41,7 +41,6 @@ class TestChatTool:
 
         # Required fields
         assert "prompt" in schema["required"]
-        assert "working_directory_absolute_path" in schema["required"]
 
         # Properties
         properties = schema["properties"]
@@ -256,7 +255,6 @@ class TestChatTool:
 
         required_fields = self.tool.get_required_fields()
         assert "prompt" in required_fields
-        assert "working_directory_absolute_path" in required_fields
 
 
 class TestChatRequestModel:

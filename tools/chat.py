@@ -48,8 +48,8 @@ class ChatRequest(ToolRequest):
         description=CHAT_FIELD_DESCRIPTIONS["absolute_file_paths"],
     )
     images: Optional[list[str]] = Field(default_factory=list, description=CHAT_FIELD_DESCRIPTIONS["images"])
-    working_directory_absolute_path: str = Field(
-        ...,
+    working_directory_absolute_path: Optional[str] = Field(
+        default=None,
         description=CHAT_FIELD_DESCRIPTIONS["working_directory_absolute_path"],
     )
 
@@ -110,7 +110,7 @@ class ChatTool(SimpleTool):
     def get_input_schema(self) -> dict[str, Any]:
         """Generate input schema matching the original Chat tool expectations."""
 
-        required_fields = ["prompt", "working_directory_absolute_path"]
+        required_fields = ["prompt"]
         if self.is_effective_auto_mode():
             required_fields.append("model")
 
@@ -184,7 +184,7 @@ class ChatTool(SimpleTool):
 
     def get_required_fields(self) -> list[str]:
         """Required fields for ChatSimple tool"""
-        return ["prompt", "working_directory_absolute_path"]
+        return ["prompt"]
 
     # === Hook Method Implementations ===
 
@@ -214,24 +214,9 @@ class ChatTool(SimpleTool):
                 expanded_files.append(expanded)
             self.set_request_files(request, expanded_files)
 
-        error = super()._validate_file_paths(request)
-        if error:
-            return error
-
-        working_directory = request.working_directory_absolute_path
-        if working_directory:
-            expanded = os.path.expanduser(working_directory)
-            if not os.path.isabs(expanded):
-                return (
-                    "Error: 'working_directory_absolute_path' must be an absolute path (you may use '~' which will be expanded). "
-                    f"Received: {working_directory}"
-                )
-            if not os.path.isdir(expanded):
-                return (
-                    "Error: 'working_directory_absolute_path' must reference an existing directory. "
-                    f"Received: {working_directory}"
-                )
-        return None
+        # NOTE: working_directory_absolute_path is a client-side path and cannot be
+        # validated on the server. The client is responsible for ensuring it exists.
+        return super()._validate_file_paths(request)
 
     def format_response(self, response: str, request: ChatRequest, model_info: Optional[dict] = None) -> str:
         """

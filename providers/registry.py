@@ -167,23 +167,32 @@ class ModelProviderRegistry:
         """
         logging.debug(f"get_provider_for_model called with model_name='{model_name}'")
 
-        # Check providers in priority order
-        instance = cls()
-        logging.debug(f"Registry instance: {instance}")
-        logging.debug(f"Available providers in registry: {list(instance._providers.keys())}")
+        # Sanitize the input model name for fallback matching
+        sanitized_model_name = model_name.replace("-", "")
 
+        instance = cls()
         for provider_type in cls.PROVIDER_PRIORITY_ORDER:
-            if provider_type in instance._providers:
-                logging.debug(f"Found {provider_type} in registry")
-                # Get or create provider instance
-                provider = cls.get_provider(provider_type)
-                if provider and provider.validate_model_name(model_name):
-                    logging.debug(f"{provider_type} validates model {model_name}")
+            if provider_type not in instance._providers:
+                continue
+
+            provider = cls.get_provider(provider_type)
+            if not provider:
+                continue
+
+            # 1. Try exact match first
+            if provider.validate_model_name(model_name):
+                logging.debug(f"{provider_type} validates model {model_name} (exact match)")
+                return provider
+
+            # 2. Try sanitized match as a fallback
+            sanitized_map = provider.get_sanitized_model_map()
+            if sanitized_model_name in sanitized_map:
+                canonical_name = sanitized_map[sanitized_model_name]
+                if provider.validate_model_name(canonical_name):
+                    logging.debug(
+                        f"{provider_type} validates sanitized model '{sanitized_model_name}' -> '{canonical_name}'"
+                    )
                     return provider
-                else:
-                    logging.debug(f"{provider_type} does not validate model {model_name}")
-            else:
-                logging.debug(f"{provider_type} not found in registry")
 
         logging.debug(f"No provider found for model {model_name}")
         return None

@@ -31,7 +31,8 @@
       "aliases": [
         "pro",
         "gemini pro",
-        "gemini-pro"
+        "gemini-pro",
+        "gemini2.5pro"
       ],
       "intelligence_score": 18,
       "description": "Deep reasoning + thinking mode (1M context) - Complex problems, architecture, deep analysis",
@@ -53,7 +54,8 @@
       "friendly_name": "Gemini (Flash 2.0)",
       "aliases": [
         "flash-2.0",
-        "flash2"
+        "flash2",
+        "gemini2.0flash"
       ],
       "intelligence_score": 9,
       "description": "Gemini 2.0 Flash (1M context) - Latest fast model with experimental thinking, supports audio/video input",
@@ -74,7 +76,8 @@
       "friendly_name": "Gemini (Flash Lite 2.0)",
       "aliases": [
         "flashlite",
-        "flash-lite"
+        "flash-lite",
+        "gemini2.0flashlite"
       ],
       "intelligence_score": 7,
       "description": "Gemini 2.0 Flash Lite (1M context) - Lightweight fast model, text-only",

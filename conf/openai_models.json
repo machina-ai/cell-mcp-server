@@ -30,7 +30,8 @@
       "friendly_name": "OpenAI (GPT-5)",
       "aliases": [
         "gpt5",
-        "gpt-5"
+        "gpt-5",
+        "g-p-t-5"
       ],
       "intelligence_score": 16,
       "description": "GPT-5 (400K context, 128K output) - Advanced model with reasoning support",
@@ -217,7 +218,8 @@
         "gpt5-codex",
         "codex",
         "gpt-5-code",
-        "gpt5-code"
+        "gpt5-code",
+        "gpt5codex"
       ],
       "intelligence_score": 17,
       "description": "GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.",

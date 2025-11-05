@@ -119,8 +119,7 @@ class TestConsensusTool:
         # confidence field should be excluded
         assert "confidence" not in schema["properties"]
         assert "models" in schema["properties"]
-        # relevant_files should be present as it's used by consensus
-        assert "relevant_files" in schema["properties"]
+        assert "relevant_code" in schema["properties"]
 
         # model field should NOT be present as consensus uses 'models' field instead
         assert "model" not in schema["properties"]
@@ -178,7 +177,7 @@ class TestConsensusTool:
             findings="Test findings",
             confidence="medium",
             models=[{"model": "test"}],
-            relevant_files=["/test.py"],
+            relevant_code="print('hello')",
         )
 
         step_data = tool.prepare_step_data(request)
@@ -186,7 +185,6 @@ class TestConsensusTool:
         # Verify consensus-specific fields
         assert step_data["step"] == "Test step"
         assert step_data["findings"] == "Test findings"
-        assert step_data["relevant_files"] == ["/test.py"]
 
         # Verify unused workflow fields are empty
         assert step_data["files_checked"] == []

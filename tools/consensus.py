@@ -48,7 +48,7 @@ CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS = {
     "findings": (
         "Step 1: your independent analysis for later synthesis (not shared with other models). Steps 2+: summarize the newest model response."
     ),
-    "relevant_files": "Optional supporting files that help the consensus analysis. Must be absolute full, non-abbreviated paths.",
+    "relevant_code": "Full content of relevant files/context as a single string. Use instead of relevant_files for remote/inaccessible files.",
     "models": (
         "User-specified list of models to consult (provide at least two entries). "
         "Each entry may include model, stance (for/against/neutral), and stance_prompt. "
@@ -75,9 +75,9 @@ class ConsensusRequest(WorkflowRequest):
 
     # Consensus-specific fields (only needed in step 1)
     models: list[dict] | None = Field(None, description=CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["models"])
-    relevant_files: list[str] | None = Field(
-        default_factory=list,
-        description=CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["relevant_files"],
+    relevant_code: str | None = Field(
+        None,
+        description=CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["relevant_code"],
     )
 
     # Internal tracking fields
@@ -218,10 +218,9 @@ of the evidence, even when it strongly points in one direction.""",
                 "type": "string",
                 "description": CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["findings"],
             },
-            "relevant_files": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["relevant_files"],
+            "relevant_code": {
+                "type": "string",
+                "description": CONSENSUS_WORKFLOW_FIELD_DESCRIPTIONS["relevant_code"],
             },
             # consensus-specific fields (not in base workflow)
             "models": {
@@ -378,7 +377,6 @@ of the evidence, even when it strongly points in one direction.""",
             "step_number": request.step_number,
             "findings": request.findings,
             "files_checked": [],  # Not used
-            "relevant_files": request.relevant_files or [],
             "relevant_context": [],  # Not used
             "issues_found": [],  # Not used
             "confidence": "exploring",  # Not used, kept for compatibility
@@ -588,14 +586,8 @@ of the evidence, even when it strongly points in one direction.""",
             # CRITICAL: Use the original proposal from step 1, NOT what's in request.step for steps 2+!
             # Steps 2+ contain summaries/notes that must NEVER be sent to other models
             prompt = self.original_proposal if self.original_proposal else self.initial_prompt
-            if request.relevant_files:
-                file_content, _ = self._prepare_file_content_for_prompt(
-                    request.relevant_files,
-                    None,  # Use None instead of request.continuation_id for blinded consensus
-                    "Context files",
-                )
-                if file_content:
-                    prompt = f"{prompt}\n\n=== CONTEXT FILES ===\n{file_content}\n=== END CONTEXT ==="
+            if request.relevant_code:
+                prompt = f"{prompt}\n\n=== CONTEXT FILES ===\n{request.relevant_code}\n=== END CONTEXT ==="
 
             # Get stance-specific system prompt
             stance = model_config.get("stance", "neutral")
