@@ -7,5 +7,12 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 # Change to the zen-mcp-server directory
 cd "$DIR"
 
+# User-specific development environment
+export DISABLED_TOOLS="tracer"
+export DEFAULT_MODEL="grok-code-fast"
+export CONVERSATION_TIMEOUT_HOURS="8"
+export MAX_CONVERSATION_TURNS="20"
+export LOG_LEVEL="ERROR"
+
 # Execute the Python server with all arguments passed through
 exec .zen_venv/bin/python server.py "$@"

@@ -70,6 +70,7 @@ from tools import (  # noqa: E402
 from tools.models import ToolOutput  # noqa: E402
 from tools.shared.exceptions import ToolExecutionError  # noqa: E402
 from utils.env import env_override_enabled, get_env  # noqa: E402
+from utils.token_utils import estimate_tokens  # noqa: E402
 
 # Configure logging for server operations
 # Can be controlled via LOG_LEVEL environment variable (DEBUG, INFO, WARNING, ERROR)
@@ -507,26 +508,29 @@ def configure_providers():
     registered_providers = []
 
     if has_native_apis:
+        def gemini_provider_factory(api_key):
+            return GeminiModelProvider(api_key, base_url=proxy_urls["gemini"])
         if gemini_key and gemini_key != "your_gemini_api_key_here":
-            ModelProviderRegistry.register_provider(
-                ProviderType.GOOGLE, lambda api_key: GeminiModelProvider(api_key, base_url=proxy_urls["gemini"])
-            )
+            ModelProviderRegistry.register_provider(ProviderType.GOOGLE, gemini_provider_factory)
             registered_providers.append(ProviderType.GOOGLE.value)
             logger.debug(f"Registered provider: {ProviderType.GOOGLE.value}")
+
+        def openai_provider_factory(api_key):
+            return OpenAIModelProvider(api_key, base_url=proxy_urls["openai"])
         if openai_key and openai_key != "your_openai_api_key_here":
-            ModelProviderRegistry.register_provider(
-                ProviderType.OPENAI, lambda api_key: OpenAIModelProvider(api_key, base_url=proxy_urls["openai"])
-            )
+            ModelProviderRegistry.register_provider(ProviderType.OPENAI, openai_provider_factory)
             registered_providers.append(ProviderType.OPENAI.value)
             logger.debug(f"Registered provider: {ProviderType.OPENAI.value}")
+
         if azure_models_available:
             ModelProviderRegistry.register_provider(ProviderType.AZURE, AzureOpenAIProvider)
             registered_providers.append(ProviderType.AZURE.value)
             logger.debug(f"Registered provider: {ProviderType.AZURE.value}")
+
+        def xai_provider_factory(api_key):
+            return XAIModelProvider(api_key, base_url=proxy_urls["xai"])
         if xai_key and xai_key != "your_xai_api_key_here":
-            ModelProviderRegistry.register_provider(
-                ProviderType.XAI, lambda api_key: XAIModelProvider(api_key, base_url=proxy_urls["xai"])
-            )
+            ModelProviderRegistry.register_provider(ProviderType.XAI, xai_provider_factory)
             registered_providers.append(ProviderType.XAI.value)
             logger.debug(f"Registered provider: {ProviderType.XAI.value}")
         if dial_key and dial_key != "your_dial_api_key_here":
@@ -587,14 +591,13 @@ def configure_providers():
         """Clean up all registered providers on shutdown."""
         try:
             registry = ModelProviderRegistry()
-            if hasattr(registry, "_initialized_providers"):
-                for provider in list(registry._initialized_providers.items()):
-                    try:
-                        if provider and hasattr(provider, "close"):
-                            provider.close()
-                    except Exception:
-                        # Logger might be closed during shutdown
-                        pass
+            for provider in registry.get_initialized_providers():
+                try:
+                    if provider and hasattr(provider, "close"):
+                        provider.close()
+                except Exception:
+                    # Logger might be closed during shutdown
+                    pass
         except Exception:
             # Silently ignore any errors during cleanup
             pass

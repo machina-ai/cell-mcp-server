@@ -70,15 +70,11 @@ def configure_proxy_for_providers(
     port = proxy_config["port"]
     proxy_base_url = f"http://localhost:{port}"
 
-    # For X.AI, OpenAI, and Gemini, construct the new base URL
-    def build_url(provider: str, original_url: str) -> str:
-        # The user wants the new base to be http://localhost:{port}/{provider}/
-        # The provider's SDK will append the rest of the path.
+    def build_url(provider: str) -> str:
         return f"{proxy_base_url}/{provider}/"
 
     return {
-        "xai": build_url("xai", xai_base_url),
-        "openai": build_url("openai", openai_base_url),
-        "gemini": build_url("gemini", gemini_base_url or ""),
+        "xai": build_url("xai"),
+        "openai": build_url("openai"),
+        "gemini": build_url("gemini"),
     }
-

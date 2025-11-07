@@ -141,32 +141,22 @@ For best results when using [Codex CLI](https://developers.openai.com/codex/cli)
 
 **Prerequisites:** Python 3.10+, Git, [uv installed](https://docs.astral.sh/uv/getting-started/installation/)
 
-**1. Get API Keys** (choose one or more):
-- **[OpenRouter](https://openrouter.ai/)** - Access multiple models with one API
-- **[Gemini](https://makersuite.google.com/app/apikey)** - Google's latest models
-- **[OpenAI](https://platform.openai.com/api-keys)** - O3, GPT-5 series
-- **[Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)** - Enterprise deployments of GPT-4o, GPT-4.1, GPT-5 family
-- **[X.AI](https://console.x.ai/)** - Grok models
-- **[DIAL](https://dialx.ai/)** - Vendor-agnostic model access
-- **[Ollama](https://ollama.ai/)** - Local models (free)
-
-**2. Install** (choose one):
+**1. Install** (choose one):
 
 **Option A: Clone and Automatic Setup** (recommended)
 ```bash
 git clone https://github.com/BeehiveInnovations/zen-mcp-server.git
 cd zen-mcp-server
 
-# Handles everything: setup, config, API keys from system environment. 
+# Handles everything: setup and configuration.
 # Auto-configures Claude Desktop, Claude Code, Gemini CLI, Codex CLI, Qwen CLI
-# Enable / disable additional settings in .env
+# The server is pre-configured to work with a local proxy.
 ./run-server.sh  
 ```
 
 **Option B: Instant Setup with [uvx](https://docs.astral.sh/uv/getting-started/installation/)**
 ```json
 // Add to ~/.claude/settings.json or .mcp.json
-// Don't forget to add your API keys under env
 {
   "mcpServers": {
     "zen": {
@@ -174,7 +164,6 @@ cd zen-mcp-server
       "args": ["-c", "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/zen-mcp-server.git zen-mcp-server; done; echo 'uvx not found' >&2; exit 1"],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
-        "GEMINI_API_KEY": "your-key-here",
         "DISABLED_TOOLS": "analyze,refactor,testgen,secaudit,docgen,tracer",
         "DEFAULT_MODEL": "auto"
       }
@@ -183,7 +172,7 @@ cd zen-mcp-server
 }
 ```
 
-**3. Start Using!**
+**2. Start Using!**
 ```
 "Use zen to analyze this code for security issues with gemini pro"
 "Debug this error with o3 and then get flash to suggest optimizations"
@@ -197,7 +186,7 @@ cd zen-mcp-server
 
 ## Provider Configuration
 
-Zen activates any provider that has credentials in your `.env`. See `.env.example` for deeper customization.
+Zen is configured to work with a local proxy, which handles API credentials. See the documentation for more details on proxy setup.
 
 ## Core Tools
 
@@ -205,7 +194,7 @@ Zen activates any provider that has credentials in your `.env`. See `.env.exampl
 
 **Collaboration & Planning** *(Enabled by default)*
 - **[`clink`](docs/tools/clink.md)** - Bridge requests to external AI CLIs (Gemini planner, codereviewer, etc.)
-- **[`chat`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (GPT-5 Pro, Gemini 2.5 Pro), generates complete code / implementation
+- **[`brainstorm`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (GPT-5 Pro, Gemini 2.5 Pro), generates complete code / implementation
 - **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
 - **[`planner`](docs/tools/planner.md)** - Break down complex projects into structured, actionable plans
 - **[`consensus`](docs/tools/consensus.md)** - Get expert opinions from multiple AI models with stance steering
@@ -235,7 +224,7 @@ Zen activates any provider that has credentials in your `.env`. See `.env.exampl
 To optimize context window usage, only essential tools are enabled by default:
 
 **Enabled by default:**
-- `chat`, `thinkdeep`, `planner`, `consensus` - Core collaboration tools
+- `brainstorm`, `thinkdeep`, `planner`, `consensus` - Core collaboration tools
 - `codereview`, `precommit`, `debug` - Essential code quality tools
 - `apilookup` - Rapid API/SDK information lookup
 - `challenge` - Critical thinking utility
@@ -272,10 +261,7 @@ DISABLED_TOOLS=
         "DEFAULT_MODEL": "pro",
         "DEFAULT_THINKING_MODE_THINKDEEP": "high",
         
-        // API configuration
-        "GEMINI_API_KEY": "your-gemini-key",
-        "OPENAI_API_KEY": "your-openai-key",
-        "OPENROUTER_API_KEY": "your-openrouter-key",
+        // The server is configured to use a local proxy, so API keys are not needed here.
         
         // Logging and performance
         "LOG_LEVEL": "INFO",
@@ -302,7 +288,7 @@ DISABLED_TOOLS=
 ```
 
 **Note:**
-- Essential tools (`version`, `listmodels`) cannot be disabled
+- The essential tool `listmodels` cannot be disabled
 - After changing tool configuration, restart your Claude session for changes to take effect
 - Each tool adds to context window usage, so only enable what you need
 
@@ -311,7 +297,7 @@ DISABLED_TOOLS=
 ## 📺 Watch Tools In Action
 
 <details>
-<summary><b>Chat Tool</b> - Collaborative decision making and multi-turn conversations</summary>
+<summary><b>Brainstorm Tool</b> - Collaborative decision making and multi-turn conversations</summary>
 
 **Picking Redis vs Memcached:**
 
