@@ -70,11 +70,15 @@ def configure_proxy_for_providers(
     port = proxy_config["port"]
     proxy_base_url = f"http://localhost:{port}"
 
-    def build_url(provider: str) -> str:
-        return f"{proxy_base_url}/{provider}/"
+    # Build URLs with provider-specific paths
+    xai_url = f"{proxy_base_url}/cell/v1.1/xai/v1"
+    openai_url = f"{proxy_base_url}/cell/v1.1/openai/v1"
+    gemini_url = f"{proxy_base_url}/cell/v1.1/gemini/"
+
+    logger.info(f"Proxy configured. X.AI URL: {xai_url}, OpenAI URL: {openai_url}, Gemini URL: {gemini_url}")
 
     return {
-        "xai": build_url("xai"),
-        "openai": build_url("openai"),
-        "gemini": build_url("gemini"),
+        "xai": xai_url,
+        "openai": openai_url,
+        "gemini": gemini_url,
     }

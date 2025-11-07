@@ -72,6 +72,9 @@ class GeminiModelProvider(RegistryBackedProviderMixin, ModelProvider):
     def client(self):
         """Lazy initialization of Gemini client."""
         if self._client is None:
+            base_url_to_log = self._base_url or "https://generativelanguage.googleapis.com"
+            logging.info(f"Initializing Gemini client with base URL: {base_url_to_log}")
+
             http_options_kwargs: dict[str, object] = {}
             if self._base_url:
                 http_options_kwargs["base_url"] = self._base_url

@@ -308,6 +308,10 @@ class OpenAICompatibleProvider(ModelProvider):
                         timeout_config,
                     )
 
+                    logging.info(
+                        f"Initializing OpenAI client for {self.FRIENDLY_NAME} with base URL: {self.base_url or 'https://api.openai.com/v1'}"
+                    )
+
                     # Create OpenAI client with custom httpx client
                     self._client = OpenAI(**client_kwargs)
 

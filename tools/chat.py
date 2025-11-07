@@ -70,7 +70,7 @@ class ChatTool(SimpleTool):
         self._last_recordable_response: Optional[str] = None
 
     def get_name(self) -> str:
-        return "chat"
+        return "brainstorm"
 
     def get_description(self) -> str:
         return (
