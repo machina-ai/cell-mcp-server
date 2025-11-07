@@ -82,6 +82,22 @@
       "supports_json_mode": false,
       "supports_images": false,
       "supports_temperature": true
+    },
+    {
+      "model_name": "grok-code-fast-1",
+      "friendly_name": "X.AI (Grok Code Fast 1)",
+      "aliases": ["grok-code-fast", "grok-code-fast-1-0825"],
+      "intelligence_score": 14,
+      "description": "Grok Code Fast 1 (256K context) – Fast and economical reasoning model optimized for agentive coding, excelent for algorithms and code tasks",
+      "context_window": 256000,
+      "max_output_tokens": 256000,
+      "supports_extended_thinking": true,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": false,
+      "supports_temperature": true
     }
   ]
 }

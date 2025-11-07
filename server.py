@@ -166,7 +166,7 @@ server: Server = Server("zen-server")
 
 
 # Constants for tool filtering
-ESSENTIAL_TOOLS = {"version", "listmodels"}
+ESSENTIAL_TOOLS = {"listmodels"}
 
 
 def parse_disabled_tools_env() -> set[str]:
@@ -259,7 +259,7 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 # Each tool provides specialized functionality for different development tasks
 # Tools are instantiated once and reused across requests (stateless design)
 TOOLS = {
-    "chat": ChatTool(),  # Interactive development chat and brainstorming
+    "brainstorm": ChatTool(),  # Interactive development chat and brainstorming
     "clink": CLinkTool(),  # Bridge requests to configured AI CLIs
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
     "planner": PlannerTool(),  # Interactive sequential planner using workflow architecture
@@ -276,16 +276,15 @@ TOOLS = {
     "challenge": ChallengeTool(),  # Critical challenge prompt wrapper to avoid automatic agreement
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
-    "version": VersionTool(),  # Display server version and system information
 }
 TOOLS = filter_disabled_tools(TOOLS)
 
 # Rich prompt templates for all tools
 PROMPT_TEMPLATES = {
-    "chat": {
-        "name": "chat",
-        "description": "Chat and brainstorm ideas",
-        "template": "Chat with {model} about this",
+    "brainstorm": {
+        "name": "brainstorm",
+        "description": "Brainstorm ideas and chat interactively",
+        "template": "Brainstorm with {model} about this",
     },
     "clink": {
         "name": "clink",
@@ -367,11 +366,6 @@ PROMPT_TEMPLATES = {
         "description": "List available AI models",
         "template": "List all available models",
     },
-    "version": {
-        "name": "version",
-        "description": "Show server version and system information",
-        "template": "Show Zen MCP Server version",
-    },
 }
 
 
@@ -391,6 +385,14 @@ def configure_providers():
     for key in api_keys_to_check:
         value = get_env(key)
         logger.debug(f"  {key}: {'[PRESENT]' if value else '[MISSING]'}")
+
+    # Patch: Unconditionally use dummy API keys to force proxy authentication.
+    keys_to_patch = ["GEMINI_API_KEY", "OPENAI_API_KEY", "XAI_API_KEY"]
+    for key in keys_to_patch:
+        os.environ[key] = "dummy"
+        provider_name = key.split("_")[0]
+        logger.info(f"Forcing dummy API key for {provider_name} to ensure proxy authentication")
+
     from providers import ModelProviderRegistry
     from providers.azure_openai import AzureOpenAIProvider
     from providers.custom import CustomProvider
@@ -401,6 +403,14 @@ def configure_providers():
     from providers.shared import ProviderType
     from providers.xai import XAIModelProvider
     from utils.model_restrictions import get_restriction_service
+    from utils.proxy_config import configure_proxy_for_providers
+
+    # Get default base URLs and then apply proxy configuration
+    proxy_urls = configure_proxy_for_providers(
+        xai_base_url="https://api.x.ai/v1",
+        openai_base_url="https://api.openai.com/v1",
+        gemini_base_url=None,  # Gemini uses environment variables for proxy
+    )
 
     valid_providers = []
     has_native_apis = False
@@ -498,11 +508,15 @@ def configure_providers():
 
     if has_native_apis:
         if gemini_key and gemini_key != "your_gemini_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
+            ModelProviderRegistry.register_provider(
+                ProviderType.GOOGLE, lambda api_key: GeminiModelProvider(api_key, base_url=proxy_urls["gemini"])
+            )
             registered_providers.append(ProviderType.GOOGLE.value)
             logger.debug(f"Registered provider: {ProviderType.GOOGLE.value}")
         if openai_key and openai_key != "your_openai_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
+            ModelProviderRegistry.register_provider(
+                ProviderType.OPENAI, lambda api_key: OpenAIModelProvider(api_key, base_url=proxy_urls["openai"])
+            )
             registered_providers.append(ProviderType.OPENAI.value)
             logger.debug(f"Registered provider: {ProviderType.OPENAI.value}")
         if azure_models_available:
@@ -510,7 +524,9 @@ def configure_providers():
             registered_providers.append(ProviderType.AZURE.value)
             logger.debug(f"Registered provider: {ProviderType.AZURE.value}")
         if xai_key and xai_key != "your_xai_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.XAI, XAIModelProvider)
+            ModelProviderRegistry.register_provider(
+                ProviderType.XAI, lambda api_key: XAIModelProvider(api_key, base_url=proxy_urls["xai"])
+            )
             registered_providers.append(ProviderType.XAI.value)
             logger.debug(f"Registered provider: {ProviderType.XAI.value}")
         if dial_key and dial_key != "your_dial_api_key_here":

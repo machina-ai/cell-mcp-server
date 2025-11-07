@@ -1,5 +1,5 @@
 #!/bin/bash
-# Wrapper script for Gemini CLI compatibility
+# Wrapper script for Cell CLI compatibility
 
 # Get the directory of this script
 DIR="$(cd "$(dirname "$0")" && pwd)"
