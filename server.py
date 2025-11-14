@@ -163,7 +163,7 @@ else:
 
 # Create the MCP server instance with a unique name identifier
 # This name is used by MCP clients to identify and connect to this specific server
-server: Server = Server("zen-server")
+server: Server = Server("cell-server")
 
 
 # Constants for tool filtering

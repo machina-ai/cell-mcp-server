@@ -13,7 +13,7 @@ fi
 # Get the directory of this script
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Change to the zen-mcp-server directory
+# Change to the cell-mcp-server directory
 cd "$DIR"
 
 # User-specific development environment
