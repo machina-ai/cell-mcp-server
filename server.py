@@ -113,9 +113,9 @@ root_logger.setLevel(getattr(logging, log_level, logging.INFO))
 # Add rotating file handler for local log monitoring
 
 try:
-    # Create logs directory in project root
-    log_dir = Path(__file__).parent / "logs"
-    log_dir.mkdir(exist_ok=True)
+    # Create logs directory in the user's home directory for robust write access
+    log_dir = Path.home() / ".cell-cli" / "mcp_servers" / "cell" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
 
     # Main server log with size-based rotation (20MB max per file)
     # This ensures logs don't grow indefinitely and are properly managed

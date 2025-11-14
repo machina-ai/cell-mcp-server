@@ -15,7 +15,7 @@ dependencies = [
 include = ["tools*", "providers*", "systemprompts*", "utils*", "conf*", "clink*"]
 
 [tool.setuptools]
-py-modules = ["server", "config"]
+py-modules = ["server", "config", "launcher"]
 
 [tool.setuptools.package-data]
 "*" = ["conf/*.json"]
@@ -32,7 +32,7 @@ py-modules = ["server", "config"]
 ]
 
 [project.scripts]
-cell-mcp-server = "server:run"
+cell-mcp-server = "launcher:main"
 
 [tool.black]
 line-length = 120
