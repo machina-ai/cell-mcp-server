@@ -93,8 +93,17 @@ class ClinkRegistry:
     def _iter_config_files(self) -> Iterable[Path]:
         search_paths: list[Path] = []
 
-        # 1. Built-in configs
-        search_paths.append(CONFIG_DIR)
+        # 1. Built-in configs using importlib.resources for package-safe access
+        try:
+            import importlib.resources
+            # This is the robust way to access package data
+            package_config_dir = importlib.resources.files('conf').joinpath('cli_clients')
+            search_paths.append(package_config_dir)
+        except (ImportError, ModuleNotFoundError):
+            # Fallback for older environments or different structures, though less robust
+            logger.warning("Could not use importlib.resources, falling back to relative paths.")
+            search_paths.append(CONFIG_DIR)
+
 
         # 2. CLI_CLIENTS_CONFIG_PATH environment override (file or directory)
         env_path_raw = get_env(CONFIG_ENV_VAR)
@@ -114,16 +123,24 @@ class ClinkRegistry:
                 continue
             seen.add(base)
 
-            if base.is_file() and base.suffix.lower() == ".json":
-                yield base
-                continue
+            # Handle Traversable resources from importlib.resources
+            if hasattr(base, 'is_file'):
+                if base.is_file() and base.suffix.lower() == ".json":
+                    yield base
+                    continue
 
-            if base.is_dir():
-                for path in sorted(base.glob("*.json")):
-                    if path.is_file():
-                        yield path
-            else:
-                logger.debug("Configuration path does not exist: %s", base)
+                if base.is_dir():
+                    for path in sorted(base.glob("*.json")):
+                        if path.is_file():
+                            yield path
+                else:
+                    logger.debug("Configuration path does not exist: %s", base)
+            elif hasattr(base, 'iterdir'): # It's a Traversable
+                for item in base.iterdir():
+                    if item.is_file() and item.name.endswith('.json'):
+                        # We need to yield a Path object, so we might need to use as_file
+                        with importlib.resources.as_file(item) as file_path:
+                            yield file_path
 
     def _resolve_config(self, raw: CLIClientConfig, *, source_path: Path) -> ResolvedCLIClient:
         if not raw.name:
