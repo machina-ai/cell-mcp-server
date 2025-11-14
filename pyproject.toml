@@ -1,5 +1,5 @@
 [project]
-name = "zen-mcp-server"
+name = "cell-mcp-server"
 version = "9.1.3"
 description = "AI-powered MCP server with multiple model providers"
 requires-python = ">=3.9"
@@ -32,7 +32,7 @@ py-modules = ["server", "config"]
 ]
 
 [project.scripts]
-zen-mcp-server = "server:run"
+cell-mcp-server = "server:run"
 
 [tool.black]
 line-length = 120

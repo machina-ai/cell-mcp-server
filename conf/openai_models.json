@@ -47,14 +47,14 @@
       "temperature_constraint": "fixed"
     },
     {
-      "model_name": "gpt-5-pro",
-      "friendly_name": "OpenAI (GPT-5 Pro)",
+      "model_name": "gpt-5.1",
+      "friendly_name": "OpenAI (GPT-5.1)",
       "aliases": [
-        "gpt5pro",
-        "gpt5-pro"
+        "gpt5.1",
+        "gpt-5.1"
       ],
-      "intelligence_score": 18,
-      "description": "GPT-5 Pro (400K context, 272K output) - Very advanced, reasoning model",
+      "intelligence_score": 19,
+      "description": "GPT-5.1 is the newest flagship model, with new reasoning settings and tools for coding.",
       "context_window": 400000,
       "max_output_tokens": 272000,
       "supports_extended_thinking": true,
@@ -63,10 +63,10 @@
       "supports_function_calling": true,
       "supports_json_mode": true,
       "supports_images": true,
-      "supports_temperature": true,
       "max_image_size_mb": 20.0,
+      "supports_temperature": false,
       "use_openai_response_api": true,
-      "default_reasoning_effort": "high",
+      "default_reasoning_effort": "none",
       "allow_code_generation": true,
       "temperature_constraint": "fixed"
     },
