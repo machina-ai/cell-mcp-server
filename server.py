@@ -1532,25 +1532,7 @@ async def main():
 
 
 def run():
-    """Console script entry point for cell-mcp-server."""
-    import argparse
-    import importlib.metadata
-
-    try:
-        # Get version from installed package metadata
-        version = importlib.metadata.version('cell-mcp-server')
-    except importlib.metadata.PackageNotFoundError:
-        # Fallback for development environments
-        from config import __version__ as version
-
-    parser = argparse.ArgumentParser(description="Cell MCP Server")
-    parser.add_argument(
-        '--version',
-        action='version',
-        version=f'%(prog)s {version}'
-    )
-    parser.parse_args()
-
+    """Console script entry point for zen-mcp-server."""
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

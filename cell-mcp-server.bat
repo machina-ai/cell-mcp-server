@@ -1,6 +1,12 @@
 @echo off
 REM Wrapper script for Cell CLI compatibility on Windows
 
+REM Handle --version flag
+if "%1" == "--version" (
+    python -c "from config import __version__; print(__version__)"
+    exit /b 0
+)
+
 REM Change to the script's directory
 cd /d %~dp0
 

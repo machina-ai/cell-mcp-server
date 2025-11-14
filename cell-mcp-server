@@ -1,6 +1,15 @@
 #!/bin/bash
 # Wrapper script for Cell CLI compatibility
 
+# Handle --version flag
+if [ "$1" == "--version" ]; then
+    # Get the directory of this script to find the config
+    DIR="$(cd "$(dirname "$0")" && pwd)"
+    # Use python to extract the version from config.py and exit
+    python -c "import sys; sys.path.append('$DIR'); from config import __version__; print(__version__)"
+    exit 0
+fi
+
 # Get the directory of this script
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
