@@ -54,7 +54,7 @@
         "gpt-5.1"
       ],
       "intelligence_score": 19,
-      "description": "GPT-5.1 is the newest flagship model, with new reasoning settings and tools for coding.",
+      "description": "GPT-5.1 Previous flagship model good for reasoning and tools for coding.",
       "context_window": 400000,
       "max_output_tokens": 272000,
       "supports_extended_thinking": true,
@@ -67,6 +67,30 @@
       "supports_temperature": false,
       "use_openai_response_api": true,
       "default_reasoning_effort": "none",
+      "allow_code_generation": true,
+      "temperature_constraint": "fixed"
+    },
+    {
+      "model_name": "gpt-5.2",
+      "friendly_name": "OpenAI (GPT-5.2)",
+      "aliases": [
+        "gpt5.2",
+        "gpt-5.2"
+      ],
+      "intelligence_score": 20,
+      "description": "GPT-5.2 (400K context, 128K output) - Flagship, Advanced reasoning model, best for complex agentic tasks.",
+      "context_window": 400000,
+      "max_output_tokens": 128000,
+      "supports_extended_thinking": true,
+      "supports_system_prompts": true,
+      "supports_streaming": false,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": true,
+      "max_image_size_mb": 20.0,
+      "supports_temperature": false,
+      "use_openai_response_api": true,
+      "default_reasoning_effort": "medium",
       "allow_code_generation": true,
       "temperature_constraint": "fixed"
     },
