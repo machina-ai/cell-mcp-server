@@ -25,17 +25,16 @@
   },
   "models": [
     {
-      "model_name": "grok-4",
-      "friendly_name": "X.AI (Grok 4)",
+      "model_name": "grok-4.20-reasoning",
+      "friendly_name": "X.AI (Grok 4.20 Reasoning)",
       "aliases": [
-        "grok",
-        "grok4",
-        "grok-4"
+        "grok4.20",
+        "grok-4.20"
       ],
-      "intelligence_score": 16,
-      "description": "GROK-4 (256K context) - Frontier multimodal reasoning model with advanced capabilities",
-      "context_window": 256000,
-      "max_output_tokens": 256000,
+      "intelligence_score": 20,
+      "description": "GROK-4.20 Reasoning (2M context) - Flagship reasoning model with massive 2M token context",
+      "context_window": 2000000,
+      "max_output_tokens": 2000000,
       "supports_extended_thinking": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
@@ -46,49 +45,36 @@
       "max_image_size_mb": 20.0
     },
     {
-      "model_name": "grok-3",
-      "friendly_name": "X.AI (Grok 3)",
+      "model_name": "grok-4-1-fast-reasoning",
+      "friendly_name": "X.AI (Grok 4.1 Fast Reasoning)",
       "aliases": [
-        "grok3"
+        "grok4.1f",
+        "grok4.1-fast",
+        "fast"
       ],
-      "intelligence_score": 13,
-      "description": "GROK-3 (131K context) - Advanced reasoning model from X.AI, excellent for complex analysis",
-      "context_window": 131072,
-      "max_output_tokens": 131072,
-      "supports_extended_thinking": false,
+      "intelligence_score": 18,
+      "description": "GROK-4.1 Fast Reasoning (2M context) - High performance, cost-efficient reasoning model",
+      "context_window": 2000000,
+      "max_output_tokens": 2000000,
+      "supports_extended_thinking": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
       "supports_function_calling": true,
-      "supports_json_mode": false,
-      "supports_images": false,
-      "supports_temperature": true
-    },
-    {
-      "model_name": "grok-3-fast",
-      "friendly_name": "X.AI (Grok 3 Fast)",
-      "aliases": [
-        "grok3fast",
-        "grokfast",
-        "grok3-fast"
-      ],
-      "intelligence_score": 12,
-      "description": "GROK-3 Fast (131K context) - Higher performance variant, faster processing but more expensive",
-      "context_window": 131072,
-      "max_output_tokens": 131072,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": false,
-      "supports_images": false,
-      "supports_temperature": true
+      "supports_json_mode": true,
+      "supports_images": true,
+      "supports_temperature": true,
+      "max_image_size_mb": 20.0
     },
     {
       "model_name": "grok-code-fast-1",
       "friendly_name": "X.AI (Grok Code Fast 1)",
-      "aliases": ["grok-code-fast", "grok-code-fast-1-0825"],
+      "aliases": [
+        "grokcode",
+        "grok-code",
+        "code"
+      ],
       "intelligence_score": 14,
-      "description": "Grok Code Fast 1 (256K context) – Fast and economical reasoning model optimized for agentive coding, excelent for algorithms and code tasks",
+      "description": "Grok Code Fast 1 (256K context) - Optimized for agentive coding and repo analysis",
       "context_window": 256000,
       "max_output_tokens": 256000,
       "supports_extended_thinking": true,
