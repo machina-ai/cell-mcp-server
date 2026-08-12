@@ -99,7 +99,7 @@ class TestAutoModeProviderSelection:
 
             # Should select appropriate OpenAI models based on new preference order
             assert extended_reasoning == "gpt-5.6-terra"
-            assert fast_response == "gpt-5.6-terra.6-luna"
+            assert fast_response == "gpt-5.6-luna"
             assert balanced == "gpt-5.6-terra"
 
         finally:
@@ -203,7 +203,7 @@ class TestAutoModeProviderSelection:
             # Set up environment with restrictions
             os.environ["GEMINI_API_KEY"] = "test-key"
             os.environ["OPENAI_API_KEY"] = "test-key"
-            os.environ["OPENAI_ALLOWED_MODELS"] = "gpt-5.6-terra.6-luna"  # Only allow gpt-5.6-terra.6-luna
+            os.environ["OPENAI_ALLOWED_MODELS"] = "gpt-5.6-luna"  # Only allow gpt-5.6-luna
 
             # Clear restriction service to pick up new restrictions
             import utils.model_restrictions
@@ -221,8 +221,8 @@ class TestAutoModeProviderSelection:
             available_models = ModelProviderRegistry.get_available_models(respect_restrictions=True)
 
             # Should include allowed OpenAI model
-            assert "gpt-5.6-terra.6-luna" in available_models
-            assert available_models["gpt-5.6-terra.6-luna"] == ProviderType.OPENAI
+            assert "gpt-5.6-luna" in available_models
+            assert available_models["gpt-5.6-luna"] == ProviderType.OPENAI
 
             # Should NOT include restricted OpenAI models
             assert "gpt-5.6-terra" not in available_models
@@ -318,7 +318,7 @@ class TestAutoModeProviderSelection:
             test_cases = [
                 ("flash", ProviderType.GOOGLE, "gemini-3-flash-preview"),
                 ("pro", ProviderType.GOOGLE, "gemini-3.1-pro-preview"),
-                ("luna", ProviderType.OPENAI, "gpt-5.6-terra.6-luna"),
+                ("luna", ProviderType.OPENAI, "gpt-5.6-luna"),
                 ("terra", ProviderType.OPENAI, "gpt-5.6-terra"),
                 ("grok", ProviderType.XAI, "grok-4.3"),
                 ("fast", ProviderType.XAI, "grok-4.3-low"),

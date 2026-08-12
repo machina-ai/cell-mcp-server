@@ -43,15 +43,15 @@ class TestSupportedModelsAliases:
 
         # Test specific aliases
         assert "terra" in provider.MODEL_CAPABILITIES["gpt-5.6-terra"].aliases
-        assert "luna" in provider.MODEL_CAPABILITIES["gpt-5.6-terra.6-luna"].aliases
+        assert "luna" in provider.MODEL_CAPABILITIES["gpt-5.6-luna"].aliases
 
         # Test alias resolution
         assert provider._resolve_model_name("terra") == "gpt-5.6-terra"
-        assert provider._resolve_model_name("luna") == "gpt-5.6-terra.6-luna"
+        assert provider._resolve_model_name("luna") == "gpt-5.6-luna"
 
         # Test case insensitive resolution
         assert provider._resolve_model_name("Terra") == "gpt-5.6-terra"
-        assert provider._resolve_model_name("LUNA") == "gpt-5.6-terra.6-luna"
+        assert provider._resolve_model_name("LUNA") == "gpt-5.6-luna"
 
     def test_xai_provider_aliases(self):
         """Test XAI provider's alias structure."""
@@ -117,7 +117,7 @@ class TestSupportedModelsAliases:
         openai_models = openai_provider.list_models(respect_restrictions=False)
         assert "gpt-5.6-terra" in openai_models
         assert "terra" in openai_models
-        assert "gpt-5.6-terra.6-luna" in openai_models
+        assert "gpt-5.6-luna" in openai_models
         assert "luna" in openai_models
 
         # Test XAI
@@ -161,7 +161,7 @@ class TestSupportedModelsAliases:
         )
         assert "gpt-5.6-terra" in openai_all
         assert "terra" in openai_all
-        assert "gpt-5.6-terra.6-luna" in openai_all
+        assert "gpt-5.6-luna" in openai_all
         assert "luna" in openai_all
         # All should be lowercase
         assert all(model == model.lower() for model in openai_all)

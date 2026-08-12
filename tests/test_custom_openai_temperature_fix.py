@@ -274,7 +274,7 @@ class TestCustomOpenAITemperatureParameterFix:
             provider = OpenAIModelProvider(api_key="test-key")
 
             # Test that built-in models still work
-            assert provider.validate_model_name("gpt-5.6-terra.6-luna") is True
+            assert provider.validate_model_name("gpt-5.6-luna") is True
 
             # Test that unsupported models return false
             assert provider.validate_model_name("unknown-model") is False

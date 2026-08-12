@@ -30,12 +30,12 @@
       "temperature_constraint": "fixed"
     },
     {
-      "model_name": "gpt-5.6-terra.6-luna",
+      "model_name": "gpt-5.6-luna",
       "friendly_name": "OpenAI (gpt-5.6-terra.6 Luna)",
       "aliases": [
         "luna",
         "gpt5.6l",
-        "gpt-5.6-terra.6-luna"
+        "gpt-5.6-luna"
       ],
       "intelligence_score": 20,
       "description": "gpt-5.6-terra.6 Luna (1.05M context, 128K output) - Specialized reasoning model using parallel test-time compute",

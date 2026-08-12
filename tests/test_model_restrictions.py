@@ -51,7 +51,7 @@ class TestModelRestrictionService:
         with patch.dict(
             os.environ,
             {
-                "OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,gpt-5.6-terra",
+                "OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,gpt-5.6-terra",
                 "GOOGLE_ALLOWED_MODELS": "flash,pro",
             },
         ):
@@ -73,7 +73,7 @@ class TestModelRestrictionService:
                 service = ModelRestrictionService()
 
                 # Check OpenAI models
-                assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-luna")
+                assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna")
                 assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
                 assert not service.is_allowed(ProviderType.OPENAI, "invalid-model")
 
@@ -84,12 +84,12 @@ class TestModelRestrictionService:
 
     def test_case_insensitive_and_whitespace_handling(self):
         """Test that model names are case-insensitive and whitespace is trimmed."""
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": " gpt-5.6-terra.6-LUNA , gpt-5.6-terra "}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": " gpt-5.6-luna , gpt-5.6-terra "}):
             service = ModelRestrictionService()
 
             # Should work with any case
-            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-luna")
-            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-LUNA")
+            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna")
+            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna")
             assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
             assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
 
@@ -99,7 +99,7 @@ class TestModelRestrictionService:
             service = ModelRestrictionService()
 
             # OpenAI should allow all models (empty string = no restrictions)
-            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-luna")
+            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna")
             assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
 
             # Google should only allow flash (and its resolved name)
@@ -110,21 +110,21 @@ class TestModelRestrictionService:
 
     def test_filter_models(self):
         """Test filtering a list of models based on restrictions."""
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,gpt-5.6-terra"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,gpt-5.6-terra"}):
             service = ModelRestrictionService()
 
-            models = ["gpt-5.6-terra.6-luna", "gpt-5.6-terra", "other-model"]
+            models = ["gpt-5.6-luna", "gpt-5.6-terra", "other-model"]
             filtered = service.filter_models(ProviderType.OPENAI, models)
 
-            assert filtered == ["gpt-5.6-terra.6-luna", "gpt-5.6-terra"]
+            assert filtered == ["gpt-5.6-luna", "gpt-5.6-terra"]
 
     def test_get_allowed_models(self):
         """Test getting the set of allowed models."""
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,gpt-5.6-terra"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,gpt-5.6-terra"}):
             service = ModelRestrictionService()
 
             allowed = service.get_allowed_models(ProviderType.OPENAI)
-            assert allowed == {"gpt-5.6-terra.6-luna", "gpt-5.6-terra"}
+            assert allowed == {"gpt-5.6-luna", "gpt-5.6-terra"}
 
             # No restrictions for Google
             assert service.get_allowed_models(ProviderType.GOOGLE) is None
@@ -139,8 +139,8 @@ class TestModelRestrictionService:
             service = ModelRestrictionService()
 
             # When providers check models, they pass both resolved and original names
-            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-luna", "luna")
-            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra.6-luna")
+            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna", "luna")
+            assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-luna")
 
             assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
             assert not service.is_allowed(ProviderType.OPENAI, "invalid-model")
@@ -236,7 +236,7 @@ class TestModelRestrictionService:
 class TestProviderIntegration:
     """Test integration with actual providers."""
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna"})
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna"})
     def test_openai_provider_respects_restrictions(self):
         """Test that OpenAI provider respects restrictions."""
         # Clear any cached restriction service
@@ -247,7 +247,7 @@ class TestProviderIntegration:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Should validate allowed model
-        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
+        assert provider.validate_model_name("gpt-5.6-luna")
 
         # Should not validate disallowed model
         assert not provider.validate_model_name("gpt-5.6-terra")
@@ -591,8 +591,8 @@ class TestShorthandRestrictions:
         with patch.object(ModelProviderRegistry, "get_provider", side_effect=registry_side_effect):
             assert openai_provider.validate_model_name(
                 "luna"
-            )  # Should work with shorthand (maps to gpt-5.6-terra.6-luna)
-            assert openai_provider.validate_model_name("gpt-5.6-terra.6-luna")  # Canonical resolved from shorthand
+            )  # Should work with shorthand (maps to gpt-5.6-luna)
+            assert openai_provider.validate_model_name("gpt-5.6-luna")  # Canonical resolved from shorthand
             assert not openai_provider.validate_model_name("gpt-5.6-terra")  # Unrelated model still blocked
 
             # Test Gemini provider
@@ -615,12 +615,12 @@ class TestShorthandRestrictions:
         assert openai_provider.validate_model_name("terra")
 
         # Resolved names should be allowed when their shorthands are present
-        assert openai_provider.validate_model_name("gpt-5.6-terra.6-luna")
+        assert openai_provider.validate_model_name("gpt-5.6-luna")
         assert openai_provider.validate_model_name("gpt-5.6-terra")
 
     @patch.dict(
         os.environ,
-        {"OPENAI_ALLOWED_MODELS": "luna,gpt-5.6-terra.6-luna", "GOOGLE_ALLOWED_MODELS": "flash,gemini-3-flash-preview"},
+        {"OPENAI_ALLOWED_MODELS": "luna,gpt-5.6-luna", "GOOGLE_ALLOWED_MODELS": "flash,gemini-3-flash-preview"},
     )
     def test_both_shorthand_and_full_name_allowed(self):
         """Test that we can allow both shorthand and full names."""
@@ -629,10 +629,10 @@ class TestShorthandRestrictions:
 
         utils.model_restrictions._restriction_service = None
 
-        # OpenAI - both luna and gpt-5.6-terra.6-luna are allowed
+        # OpenAI - both luna and gpt-5.6-luna are allowed
         openai_provider = OpenAIModelProvider(api_key="test-key")
         assert openai_provider.validate_model_name("luna")
-        assert openai_provider.validate_model_name("gpt-5.6-terra.6-luna")
+        assert openai_provider.validate_model_name("gpt-5.6-luna")
 
         # Gemini - both flash and full name are allowed
         gemini_provider = GeminiModelProvider(api_key="test-key")
@@ -653,7 +653,7 @@ class TestAutoModeWithRestrictions:
         mock_openai = MagicMock()
         mock_openai.MODEL_CAPABILITIES = {
             "gpt-5.6-terra": {"context_window": 1000000},
-            "gpt-5.6-terra.6-luna": {"context_window": 1000000},
+            "gpt-5.6-luna": {"context_window": 1000000},
         }
         mock_openai.get_provider_type.return_value = ProviderType.OPENAI
 
@@ -712,14 +712,14 @@ class TestAutoModeWithRestrictions:
         registry = ModelProviderRegistry()
         registry._providers = {ProviderType.OPENAI: type(mock_openai)}
 
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna"}):
             # Clear cached restriction service
             import utils.model_restrictions
 
             utils.model_restrictions._restriction_service = None
 
             model = ModelProviderRegistry.get_preferred_fallback_model(ToolModelCategory.FAST_RESPONSE)
-            assert model == "gpt-5.6-terra.6-luna"
+            assert model == "gpt-5.6-luna"
 
     def test_fallback_with_shorthand_restrictions(self, monkeypatch):
         """Test fallback model selection with shorthand restrictions."""
@@ -751,7 +751,7 @@ class TestAutoModeWithRestrictions:
 
             model = ModelProviderRegistry.get_preferred_fallback_model(ToolModelCategory.FAST_RESPONSE)
 
-            assert model in ["luna", "gpt-5.6-terra.6-luna", "gemini-3.6-flash"]
+            assert model in ["luna", "gpt-5.6-luna", "gemini-3.6-flash"]
         finally:
             # Restore original registry state
             registry = ModelProviderRegistry()

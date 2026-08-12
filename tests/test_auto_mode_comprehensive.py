@@ -95,7 +95,7 @@ class TestAutoModeComprehensive:
                 },
                 {
                     "EXTENDED_REASONING": "gpt-5.6-terra",
-                    "FAST_RESPONSE": "gpt-5.6-terra.6-luna",
+                    "FAST_RESPONSE": "gpt-5.6-luna",
                     "BALANCED": "gpt-5.6-terra",
                 },
             ),
@@ -405,7 +405,7 @@ class TestAutoModeComprehensive:
             "XAI_API_KEY": None,
             "OPENROUTER_API_KEY": None,
             "DEFAULT_MODEL": "auto",
-            "OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna",  # Restrict OpenAI to only gpt-5.6-terra.6-luna
+            "OPENAI_ALLOWED_MODELS": "gpt-5.6-luna",  # Restrict OpenAI to only gpt-5.6-luna
         }
 
         # Filter out None values to avoid patch.dict errors
@@ -434,7 +434,7 @@ class TestAutoModeComprehensive:
             available_models = ModelProviderRegistry.get_available_models(respect_restrictions=True)
 
             # Should include restricted OpenAI model
-            assert "gpt-5.6-terra.6-luna" in available_models
+            assert "gpt-5.6-luna" in available_models
 
             # Should NOT include non-restricted OpenAI models
             assert "gpt-5.6-terra" not in available_models

@@ -32,7 +32,7 @@ class TestO3TemperatureParameterFixSimple:
         mock_response.choices = [Mock()]
         mock_response.choices[0].message.content = "Test response"
         mock_response.choices[0].finish_reason = "stop"
-        mock_response.model = "gpt-5.6-terra.6-luna"
+        mock_response.model = "gpt-5.6-luna"
         mock_response.id = "test-id"
         mock_response.created = 1234567890
         mock_response.usage = Mock()
@@ -50,16 +50,16 @@ class TestO3TemperatureParameterFixSimple:
         # Override model validation to bypass restrictions
         provider.validate_model_name = lambda name: True
 
-        # Call generate_content with gpt-5.6-terra.6-luna
+        # Call generate_content with gpt-5.6-luna
         provider.generate_content(
-            prompt="Test prompt", model_name="gpt-5.6-terra.6-luna", temperature=0.5, max_output_tokens=100
+            prompt="Test prompt", model_name="gpt-5.6-luna", temperature=0.5, max_output_tokens=100
         )
 
         # Verify the API call was made
         mock_client.responses.create.assert_called_once()
         call_kwargs = mock_client.responses.create.call_args[1]
 
-        assert call_kwargs["model"] == "gpt-5.6-terra.6-luna"
+        assert call_kwargs["model"] == "gpt-5.6-luna"
         assert "input" in call_kwargs
 
     @patch("utils.model_restrictions.get_restriction_service")
@@ -123,7 +123,7 @@ class TestO3TemperatureParameterFixSimple:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Test models that should NOT support temperature parameter
-        fixed_temp_models = ["gpt-5.6-terra.6-luna"]
+        fixed_temp_models = ["gpt-5.6-luna"]
 
         for model in fixed_temp_models:
             capabilities = provider.get_capabilities(model)
@@ -155,7 +155,7 @@ class TestO3TemperatureParameterFixSimple:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Test luna model constraints
-        luna_capabilities = provider.get_capabilities("gpt-5.6-terra.6-luna")
+        luna_capabilities = provider.get_capabilities("gpt-5.6-luna")
         assert luna_capabilities.temperature_constraint is not None
 
         # Fixed temp models should have fixed temperature constraint
