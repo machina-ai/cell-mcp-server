@@ -55,7 +55,7 @@ class TestModelThinkingConfig(BaseSimulatorTest):
                 "chat",
                 {
                     "prompt": "What is 3 + 3? Give a quick answer.",
-                    "model": "flash",  # Should resolve to gemini-2.5-flash
+                    "model": "flash",  # Should resolve to gemini-3.6-flash
                     "thinking_mode": "high",  # Should be ignored for Flash model
                 },
             )
@@ -80,7 +80,7 @@ class TestModelThinkingConfig(BaseSimulatorTest):
             ("pro", "should work with Pro model"),
             ("flash", "should work with Flash model"),
             ("gemini-2.5-pro", "should work with full Pro model name"),
-            ("gemini-2.5-flash", "should work with full Flash model name"),
+            ("gemini-3.6-flash", "should work with full Flash model name"),
         ]
 
         success_count = 0

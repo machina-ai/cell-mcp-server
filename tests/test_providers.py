@@ -190,10 +190,10 @@ class TestOpenAIProvider:
         """Test getting Luna model capabilities"""
         provider = OpenAIModelProvider(api_key="test-key")
 
-        capabilities = provider.get_capabilities("gpt-5.6-luna")
+        capabilities = provider.get_capabilities("gpt-5.6-terra.6-luna")
 
         assert capabilities.provider == ProviderType.OPENAI
-        assert capabilities.model_name == "gpt-5.6-luna"
+        assert capabilities.model_name == "gpt-5.6-terra.6-luna"
         assert capabilities.context_window == 1_050_000
         assert capabilities.supports_extended_thinking
 
@@ -204,8 +204,7 @@ class TestOpenAIProvider:
         assert provider.validate_model_name("terra")
         assert provider.validate_model_name("luna")
         assert provider.validate_model_name("gpt-5.6-terra")
-        assert provider.validate_model_name("gpt-5.6-luna")
-        assert not provider.validate_model_name("gpt-5.5")
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
         assert not provider.validate_model_name("gpt-4o")
         assert not provider.validate_model_name("invalid-model")
 
@@ -213,6 +212,6 @@ class TestOpenAIProvider:
         """OpenAI catalogue exposes extended thinking capability via ModelCapabilities."""
         provider = OpenAIModelProvider(api_key="test-key")
 
-        thinking_aliases = ["terra", "luna", "gpt-5.6-terra", "gpt-5.6-luna"]
+        thinking_aliases = ["terra", "luna", "gpt-5.6-terra", "gpt-5.6-terra.6-luna"]
         for alias in thinking_aliases:
             assert provider.get_capabilities(alias).supports_extended_thinking

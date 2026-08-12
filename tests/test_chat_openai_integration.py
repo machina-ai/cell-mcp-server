@@ -24,7 +24,7 @@ CASSETTE_CONTINUATION_PATH = CASSETTE_DIR / "chat_gpt5_continuation.json"
 @pytest.mark.asyncio
 @pytest.mark.no_mock_provider
 async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
-    """Ensure ChatTool in auto mode selects gpt-5 via OpenAI and returns a valid response."""
+    """Ensure ChatTool in auto mode selects gpt-5.6-terra via OpenAI and returns a valid response."""
     # Prepare environment so only OpenAI is available in auto mode
     env_updates = {
         "DEFAULT_MODEL": "auto",
@@ -61,7 +61,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
         # Inject HTTP transport (records or replays depending on cassette state)
         inject_transport(monkeypatch, CASSETTE_PATH)
 
-        # Execute ChatTool request targeting gpt-5 directly (server normally resolves auto→model)
+        # Execute ChatTool request targeting gpt-5.6-terra directly (server normally resolves auto→model)
         chat_tool = ChatTool()
         working_directory = str(tmp_path)
         arguments = {
@@ -90,7 +90,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
 @pytest.mark.asyncio
 @pytest.mark.no_mock_provider
 async def test_chat_openai_continuation(monkeypatch, tmp_path):
-    """Verify continuation_id workflow against gpt-5 using recorded OpenAI responses."""
+    """Verify continuation_id workflow against gpt-5.6-terra using recorded OpenAI responses."""
 
     env_updates = {
         "DEFAULT_MODEL": "auto",
@@ -133,7 +133,7 @@ async def test_chat_openai_continuation(monkeypatch, tmp_path):
         # First message: obtain continuation_id
         first_args = {
             "prompt": "In one word, which sells better: iOS app or macOS app?",
-            "model": "gpt-5",
+            "model": "gpt-5.6-terra",
             "temperature": 1.0,
             "working_directory_absolute_path": working_directory,
         }
@@ -144,7 +144,7 @@ async def test_chat_openai_continuation(monkeypatch, tmp_path):
         assert first_data["status"] == "continuation_available"
         first_metadata = first_data.get("metadata", {})
         assert first_metadata.get("provider_used") == "openai"
-        assert first_metadata.get("model_used") in {"gpt-5", "gpt5"}
+        assert first_metadata.get("model_used") in {"gpt-5.6-terra", "gpt5"}
         continuation = first_data.get("continuation_offer")
         assert continuation is not None
         continuation_id = continuation.get("continuation_id")

@@ -328,14 +328,14 @@ class ReplayTransport(httpx.MockTransport):
         return f"{request.method}:{request.url.path}:{content_hash}"
 
     def _is_o3_model_request(self, content_dict: dict) -> bool:
-        """Check if this is an o3 model request."""
+        """Check if this is an o3 or gpt-5.6-terra model request for semantic matching."""
         model = content_dict.get("model", "")
-        return model.startswith("o3")
+        return model.startswith(("o3", "gpt-5.6-terra"))
 
     def _extract_semantic_fields(self, content_dict: dict) -> dict:
         """Extract only semantic fields for matching, ignoring volatile prompts.
 
-        For o3 models, we want to match on:
+        For o3/gpt-5.6-terra models, we want to match on:
         - Model name
         - User's actual question (last user message)
         - Core parameters (temperature, reasoning effort)
@@ -350,24 +350,28 @@ class ReplayTransport(httpx.MockTransport):
         }
 
         # Extract only the last user message (actual user question)
-        input_messages = content_dict.get("input", [])
+        input_messages = content_dict.get("input", []) or content_dict.get("messages", [])
         if input_messages:
             # Get the last user message content
             last_msg = input_messages[-1]
             if isinstance(last_msg, dict) and last_msg.get("role") == "user":
                 content = last_msg.get("content", [])
                 if isinstance(content, list) and len(content) > 0:
-                    # Extract just the text from the last message
-                    last_text = content[-1].get("text", "")
-                    # Only include the actual question, not the system instructions
-                    if "=== USER REQUEST ===" in last_text:
-                        # Extract just the user question
-                        parts = last_text.split("=== USER REQUEST ===")
-                        if len(parts) > 1:
-                            user_question = parts[1].split("=== END REQUEST ===")[0].strip()
-                            semantic["user_question"] = user_question
-                    else:
-                        semantic["user_question"] = last_text
+                    last_text = content[-1].get("text", "") if isinstance(content[-1], dict) else str(content[-1])
+                elif isinstance(content, str):
+                    last_text = content
+                else:
+                    last_text = str(content)
+
+                # Only include the actual question, not the system instructions
+                if "=== USER REQUEST ===" in last_text:
+                    # Extract just the user question
+                    parts = last_text.split("=== USER REQUEST ===")
+                    if len(parts) > 1:
+                        user_question = parts[1].split("=== END REQUEST ===")[0].strip()
+                        semantic["user_question"] = user_question
+                else:
+                    semantic["user_question"] = last_text
 
         return semantic
 

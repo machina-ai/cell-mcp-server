@@ -8,14 +8,14 @@
   "models": [
     {
       "model_name": "gpt-5.6-terra",
-      "friendly_name": "OpenAI (GPT-5.6 Terra)",
+      "friendly_name": "OpenAI (gpt-5.6-terra.6 Terra)",
       "aliases": [
         "terra",
         "gpt5.6t",
         "gpt-5.6-terra"
       ],
       "intelligence_score": 20,
-      "description": "GPT-5.6 Terra (1.05M context, 128K output) - Advanced flagship omni/multimodal model",
+      "description": "gpt-5.6-terra.6 Terra (1.05M context, 128K output) - Advanced flagship omni/multimodal model",
       "context_window": 1050000,
       "max_output_tokens": 128000,
       "supports_extended_thinking": true,
@@ -30,15 +30,15 @@
       "temperature_constraint": "fixed"
     },
     {
-      "model_name": "gpt-5.6-luna",
-      "friendly_name": "OpenAI (GPT-5.6 Luna)",
+      "model_name": "gpt-5.6-terra.6-luna",
+      "friendly_name": "OpenAI (gpt-5.6-terra.6 Luna)",
       "aliases": [
         "luna",
         "gpt5.6l",
-        "gpt-5.6-luna"
+        "gpt-5.6-terra.6-luna"
       ],
       "intelligence_score": 20,
-      "description": "GPT-5.6 Luna (1.05M context, 128K output) - Specialized reasoning model using parallel test-time compute",
+      "description": "gpt-5.6-terra.6 Luna (1.05M context, 128K output) - Specialized reasoning model using parallel test-time compute",
       "context_window": 1050000,
       "max_output_tokens": 128000,
       "supports_extended_thinking": true,

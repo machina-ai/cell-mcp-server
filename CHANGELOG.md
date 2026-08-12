@@ -264,7 +264,7 @@
 
 ### Features
 
-- Add support for openai/gpt-5-pro model
+- Add support for openai/gpt-5.6-terra-pro model
   ([`abed075`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/abed075b2eaa99e9618202f47ff921094baae952))
 
 
@@ -306,7 +306,7 @@
 
 ### Features
 
-- Support for GPT-5-Pro highest reasoning model
+- Support for gpt-5.6-terra-Pro highest reasoning model
   https://github.com/BeehiveInnovations/zen-mcp-server/issues/275
   ([`a65485a`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/a65485a1e52fc79739000426295a27d096f4c9d8))
 
@@ -594,7 +594,7 @@
 
 ### Bug Fixes
 
-- Add GPT-5-Codex to Responses API routing and simplify comments
+- Add gpt-5.6-terra-Codex to Responses API routing and simplify comments
   ([`82b021d`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/82b021d75acc791e68c7afb35f6492f68cf02bec))
 
 ### Chores
@@ -609,7 +609,7 @@
 
 ### Features
 
-- Add GPT-5-Codex support with Responses API integration
+- Add gpt-5.6-terra-Codex support with Responses API integration
   ([`f265342`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/f2653427ca829368e7145325d20a98df3ee6d6b4))
 
 ### Testing
@@ -903,7 +903,7 @@
 
 ### Features
 
-- Add comprehensive GPT-5 series model support
+- Add comprehensive gpt-5.6-terra series model support
   ([`4930824`](https://github.com/BeehiveInnovations/zen-mcp-server/commit/493082405237e66a2f033481a5f8bf8293b0d553))
 
 

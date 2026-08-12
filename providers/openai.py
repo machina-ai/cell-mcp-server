@@ -115,17 +115,17 @@ class OpenAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider)
 
         if category == ToolModelCategory.EXTENDED_REASONING:
             # Prefer models with extended thinking support
-            preferred = find_first(["gpt-5.6-terra", "gpt-5.6-luna"])
+            preferred = find_first(["gpt-5.6-terra", "gpt-5.6-terra.6-luna"])
             return preferred if preferred else allowed_models[0]
 
         elif category == ToolModelCategory.FAST_RESPONSE:
             # Prefer fast/efficient models
-            preferred = find_first(["gpt-5.6-luna", "gpt-5.6-terra"])
+            preferred = find_first(["gpt-5.6-terra.6-luna", "gpt-5.6-terra"])
             return preferred if preferred else allowed_models[0]
 
         else:  # BALANCED or default
             # Prefer balanced performance/cost models
-            preferred = find_first(["gpt-5.6-terra", "gpt-5.6-luna"])
+            preferred = find_first(["gpt-5.6-terra", "gpt-5.6-terra.6-luna"])
             return preferred if preferred else allowed_models[0]
 
 

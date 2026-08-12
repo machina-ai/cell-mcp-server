@@ -308,7 +308,7 @@ class ListModelsTool(BaseTool):
                 output_lines.append(f"**Error loading models**: {str(e)}")
         else:
             output_lines.append("**Status**: Not configured (set OPENROUTER_API_KEY)")
-            output_lines.append("**Note**: Provides access to GPT-5, O3, Mistral, and many more")
+            output_lines.append("**Note**: Provides access to gpt-5.6-terra, O3, Mistral, and many more")
 
         output_lines.append("")
 

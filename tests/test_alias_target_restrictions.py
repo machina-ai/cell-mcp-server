@@ -26,7 +26,7 @@ class TestAliasTargetRestrictions:
 
         # Should include both aliases and their targets
         assert "luna" in all_known  # alias
-        assert "gpt-5.6-luna" in all_known  # target of 'luna'
+        assert "gpt-5.6-terra.6-luna" in all_known  # target of 'luna'
         assert "terra" in all_known  # alias
         assert "gpt-5.6-terra" in all_known  # target of 'terra'
 
@@ -43,7 +43,7 @@ class TestAliasTargetRestrictions:
         assert "pro" in all_known  # alias
         assert "gemini-3.1-pro-preview" in all_known  # target of 'pro'
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna"})  # Allow target
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna"})  # Allow target
     def test_restriction_policy_allows_alias_when_target_allowed(self):
         """Test that restriction policy allows alias when target model is allowed."""
         # Clear cached restriction service
@@ -54,7 +54,7 @@ class TestAliasTargetRestrictions:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Both target and its actual aliases should be allowed
-        assert provider.validate_model_name("gpt-5.6-luna")
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
         assert provider.validate_model_name("luna")
 
     @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "luna"})  # Allow alias only
@@ -67,20 +67,20 @@ class TestAliasTargetRestrictions:
         provider = OpenAIModelProvider(api_key="test-key")
 
         assert provider.validate_model_name("luna")
-        assert provider.validate_model_name("gpt-5.6-luna")
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
         assert not provider.validate_model_name("gpt-5.6-terra")
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt5.5"})
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt5.6t"})
     def test_restriction_policy_alias_allows_short_name(self):
-        """Common aliases like 'gpt5.5' should allow their canonical forms."""
+        """Common aliases like 'gpt5.6t' should allow their canonical forms."""
         import utils.model_restrictions
 
         utils.model_restrictions._restriction_service = None
 
         provider = OpenAIModelProvider(api_key="test-key")
 
-        assert provider.validate_model_name("gpt5.5")
-        assert provider.validate_model_name("gpt-5.5")
+        assert provider.validate_model_name("gpt5.6t")
+        assert provider.validate_model_name("gpt-5.6-terra")
 
     @patch.dict(os.environ, {"GOOGLE_ALLOWED_MODELS": "gemini-3-flash-preview"})  # Allow target
     def test_gemini_restriction_policy_allows_alias_when_target_allowed(self):
@@ -110,7 +110,7 @@ class TestAliasTargetRestrictions:
 
     def test_restriction_service_validation_includes_all_targets(self):
         """Test that restriction service validation knows about all aliases and targets."""
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,invalid-model"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,invalid-model"}):
             service = ModelRestrictionService()
 
             # Create real provider instances
@@ -126,9 +126,9 @@ class TestAliasTargetRestrictions:
 
                 # The warning should include both aliases and targets in known models
                 warning_message = str(warning_calls[0])
-                assert "luna" in warning_message or "gpt-5.6-luna" in warning_message
+                assert "luna" in warning_message or "gpt-5.6-terra.6-luna" in warning_message
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "luna,gpt-5.6-luna,terra,gpt-5.6-terra"})
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "luna,gpt-5.6-terra.6-luna,terra,gpt-5.6-terra"})
     def test_both_alias_and_target_allowed_when_both_specified(self):
         """Test that both alias and target work when both are explicitly allowed."""
         # Clear cached restriction service
@@ -140,11 +140,11 @@ class TestAliasTargetRestrictions:
 
         # All should be allowed since we explicitly allowed them
         assert provider.validate_model_name("luna")
-        assert provider.validate_model_name("gpt-5.6-luna")
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
         assert provider.validate_model_name("terra")
         assert provider.validate_model_name("gpt-5.6-terra")
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt5.5"}, clear=True)
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt5.6t"}, clear=True)
     def test_service_alias_allows_canonical_openai(self):
         """ModelRestrictionService should permit canonical names resolved from aliases."""
         import utils.model_restrictions
@@ -153,8 +153,8 @@ class TestAliasTargetRestrictions:
         provider = OpenAIModelProvider(api_key="test-key")
         service = ModelRestrictionService()
 
-        assert service.is_allowed(ProviderType.OPENAI, "gpt-5.5")
-        assert provider.validate_model_name("gpt-5.5")
+        assert service.is_allowed(ProviderType.OPENAI, "gpt-5.6-terra")
+        assert provider.validate_model_name("gpt-5.6-terra")
 
     @patch.dict(os.environ, {"GOOGLE_ALLOWED_MODELS": "flash"}, clear=True)
     def test_service_alias_allows_canonical_gemini(self):
@@ -246,7 +246,7 @@ class TestAliasTargetRestrictions:
             unique=True,
         )
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna"})  # Restrict to specific model
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna"})  # Restrict to specific model
     def test_complex_alias_chains_handled_correctly(self):
         """Test that complex alias chains are handled correctly in restrictions."""
         # Clear cached restriction service
@@ -256,12 +256,12 @@ class TestAliasTargetRestrictions:
 
         provider = OpenAIModelProvider(api_key="test-key")
 
-        # Only gpt-5.6-luna should be allowed
-        assert provider.validate_model_name("gpt-5.6-luna")
+        # Only gpt-5.6-terra.6-luna should be allowed
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna")
 
         # Other models should be blocked
         assert not provider.validate_model_name("gpt-5.6-terra")
-        assert not provider.validate_model_name("gpt-5.5")
+        assert not provider.validate_model_name("gpt-5.6-terra")
 
     def test_critical_regression_validation_sees_alias_targets(self):
         """CRITICAL REGRESSION TEST: Ensure validation can see alias target models."""
@@ -277,25 +277,25 @@ class TestAliasTargetRestrictions:
 
         # Critical check: should contain both aliases and their targets
         assert "luna" in all_known  # alias
-        assert "gpt-5.6-luna" in all_known  # target of luna
+        assert "gpt-5.6-terra.6-luna" in all_known  # target of luna
         assert "terra" in all_known  # alias
         assert "gpt-5.6-terra" in all_known  # target of terra
 
         # Simulate restriction validation with a target model name
         with patch("utils.model_restrictions.logger") as mock_logger:
             # Set restriction to target model (not alias)
-            service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-luna"}}
+            service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-terra.6-luna"}}
 
-            # This should NOT generate warnings because gpt-5.6-luna is known
+            # This should NOT generate warnings because gpt-5.6-terra.6-luna is known
             service.validate_against_known_models(provider_instances)
 
-            # Should NOT have any warnings about gpt-5.6-luna being unrecognized
+            # Should NOT have any warnings about gpt-5.6-terra.6-luna being unrecognized
             warning_calls = [
                 call
                 for call in mock_logger.warning.call_args_list
-                if "gpt-5.6-luna" in str(call) and "not a recognized" in str(call)
+                if "gpt-5.6-terra.6-luna" in str(call) and "not a recognized" in str(call)
             ]
-            assert len(warning_calls) == 0, "gpt-5.6-luna should be recognized as valid target model"
+            assert len(warning_calls) == 0, "gpt-5.6-terra.6-luna should be recognized as valid target model"
 
         # Test the reverse: alias in restriction should also be recognized
         with patch("utils.model_restrictions.logger") as mock_logger:
@@ -316,7 +316,7 @@ class TestAliasTargetRestrictions:
     def test_critical_regression_prevents_policy_bypass(self):
         """CRITICAL REGRESSION TEST: Prevent policy bypass through missing target validation."""
         # Test with a made-up restriction scenario
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,gpt-5.6-terra"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,gpt-5.6-terra"}):
             # Clear cached restriction service
             import utils.model_restrictions
 
@@ -329,7 +329,7 @@ class TestAliasTargetRestrictions:
             all_known = provider.list_models(
                 respect_restrictions=False, include_aliases=True, lowercase=True, unique=True
             )
-            assert "gpt-5.6-luna" in all_known, "Target model gpt-5.6-luna should be known"
+            assert "gpt-5.6-terra.6-luna" in all_known, "Target model gpt-5.6-terra.6-luna should be known"
             assert "gpt-5.6-terra" in all_known, "Target model gpt-5.6-terra should be known"
 
             # Validation should not warn about these being unrecognized
@@ -340,10 +340,10 @@ class TestAliasTargetRestrictions:
                 # Should not warn about our allowed models being unrecognized
                 all_warnings = [str(call) for call in mock_logger.warning.call_args_list]
                 for warning in all_warnings:
-                    assert "gpt-5.6-luna" not in warning or "not a recognized" not in warning
+                    assert "gpt-5.6-terra.6-luna" not in warning or "not a recognized" not in warning
                     assert "gpt-5.6-terra" not in warning or "not a recognized" not in warning
 
             # The restriction should actually work
-            assert provider.validate_model_name("gpt-5.6-luna")
+            assert provider.validate_model_name("gpt-5.6-terra.6-luna")
             assert provider.validate_model_name("gpt-5.6-terra")
-            assert not provider.validate_model_name("gpt-5.5")  # not in allowed list
+            assert not provider.validate_model_name("invalid-model")  # not in allowed list

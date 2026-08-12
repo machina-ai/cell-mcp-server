@@ -51,7 +51,7 @@ class TestServerTools:
 
             # Test with real provider resolution
             try:
-                result = await handle_call_tool("brainstorm", {"prompt": "Hello Gemini", "model": "gpt-5.5-mini"})
+                result = await handle_call_tool("brainstorm", {"prompt": "Hello Gemini", "model": "gpt-5.6-terra-mini"})
 
                 # If we get here, check the response format
                 assert len(result) == 1

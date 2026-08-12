@@ -43,7 +43,7 @@ class OpenRouterModelsTest(BaseSimulatorTest):
             self.setup_test_files()
 
             # Test 1: Flash alias mapping to OpenRouter
-            self.logger.info("  1: Testing 'flash' alias (should map to google/gemini-2.5-flash)")
+            self.logger.info("  1: Testing 'flash' alias (should map to google/gemini-3.6-flash)")
 
             response1, continuation_id = self.call_mcp_tool(
                 "chat",

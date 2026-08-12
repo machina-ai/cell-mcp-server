@@ -4,7 +4,7 @@
     {
       "request": {
         "method": "post",
-        "url": "{MLDEV_URL_PREFIX}/models/gemini-2.5-pro:generateContent",
+        "url": "{MLDEV_URL_PREFIX}/models/gemini-3.1-pro-preview:generateContent",
         "headers": {
           "Content-Type": "application/json",
           "x-goog-api-key": "{REDACTED}",

@@ -1,7 +1,7 @@
 """
 Simple test to verify GitHub issue #245 is fixed.
 
-Issue: Custom OpenAI models (gpt-5, o3) use temperature despite the config having supports_temperature: false
+Issue: Custom OpenAI models (gpt-5.6-terra, o3) use temperature despite the config having supports_temperature: false
 """
 
 from unittest.mock import Mock, patch
@@ -28,7 +28,7 @@ def test_issue_245_custom_openai_temperature_ignored():
                 mock_response.choices = [Mock()]
                 mock_response.choices[0].message.content = "Test response"
                 mock_response.choices[0].finish_reason = "stop"
-                mock_response.model = "gpt-5-2025-08-07"
+                mock_response.model = "gpt-5.6-terra-2025-08-07"
                 mock_response.id = "test"
                 mock_response.created = 123
                 mock_response.usage = Mock()
@@ -46,8 +46,8 @@ def test_issue_245_custom_openai_temperature_ignored():
                 # This is what the user configured in their custom_models.json
                 custom_config = ModelCapabilities(
                     provider=ProviderType.OPENAI,
-                    model_name="gpt-5-2025-08-07",
-                    friendly_name="Custom GPT-5",
+                    model_name="gpt-5.6-terra-2025-08-07",
+                    friendly_name="Custom gpt-5.6-terra",
                     context_window=400000,
                     max_output_tokens=128000,
                     supports_extended_thinking=True,
@@ -59,7 +59,7 @@ def test_issue_245_custom_openai_temperature_ignored():
                     temperature_constraint=TemperatureConstraint.create("fixed"),
                     supports_images=True,
                     max_image_size_mb=20.0,
-                    description="Custom OpenAI GPT-5",
+                    description="Custom OpenAI gpt-5.6-terra",
                 )
                 mock_registry.get_model_config.return_value = custom_config
 
@@ -69,7 +69,7 @@ def test_issue_245_custom_openai_temperature_ignored():
 
                 # This is what was causing the 400 error before the fix
                 provider.generate_content(
-                    prompt="Test", model_name="gpt-5-2025-08-07", temperature=0.2  # This should be ignored!
+                    prompt="Test", model_name="gpt-5.6-terra-2025-08-07", temperature=0.2  # This should be ignored!
                 )
 
                 # Verify the fix: NO temperature should be sent to the API

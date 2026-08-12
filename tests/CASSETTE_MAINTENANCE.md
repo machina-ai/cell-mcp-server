@@ -210,7 +210,7 @@ Example:
 def _is_o3_model_request(self, content_dict: dict) -> bool:
     """Check if this is an o3 or other semantic-matching model request."""
     model = content_dict.get("model", "")
-    return model.startswith("o3") or model.startswith("gpt-5")  # Add more models
+    return model.startswith("o3") or model.startswith("gpt-5.6-terra")  # Add more models
 ```
 
 ## Questions?

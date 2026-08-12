@@ -130,7 +130,7 @@ class TestModelSelection:
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
 
             model = ModelProviderRegistry.get_preferred_fallback_model(ToolModelCategory.FAST_RESPONSE)
-            assert model == "gpt-5.6-luna"
+            assert model == "gpt-5.6-terra.6-luna"
 
     def test_fast_response_with_gemini_only(self):
         """Test FAST_RESPONSE prefers flash when only Gemini is available."""
@@ -202,7 +202,7 @@ class TestFlexibleModelSelection:
                 "env": {"OPENAI_API_KEY": "test-key"},
                 "provider_type": ProviderType.OPENAI,
                 "category": ToolModelCategory.FAST_RESPONSE,
-                "expected": "gpt-5.6-luna",
+                "expected": "gpt-5.6-terra.6-luna",
             },
         ]
 
@@ -422,7 +422,11 @@ class TestRuntimeModelSelection:
                     try:
                         with pytest.raises(ToolExecutionError) as exc_info:
                             await tool.execute(
-                                {"prompt": "test", "model": "gpt-5-turbo", "working_directory_absolute_path": temp_dir}
+                                {
+                                    "prompt": "test",
+                                    "model": "gpt-5.6-terra-turbo",
+                                    "working_directory_absolute_path": temp_dir,
+                                }
                             )
                     finally:
                         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -430,7 +434,7 @@ class TestRuntimeModelSelection:
                     # Should require model selection
                     error_output = json.loads(exc_info.value.payload)
                     assert error_output["status"] == "error"
-                    assert "gpt-5-turbo" in error_output["content"]
+                    assert "gpt-5.6-terra-turbo" in error_output["content"]
                     assert "is not available" in error_output["content"]
 
 

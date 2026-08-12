@@ -29,7 +29,7 @@ You need at least one API key. Choose based on your needs:
 
 **OpenAI:**
 - Visit [OpenAI Platform](https://platform.openai.com/api-keys)
-- Generate an API key for O3, GPT-5 access
+- Generate an API key for O3, gpt-5.6-terra access
 
 **X.AI (Grok):**
 - Visit [X.AI Console](https://console.x.ai/)
@@ -287,7 +287,7 @@ Add your API keys (at least one required):
 ```env
 # Choose your providers (at least one required)
 GEMINI_API_KEY=your-gemini-api-key-here      # For Gemini models  
-OPENAI_API_KEY=your-openai-api-key-here      # For O3, GPT-5
+OPENAI_API_KEY=your-openai-api-key-here      # For O3, gpt-5.6-terra
 XAI_API_KEY=your-xai-api-key-here            # For Grok models
 OPENROUTER_API_KEY=your-openrouter-key       # For multiple models
 

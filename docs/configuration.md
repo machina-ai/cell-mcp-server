@@ -81,8 +81,8 @@ DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
 
   | Provider | Canonical Models | Notable Aliases |
   |----------|-----------------|-----------------|
-  | OpenAI | `gpt-5`, `gpt-5-pro`, `gpt-5-mini`, `gpt-5-nano`, `gpt-5-codex`, `gpt-4.1`, `o3`, `o3-mini`, `o3-pro`, `o4-mini` | `gpt5`, `gpt5pro`, `mini`, `nano`, `codex`, `o3mini`, `o3pro`, `o4mini` |
-  | Gemini | `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-2.0-flash-lite` | `pro`, `gemini-pro`, `flash`, `flash-2.0`, `flashlite` |
+  | OpenAI | `gpt-5.6-terra`, `gpt-5.6-terra-pro`, `gpt-5.6-terra-mini`, `gpt-5.6-terra-nano`, `gpt-5.6-terra-codex`, `gpt-4.1`, `o3`, `o3-mini`, `o3-pro`, `o4-mini` | `gpt5`, `gpt5pro`, `mini`, `nano`, `codex`, `o3mini`, `o3pro`, `o4mini` |
+  | Gemini | `gemini-2.5-pro`, `gemini-3.6-flash`, `gemini-2.0-flash`, `gemini-2.0-flash-lite` | `pro`, `gemini-pro`, `flash`, `flash-2.0`, `flashlite` |
   | X.AI | `grok-4`, `grok-3`, `grok-3-fast` | `grok`, `grok4`, `grok3`, `grok3fast`, `grokfast` |
   | OpenRouter | See `conf/openrouter_models.json` for the continually evolving catalogue | e.g., `opus`, `sonnet`, `flash`, `pro`, `mistral` |
   | Custom | User-managed entries such as `llama3.2` | Define your own aliases per entry |
@@ -97,7 +97,7 @@ The `allow_code_generation` capability enables models to generate complete, prod
 
 ```json
 {
-  "model_name": "gpt-5",
+  "model_name": "gpt-5.6-terra",
   "allow_code_generation": true,
   ...
 }
@@ -105,7 +105,7 @@ The `allow_code_generation` capability enables models to generate complete, prod
 
 **When to Enable:**
 
-- **Enable for**: Models MORE capable than your primary CLI's model (e.g., GPT-5, GPT-5 Pro when using Claude Code with Sonnet 4.5)
+- **Enable for**: Models MORE capable than your primary CLI's model (e.g., gpt-5.6-terra, gpt-5.6-terra Pro when using Claude Code with Sonnet 4.5)
 - **Purpose**: Get complete implementations from a more powerful reasoning model that your primary CLI can then review and apply
 - **Use case**: Large-scale implementations, major refactoring, complete module creation
 
@@ -124,13 +124,13 @@ The `allow_code_generation` capability enables models to generate complete, prod
 {
   "models": [
     {
-      "model_name": "gpt-5",
+      "model_name": "gpt-5.6-terra",
       "allow_code_generation": true,
       "intelligence_score": 18,
       ...
     },
     {
-      "model_name": "gpt-5-pro",
+      "model_name": "gpt-5.6-terra-pro",
       "allow_code_generation": true,
       "intelligence_score": 19,
       ...
@@ -140,8 +140,8 @@ The `allow_code_generation` capability enables models to generate complete, prod
 ```
 
 **Typical Workflow:**
-1. You ask your AI agent to implement a complex new feature using `chat` with a higher-reasoning model such as **gpt-5-pro**
-2. GPT-5-Pro generates structured implementation and shares the complete implementation with Zen
+1. You ask your AI agent to implement a complex new feature using `chat` with a higher-reasoning model such as **gpt-5.6-terra-pro**
+2. gpt-5.6-terra-Pro generates structured implementation and shares the complete implementation with Zen
 3. Zen saves the code to `zen_generated.code` and asks AI agent to implement the plan
 4. AI agent continues from the previous context, reads the file, applies the implementation
 
@@ -183,7 +183,7 @@ OPENROUTER_ALLOWED_MODELS=opus,sonnet,mistral
 
 **Supported Model Names:** The names/aliases listed in the JSON manifests above are the authoritative source. Keep in mind:
 
-- Aliases are case-insensitive and defined per entry (for example, `mini` maps to `gpt-5-mini` by default, while `flash` maps to `gemini-2.5-flash`).
+- Aliases are case-insensitive and defined per entry (for example, `mini` maps to `gpt-5.6-terra-mini` by default, while `flash` maps to `gemini-3.6-flash`).
 - When you override the manifest files you can add or remove aliases as needed; restriction policies (`*_ALLOWED_MODELS`) automatically pick up those changes.
 - Models omitted from a manifest fall back to generic capability detection (where supported) and may have limited feature metadata.
 

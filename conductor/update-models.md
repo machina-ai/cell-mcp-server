@@ -9,9 +9,9 @@ Update model configurations and provider implementations in Zen MCP Server to su
 
 ### 1. OpenAI Direct (`conf/openai_models.json`)
 * **`gpt-5.6-terra`**: Flagship terra model (1M context, 128K output, intelligence: 20).
-* **`gpt-5.6-luna`**: Luna reasoning model (1M context, 128K output, response API enabled, intelligence: 20).
-* **`gpt-5.5`**: Standard flagship model (1M context, 128K output, intelligence: 19).
-* **`gpt-5.5-mini`**: Fast mini variant (1M context, 128K output, intelligence: 17).
+* **`gpt-5.6-terra.6-luna`**: Luna reasoning model (1M context, 128K output, response API enabled, intelligence: 20).
+* **`gpt-5.6-terra`**: Standard flagship model (1M context, 128K output, intelligence: 19).
+* **`gpt-5.6-terra-mini`**: Fast mini variant (1M context, 128K output, intelligence: 17).
 
 ### 2. xAI / Grok (`conf/xai_models.json`)
 * **`grok-4.5`**: Flagship Grok model (2M context, 2M output, extended thinking, intelligence: 20).
@@ -39,12 +39,12 @@ Update model configurations and provider implementations in Zen MCP Server to su
 ## Phased Implementation Steps
 
 ### Phase 1: JSON Configurations Update
-- Overwrite `conf/openai_models.json` with the updated JSON specs for `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.5`, and `gpt-5.5-mini`.
+- Overwrite `conf/openai_models.json` with the updated JSON specs for `gpt-5.6-terra`, `gpt-5.6-terra.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-terra-mini`.
 - Overwrite `conf/xai_models.json` with the updated JSON specs for `grok-4.5` and `grok-4-1-fast-reasoning`.
 - Overwrite `conf/gemini_models.json` with the updated JSON specs for `gemini-3.6-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.
 
 ### Phase 2: Provider Logic Adjustments
-- In `providers/openai.py`: Update `get_preferred_model()` lists for `EXTENDED_REASONING`, `FAST_RESPONSE`, and `BALANCED` categories to prioritize `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.5`, `gpt-5.5-mini`.
+- In `providers/openai.py`: Update `get_preferred_model()` lists for `EXTENDED_REASONING`, `FAST_RESPONSE`, and `BALANCED` categories to prioritize `gpt-5.6-terra`, `gpt-5.6-terra.6-luna`, `gpt-5.6-terra`, `gpt-5.6-terra-mini`.
 - In `providers/xai.py`: Update `get_preferred_model()` to prioritize `grok-4.5` and `grok-4-1-fast-reasoning`.
 - In `providers/gemini.py`:
   - Update `MAX_THINKING_TOKENS` mapping for `gemini-3.6-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.

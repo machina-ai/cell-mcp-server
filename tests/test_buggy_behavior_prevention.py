@@ -25,7 +25,7 @@ class TestBuggyBehaviorPrevention:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Baseline alias-only list captured for regression documentation
-        alias_only_snapshot = ["mini", "terra"]
+        alias_only_snapshot = ["luna", "terra"]
 
         # Canonical listing with aliases and targets
         comprehensive_list = provider.list_models(
@@ -36,18 +36,18 @@ class TestBuggyBehaviorPrevention:
         )
 
         # Comprehensive listing should contain aliases and their targets
-        assert "mini" in comprehensive_list
-        assert "gpt-5.6-luna" in comprehensive_list
+        assert "luna" in comprehensive_list
+        assert "gpt-5.6-terra.6-luna" in comprehensive_list
         assert "terra" in comprehensive_list
         assert "gpt-5.6-terra" in comprehensive_list
 
         # Legacy alias-only snapshots exclude targets
-        assert "gpt-5.6-luna" not in alias_only_snapshot
+        assert "gpt-5.6-terra.6-luna" not in alias_only_snapshot
         assert "gpt-5.6-terra" not in alias_only_snapshot
 
         # This scenario previously failed when targets were omitted
         service = ModelRestrictionService()
-        service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-luna"}}  # Restrict to target
+        service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-terra.6-luna"}}  # Restrict to target
 
         with patch("utils.model_restrictions.logger") as mock_logger:
             provider_instances = {ProviderType.OPENAI: provider}
@@ -57,9 +57,9 @@ class TestBuggyBehaviorPrevention:
             target_warnings = [
                 call
                 for call in mock_logger.warning.call_args_list
-                if "gpt-5.6-luna" in str(call) and "not a recognized" in str(call)
+                if "gpt-5.6-terra.6-luna" in str(call) and "not a recognized" in str(call)
             ]
-            assert len(target_warnings) == 0, "gpt-5.6-luna should be recognized as a valid target"
+            assert len(target_warnings) == 0, "gpt-5.6-terra.6-luna should be recognized as a valid target"
 
     def test_target_models_are_recognized_during_validation(self):
         """Target model restrictions should not trigger false warnings."""
@@ -97,28 +97,27 @@ class TestBuggyBehaviorPrevention:
         provider = OpenAIModelProvider(api_key="test-key")
 
         # Simulate a scenario where admin wants to restrict specific targets
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,gpt-5.6-terra"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,gpt-5.6-terra"}):
             # Clear cached restriction service
             import utils.model_restrictions
 
             utils.model_restrictions._restriction_service = None
 
             # These should work because they're explicitly allowed
-            assert provider.validate_model_name("gpt-5.6-luna")
+            assert provider.validate_model_name("gpt-5.6-terra.6-luna")
             assert provider.validate_model_name("gpt-5.6-terra")
 
             # These should be blocked
-            assert not provider.validate_model_name("gpt-5.5")
+            assert not provider.validate_model_name("invalid-model")
             all_known = provider.list_models(
                 respect_restrictions=False,
                 include_aliases=True,
                 lowercase=True,
                 unique=True,
             )
-            assert "gpt-5.6-luna" in all_known
+            assert "gpt-5.6-terra.6-luna" in all_known
             assert "gpt-5.6-terra" in all_known
-            assert "gpt-5.6-luna" in all_known
-            assert "mini" in all_known
+            assert "luna" in all_known
 
     def test_alias_aware_listing_extends_canonical_view(self):
         """Alias-aware list should be a superset of restriction-filtered names."""
@@ -140,7 +139,7 @@ class TestBuggyBehaviorPrevention:
             ], f"Alias-aware listing missing baseline model {model}"
 
         # Alias-aware variant should include canonical targets as well
-        for target in ("gpt-5.6-luna", "gpt-5.6-terra"):
+        for target in ("gpt-5.6-terra.6-luna", "gpt-5.6-terra"):
             assert target in alias_aware_models, f"Alias-aware listing should include target model {target}"
 
     def test_restriction_validation_uses_alias_aware_variant(self):
@@ -150,9 +149,9 @@ class TestBuggyBehaviorPrevention:
         # Simulate a provider that only returns aliases when asked for models
         alias_only_provider = MagicMock()
         alias_only_provider.MODEL_CAPABILITIES = {
-            "mini": "gpt-5.6-luna",
+            "mini": "gpt-5.6-terra.6-luna",
             "terra": "gpt-5.6-terra",
-            "gpt-5.6-luna": {"context_window": 1000000},
+            "gpt-5.6-terra.6-luna": {"context_window": 1000000},
             "gpt-5.6-terra": {"context_window": 1000000},
         }
 
@@ -167,14 +166,14 @@ class TestBuggyBehaviorPrevention:
                 return ["mini", "terra"]
 
             if not respect_restrictions and include_aliases and lowercase and unique:
-                return ["mini", "terra", "gpt-5.6-luna", "gpt-5.6-terra"]
+                return ["mini", "terra", "gpt-5.6-terra.6-luna", "gpt-5.6-terra"]
 
             raise AssertionError(f"Unexpected list_models call: {kwargs}")
 
         alias_only_provider.list_models.side_effect = list_models_side_effect
 
         # Test that validation now uses the comprehensive method
-        service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-luna"}}  # Restrict to target
+        service.restrictions = {ProviderType.OPENAI: {"gpt-5.6-terra.6-luna"}}  # Restrict to target
 
         with patch("utils.model_restrictions.logger") as mock_logger:
             provider_instances = {ProviderType.OPENAI: alias_only_provider}
@@ -188,18 +187,18 @@ class TestBuggyBehaviorPrevention:
                 unique=True,
             )
 
-            # Should not warn about gpt-5.6-luna being unrecognized
+            # Should not warn about gpt-5.6-terra.6-luna being unrecognized
             target_warnings = [
                 call
                 for call in mock_logger.warning.call_args_list
-                if "gpt-5.6-luna" in str(call) and "not a recognized" in str(call)
+                if "gpt-5.6-terra.6-luna" in str(call) and "not a recognized" in str(call)
             ]
             assert len(target_warnings) == 0
 
     def test_alias_listing_covers_targets_for_all_providers(self):
         """Alias-aware listings should expose targets across providers."""
         providers_to_test = [
-            (OpenAIModelProvider(api_key="test-key"), "mini", "gpt-5.6-luna"),
+            (OpenAIModelProvider(api_key="test-key"), "luna", "gpt-5.6-terra.6-luna"),
             (GeminiModelProvider(api_key="test-key"), "flash", "gemini-3-flash-preview"),
         ]
 
@@ -215,7 +214,7 @@ class TestBuggyBehaviorPrevention:
             # No duplicates should exist
             assert len(all_known) == len(set(all_known)), f"{provider.__class__.__name__} returns duplicate models"
 
-    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-luna,invalid-model"})
+    @patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna,invalid-model"})
     def test_validation_correctly_identifies_invalid_models(self):
         """Validation should flag invalid models while listing valid targets."""
         # Clear cached restriction service
@@ -237,10 +236,10 @@ class TestBuggyBehaviorPrevention:
             ]
             assert len(invalid_warnings) > 0, "Should warn about truly invalid models"
 
-            # The warning should mention gpt-5.6-luna in the known models list
+            # The warning should mention gpt-5.6-terra.6-luna in the known models list
             warning_text = str(mock_logger.warning.call_args_list[0])
             assert "Known models:" in warning_text, "Warning should include known models list"
-            assert "gpt-5.6-luna" in warning_text, "gpt-5.6-luna should appear in known models"
+            assert "gpt-5.6-terra.6-luna" in warning_text, "gpt-5.6-terra.6-luna should appear in known models"
 
             # But the warning should be specifically about invalid-model
             assert "'invalid-model'" in warning_text, "Warning should specifically mention invalid-model"

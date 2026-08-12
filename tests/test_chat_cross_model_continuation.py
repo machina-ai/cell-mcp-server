@@ -152,7 +152,7 @@ async def test_chat_cross_model_continuation(monkeypatch, tmp_path):
 
     assert GEMINI_REPLAY_PATH.exists()
 
-    # Step 2 – gpt-5 recalls the number via continuation
+    # Step 2 – gpt-5.6-terra recalls the number via continuation
     with monkeypatch.context() as m:
         if recording_mode:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])

@@ -95,7 +95,7 @@ class TestAutoModeComprehensive:
                 },
                 {
                     "EXTENDED_REASONING": "gpt-5.6-terra",
-                    "FAST_RESPONSE": "gpt-5.6-luna",
+                    "FAST_RESPONSE": "gpt-5.6-terra.6-luna",
                     "BALANCED": "gpt-5.6-terra",
                 },
             ),
@@ -405,7 +405,7 @@ class TestAutoModeComprehensive:
             "XAI_API_KEY": None,
             "OPENROUTER_API_KEY": None,
             "DEFAULT_MODEL": "auto",
-            "OPENAI_ALLOWED_MODELS": "gpt-5.6-luna",  # Restrict OpenAI to only gpt-5.6-luna
+            "OPENAI_ALLOWED_MODELS": "gpt-5.6-terra.6-luna",  # Restrict OpenAI to only gpt-5.6-terra.6-luna
         }
 
         # Filter out None values to avoid patch.dict errors
@@ -434,11 +434,11 @@ class TestAutoModeComprehensive:
             available_models = ModelProviderRegistry.get_available_models(respect_restrictions=True)
 
             # Should include restricted OpenAI model
-            assert "gpt-5.6-luna" in available_models
+            assert "gpt-5.6-terra.6-luna" in available_models
 
             # Should NOT include non-restricted OpenAI models
             assert "gpt-5.6-terra" not in available_models
-            assert "gpt-5.5" not in available_models
+            assert "gpt-5.6-terra" not in available_models
 
             # Should still include all Gemini models (no restrictions)
             assert "gemini-3.6-flash" in available_models
@@ -476,7 +476,7 @@ class TestAutoModeComprehensive:
             # Mock OpenRouter registry to return known models
             mock_registry = MagicMock()
             mock_registry.list_models.return_value = [
-                "google/gemini-2.5-flash",
+                "google/gemini-3.6-flash",
                 "google/gemini-2.5-pro",
                 "openai/o3",
                 "openai/o4-mini",
@@ -527,10 +527,10 @@ class TestAutoModeComprehensive:
             mock_provider = MagicMock()
             mock_response = MagicMock()
             mock_response.content = "test response"
-            mock_response.model_name = "gemini-2.5-flash"  # The resolved name
+            mock_response.model_name = "gemini-3.6-flash"  # The resolved name
             mock_response.usage = {"input_tokens": 10, "output_tokens": 5}
             # Mock _resolve_model_name to simulate alias resolution
-            mock_provider._resolve_model_name = lambda alias: ("gemini-2.5-flash" if alias == "flash" else alias)
+            mock_provider._resolve_model_name = lambda alias: ("gemini-3.6-flash" if alias == "flash" else alias)
             mock_provider.generate_content.return_value = mock_response
 
             with patch.object(ModelProviderRegistry, "get_provider_for_model", return_value=mock_provider):

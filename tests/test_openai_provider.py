@@ -44,7 +44,7 @@ class TestOpenAIProvider:
 
         # Test valid models
         assert provider.validate_model_name("gpt-5.6-terra") is True
-        assert provider.validate_model_name("gpt-5.6-luna") is True
+        assert provider.validate_model_name("gpt-5.6-terra.6-luna") is True
 
         # Test valid aliases
         assert provider.validate_model_name("terra") is True
@@ -55,7 +55,7 @@ class TestOpenAIProvider:
         # Test invalid model
         assert provider.validate_model_name("invalid-model") is False
         assert provider.validate_model_name("gpt-4") is False
-        assert provider.validate_model_name("gpt-5.5") is False
+        assert provider.validate_model_name("nonexistent-model") is False
         assert provider.validate_model_name("gemini-pro") is False
 
     def test_resolve_model_name(self):
@@ -64,21 +64,21 @@ class TestOpenAIProvider:
 
         # Test shorthand resolution
         assert provider._resolve_model_name("terra") == "gpt-5.6-terra"
-        assert provider._resolve_model_name("luna") == "gpt-5.6-luna"
+        assert provider._resolve_model_name("luna") == "gpt-5.6-terra.6-luna"
         assert provider._resolve_model_name("gpt5.6t") == "gpt-5.6-terra"
-        assert provider._resolve_model_name("gpt5.6l") == "gpt-5.6-luna"
+        assert provider._resolve_model_name("gpt5.6l") == "gpt-5.6-terra.6-luna"
 
         # Test full name passthrough
         assert provider._resolve_model_name("gpt-5.6-terra") == "gpt-5.6-terra"
-        assert provider._resolve_model_name("gpt-5.6-luna") == "gpt-5.6-luna"
+        assert provider._resolve_model_name("gpt-5.6-terra.6-luna") == "gpt-5.6-terra.6-luna"
 
     def test_get_capabilities_terra(self):
-        """Test getting model capabilities for GPT-5.6 Terra."""
+        """Test getting model capabilities for gpt-5.6-terra.6 Terra."""
         provider = OpenAIModelProvider("test-key")
 
         capabilities = provider.get_capabilities("terra")
         assert capabilities.model_name == "gpt-5.6-terra"
-        assert capabilities.friendly_name == "OpenAI (GPT-5.6 Terra)"
+        assert capabilities.friendly_name == "OpenAI (gpt-5.6-terra.6 Terra)"
         assert capabilities.context_window == 1_050_000
         assert capabilities.provider == ProviderType.OPENAI
         assert capabilities.supports_extended_thinking is True
@@ -91,8 +91,8 @@ class TestOpenAIProvider:
         provider = OpenAIModelProvider("test-key")
 
         capabilities = provider.get_capabilities("luna")
-        assert capabilities.model_name == "gpt-5.6-luna"
-        assert capabilities.friendly_name == "OpenAI (GPT-5.6 Luna)"
+        assert capabilities.model_name == "gpt-5.6-terra.6-luna"
+        assert capabilities.friendly_name == "OpenAI (gpt-5.6-terra.6 Luna)"
         assert capabilities.context_window == 1_050_000
         assert capabilities.provider == ProviderType.OPENAI
 
@@ -158,12 +158,12 @@ class TestOpenAIProvider:
 
         provider = OpenAIModelProvider("test-key")
 
-        # Test luna -> gpt-5.6-luna
+        # Test luna -> gpt-5.6-terra.6-luna
         mock_response.output_text = "Test response"
         mock_client.responses.create.return_value = mock_response
         provider.generate_content(prompt="Test", model_name="luna", temperature=1.0)
         call_kwargs = mock_client.responses.create.call_args[1]
-        assert call_kwargs["model"] == "gpt-5.6-luna"
+        assert call_kwargs["model"] == "gpt-5.6-terra.6-luna"
 
     @patch("providers.openai_compatible.OpenAI")
     def test_generate_content_no_alias_passthrough(self, mock_openai_class):
@@ -194,7 +194,7 @@ class TestOpenAIProvider:
 
         supported_aliases = [
             "gpt-5.6-terra",
-            "gpt-5.6-luna",
+            "gpt-5.6-terra.6-luna",
             "terra",
             "luna",
             "gpt5.6t",
@@ -208,14 +208,14 @@ class TestOpenAIProvider:
 
     @patch("providers.openai_compatible.OpenAI")
     def test_luna_routes_to_responses_endpoint(self, mock_openai_class):
-        """Test that gpt-5.6-luna model routes to the /v1/responses endpoint (mock test)."""
+        """Test that gpt-5.6-terra.6-luna model routes to the /v1/responses endpoint (mock test)."""
         # Set up mock for OpenAI client responses endpoint
         mock_client = MagicMock()
         mock_openai_class.return_value = mock_client
 
         mock_response = MagicMock()
         mock_response.output_text = "4"
-        mock_response.model = "gpt-5.6-luna"
+        mock_response.model = "gpt-5.6-terra.6-luna"
         mock_response.id = "test-id"
         mock_response.created_at = 1234567890
         mock_response.usage = MagicMock()
@@ -227,19 +227,19 @@ class TestOpenAIProvider:
 
         provider = OpenAIModelProvider("test-key")
 
-        # Generate content with gpt-5.6-luna
-        result = provider.generate_content(prompt="What is 2 + 2?", model_name="gpt-5.6-luna", temperature=1.0)
+        # Generate content with gpt-5.6-terra.6-luna
+        result = provider.generate_content(prompt="What is 2 + 2?", model_name="gpt-5.6-terra.6-luna", temperature=1.0)
 
         # Verify responses.create was called
         mock_client.responses.create.assert_called_once()
         call_args = mock_client.responses.create.call_args[1]
-        assert call_args["model"] == "gpt-5.6-luna"
+        assert call_args["model"] == "gpt-5.6-terra.6-luna"
         assert call_args["input"][0]["role"] == "user"
         assert "What is 2 + 2?" in call_args["input"][0]["content"][0]["text"]
 
         # Verify the response
         assert result.content == "4"
-        assert result.model_name == "gpt-5.6-luna"
+        assert result.model_name == "gpt-5.6-terra.6-luna"
         assert result.metadata["endpoint"] == "responses"
 
     @patch("providers.openai_compatible.OpenAI")

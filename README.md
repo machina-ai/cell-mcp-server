@@ -35,7 +35,7 @@ clink with codex codereviewer to audit auth module for security issues
 # Subagent reviews in isolation, returns final report without cluttering your context as codex reads each file and walks the directory structure
 
 # Consensus from different AI models → Implementation handoff with full context preservation between tools
-Use consensus with gpt-5 and gemini-pro to decide: dark mode or offline support next
+Use consensus with gpt-5.6-terra and gemini-pro to decide: dark mode or offline support next
 Continue with clink gemini - implement the recommended feature
 # Gemini receives full debate context and starts coding immediately
 ```
@@ -65,7 +65,7 @@ Your CLI always stays in control but gets perspectives from the best AI for each
 
 A typical workflow with Claude Code as an example:
 
-1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, GPT-5, and 50+ other models to get the best analysis for each task
+1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, gpt-5.6-terra, and 50+ other models to get the best analysis for each task
 
 2. **Context Revival Magic** - Even after Claude's context resets, continue conversations seamlessly by having other models "remind" Claude of the discussion
 
@@ -125,7 +125,7 @@ and review into consideration to aid with its final pre-commit review.
 For best results when using [Claude Code](https://claude.ai/code):  
 
 - **Sonnet 4.5** - All agentic work and orchestration
-- **Gemini 2.5 Pro** OR **GPT-5-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
+- **Gemini 2.5 Pro** OR **gpt-5.6-terra-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
 </details>
 
 <details>
@@ -133,8 +133,8 @@ For best results when using [Claude Code](https://claude.ai/code):
 
 For best results when using [Codex CLI](https://developers.openai.com/codex/cli):  
 
-- **GPT-5 Codex Medium** - All agentic work and orchestration
-- **Gemini 2.5 Pro** OR **GPT-5-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
+- **gpt-5.6-terra Codex Medium** - All agentic work and orchestration
+- **Gemini 2.5 Pro** OR **gpt-5.6-terra-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
 </details>
 
 ## Quick Start (5 minutes)
@@ -194,7 +194,7 @@ Zen is configured to work with a local proxy, which handles API credentials. See
 
 **Collaboration & Planning** *(Enabled by default)*
 - **[`clink`](docs/tools/clink.md)** - Bridge requests to external AI CLIs (Gemini planner, codereviewer, etc.)
-- **[`brainstorm`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (GPT-5 Pro, Gemini 2.5 Pro), generates complete code / implementation
+- **[`brainstorm`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (gpt-5.6-terra Pro, Gemini 2.5 Pro), generates complete code / implementation
 - **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
 - **[`planner`](docs/tools/planner.md)** - Break down complex projects into structured, actionable plans
 - **[`consensus`](docs/tools/consensus.md)** - Get expert opinions from multiple AI models with stance steering
@@ -365,7 +365,7 @@ DISABLED_TOOLS=
 
 **Model Support**
 - **Multiple providers** - Gemini, OpenAI, Azure, X.AI, OpenRouter, DIAL, Ollama
-- **Latest models** - GPT-5, Gemini 2.5 Pro, O3, Grok-4, local Llama
+- **Latest models** - gpt-5.6-terra, Gemini 2.5 Pro, O3, Grok-4, local Llama
 - **[Thinking modes](docs/advanced-usage.md#thinking-modes)** - Control reasoning depth vs cost
 - **Vision support** - Analyze images, diagrams, screenshots
 

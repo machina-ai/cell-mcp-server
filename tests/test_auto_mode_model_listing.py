@@ -144,7 +144,7 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
         "gpt-5.6-terra",
         "grok-4.5",
         "gpt5nano",
-        "openai/gpt-5-nano",
+        "openai/gpt-5.6-terra-nano",
     }
 
 

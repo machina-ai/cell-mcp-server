@@ -27,7 +27,7 @@ GEMINI_REPLAY_PATH = GEMINI_REPLAY_DIR / "consensus" / "step2_gemini25_flash_aga
 @pytest.mark.asyncio
 @pytest.mark.no_mock_provider
 async def test_consensus_multi_model_consultations(monkeypatch):
-    """Exercise ConsensusTool against gpt-5 (supporting) and gemini-2.0-flash (critical)."""
+    """Exercise ConsensusTool against gpt-5.6-terra (supporting) and gemini-2.0-flash (critical)."""
 
     env_updates = {
         "DEFAULT_MODEL": "auto",
@@ -86,8 +86,8 @@ async def test_consensus_multi_model_consultations(monkeypatch):
         tool = ConsensusTool()
 
         models_to_consult = [
-            {"model": "gpt-5", "stance": "for"},
-            {"model": "gemini-2.5-flash", "stance": "against"},
+            {"model": "gpt-5.6-terra", "stance": "for"},
+            {"model": "gemini-3.6-flash", "stance": "against"},
         ]
 
         # Step 1: CLI agent analysis followed by first model consultation
@@ -105,7 +105,7 @@ async def test_consensus_multi_model_consultations(monkeypatch):
         step1_data = json.loads(step1_response[0].text)
 
         assert step1_data["status"] == "analysis_and_first_model_consulted"
-        assert step1_data["model_consulted"] == "gpt-5"
+        assert step1_data["model_consulted"] == "gpt-5.6-terra"
         assert step1_data["model_response"]["status"] == "success"
         assert step1_data["model_response"]["metadata"]["provider"] == "openai"
         assert step1_data["model_response"]["verdict"]
@@ -118,7 +118,7 @@ async def test_consensus_multi_model_consultations(monkeypatch):
         summary_for_step2 = step1_data["model_response"]["verdict"][:200]
 
         step2_arguments = {
-            "step": f"Incorporated gpt-5 perspective: {summary_for_step2}",
+            "step": f"Incorporated gpt-5.6-terra perspective: {summary_for_step2}",
             "step_number": 2,
             "total_steps": len(models_to_consult),
             "next_step_required": False,
@@ -134,12 +134,12 @@ async def test_consensus_multi_model_consultations(monkeypatch):
     step2_data = json.loads(step2_response[0].text)
 
     assert step2_data["status"] == "consensus_workflow_complete"
-    assert step2_data["model_consulted"] == "gemini-2.5-flash"
+    assert step2_data["model_consulted"] == "gemini-3.6-flash"
     assert step2_data["model_response"]["metadata"]["provider"] == "google"
     assert step2_data["model_response"]["verdict"]
     assert step2_data["complete_consensus"]["models_consulted"] == [
-        "gpt-5:for",
-        "gemini-2.5-flash:against",
+        "gpt-5.6-terra:for",
+        "gemini-3.6-flash:against",
     ]
     assert step2_data["consensus_complete"] is True
 
@@ -148,7 +148,7 @@ async def test_consensus_multi_model_consultations(monkeypatch):
     assert continuation_offer_final["continuation_id"] == continuation_id
 
     # Ensure Gemini replay session is flushed to disk before verification
-    gemini_provider = ModelProviderRegistry.get_provider_for_model("gemini-2.5-flash")
+    gemini_provider = ModelProviderRegistry.get_provider_for_model("gemini-3.6-flash")
     if gemini_provider is not None:
         try:
             client = gemini_provider.client
@@ -214,7 +214,7 @@ async def test_consensus_auto_mode_with_openrouter_and_gemini(monkeypatch):
 
         models_to_consult = [
             {"model": "claude-3-5-flash-20241022", "stance": "neutral"},
-            {"model": "gpt-5-mini", "stance": "neutral"},
+            {"model": "gpt-5.6-terra-mini", "stance": "neutral"},
         ]
 
         step1_args = {
@@ -260,7 +260,7 @@ async def test_consensus_auto_mode_with_openrouter_and_gemini(monkeypatch):
 
     serialized = json.dumps(step2_payload)
     assert "auto" not in serialized.lower(), "Auto model leakage should be resolved"
-    assert "gpt-5-mini" in serialized or "claude-3-5-flash-20241022" in serialized
+    assert "gpt-5.6-terra-mini" in serialized or "claude-3-5-flash-20241022" in serialized
 
     # Restore server module to reflect original configuration for other tests
     import importlib

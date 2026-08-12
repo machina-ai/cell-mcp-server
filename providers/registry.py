@@ -160,7 +160,7 @@ class ModelProviderRegistry:
         3. OPENROUTER - Catch-all for cloud models via unified API
 
         Args:
-            model_name: Name of the model (e.g., "gemini-2.5-flash", "gpt5")
+            model_name: Name of the model (e.g., "gemini-3.6-flash", "gpt5")
 
         Returns:
             ModelProvider instance that supports this model

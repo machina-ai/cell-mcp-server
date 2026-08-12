@@ -33,7 +33,7 @@ class TestCustomOpenAITemperatureParameterFix:
         # Create test config with a custom OpenAI model that doesn't support temperature
         config_models = [
             {
-                "model_name": "gpt-5-2025-08-07",
+                "model_name": "gpt-5.6-terra-2025-08-07",
                 "provider": "openai",
                 "context_window": 400000,
                 "max_output_tokens": 128000,
@@ -47,7 +47,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 "supports_images": True,
                 "max_image_size_mb": 20.0,
                 "reasoning": {"effort": "low"},
-                "description": "Custom OpenAI GPT-5 test model",
+                "description": "Custom OpenAI gpt-5.6-terra test model",
             }
         ]
 
@@ -68,7 +68,7 @@ class TestCustomOpenAITemperatureParameterFix:
             mock_response.choices = [Mock()]
             mock_response.choices[0].message.content = "Test response"
             mock_response.choices[0].finish_reason = "stop"
-            mock_response.model = "gpt-5-2025-08-07"
+            mock_response.model = "gpt-5.6-terra-2025-08-07"
             mock_response.id = "test-id"
             mock_response.created = 1234567890
             mock_response.usage = Mock()
@@ -89,8 +89,8 @@ class TestCustomOpenAITemperatureParameterFix:
 
                 test_capabilities = ModelCapabilities(
                     provider=ProviderType.OPENAI,
-                    model_name="gpt-5-2025-08-07",
-                    friendly_name="Custom GPT-5",
+                    model_name="gpt-5.6-terra-2025-08-07",
+                    friendly_name="Custom gpt-5.6-terra",
                     context_window=400000,
                     max_output_tokens=128000,
                     supports_extended_thinking=True,
@@ -102,7 +102,7 @@ class TestCustomOpenAITemperatureParameterFix:
                     max_image_size_mb=20.0,
                     supports_temperature=False,  # This is the key setting
                     temperature_constraint=TemperatureConstraint.create("fixed"),
-                    description="Custom OpenAI GPT-5 test model",
+                    description="Custom OpenAI gpt-5.6-terra test model",
                 )
 
                 mock_registry.get_model_config.return_value = test_capabilities
@@ -114,7 +114,7 @@ class TestCustomOpenAITemperatureParameterFix:
 
                 # Call generate_content with custom model
                 provider.generate_content(
-                    prompt="Test prompt", model_name="gpt-5-2025-08-07", temperature=0.5, max_output_tokens=100
+                    prompt="Test prompt", model_name="gpt-5.6-terra-2025-08-07", temperature=0.5, max_output_tokens=100
                 )
 
                 # Verify the API call was made without temperature or max_tokens
@@ -127,7 +127,7 @@ class TestCustomOpenAITemperatureParameterFix:
                 assert (
                     "max_tokens" not in call_kwargs
                 ), "Custom OpenAI models with supports_temperature=false should not include max_tokens parameter"
-                assert call_kwargs["model"] == "gpt-5-2025-08-07"
+                assert call_kwargs["model"] == "gpt-5.6-terra-2025-08-07"
                 assert "messages" in call_kwargs
 
         finally:
@@ -274,7 +274,7 @@ class TestCustomOpenAITemperatureParameterFix:
             provider = OpenAIModelProvider(api_key="test-key")
 
             # Test that built-in models still work
-            assert provider.validate_model_name("gpt-5.6-luna") is True
+            assert provider.validate_model_name("gpt-5.6-terra.6-luna") is True
 
             # Test that unsupported models return false
             assert provider.validate_model_name("unknown-model") is False
