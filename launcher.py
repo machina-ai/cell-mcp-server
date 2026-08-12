@@ -21,10 +21,10 @@ regardless of how it's installed or executed, resolving issues with package
 installation tools like `uv` or `pip` that autogenerate executable wrappers.
 """
 
-import os
-import sys
 import argparse
 import importlib.metadata
+import os
+import sys
 
 
 def set_default_env(name: str, value: str):
@@ -44,7 +44,7 @@ def main():
     # This is done first to handle flags like --version before any heavy lifting.
     try:
         # Prioritize getting version from installed package metadata
-        version = importlib.metadata.version('cell-mcp-server')
+        version = importlib.metadata.version("cell-mcp-server")
     except importlib.metadata.PackageNotFoundError:
         # Fallback for development environments where the package isn't installed
         try:
@@ -53,11 +53,7 @@ def main():
             version = "unknown"
 
     parser = argparse.ArgumentParser(description="Cell MCP Server")
-    parser.add_argument(
-        '--version',
-        action='version',
-        version=f'%(prog)s {version}'
-    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {version}")
     # Use parse_known_args() to handle --version and ignore any other args
     # that might be intended for the underlying server process.
     parser.parse_known_args()
@@ -77,11 +73,12 @@ def main():
         # server modules are loaded, as they may depend on these variables
         # at import time.
         from server import run
+
         sys.exit(run())
     except ImportError as e:
         print(
             f"Error: Failed to import the server. Make sure all dependencies are installed. Details: {e}",
-            file=sys.stderr
+            file=sys.stderr,
         )
         sys.exit(1)
     except Exception as e:

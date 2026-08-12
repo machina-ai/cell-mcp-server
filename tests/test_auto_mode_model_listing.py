@@ -82,10 +82,10 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     except ModuleNotFoundError:
         pass
 
-    monkeypatch.setenv("GOOGLE_ALLOWED_MODELS", "gemini-2.5-pro")
-    monkeypatch.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
+    monkeypatch.setenv("GOOGLE_ALLOWED_MODELS", "gemini-3.1-pro-preview")
+    monkeypatch.setenv("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra")
     monkeypatch.setenv("OPENROUTER_ALLOWED_MODELS", "gpt5nano")
-    monkeypatch.setenv("XAI_ALLOWED_MODELS", "")
+    monkeypatch.setenv("XAI_ALLOWED_MODELS", "grok-4.5")
 
     import config
 
@@ -103,10 +103,10 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
         ("GEMINI_API_KEY", "test-gemini"),
         ("OPENAI_API_KEY", "test-openai"),
         ("OPENROUTER_API_KEY", "test-openrouter"),
-        ("GOOGLE_ALLOWED_MODELS", "gemini-2.5-pro"),
-        ("OPENAI_ALLOWED_MODELS", "gpt-5"),
+        ("GOOGLE_ALLOWED_MODELS", "gemini-3.1-pro-preview"),
+        ("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra"),
         ("OPENROUTER_ALLOWED_MODELS", "gpt5nano"),
-        ("XAI_ALLOWED_MODELS", ""),
+        ("XAI_ALLOWED_MODELS", "grok-4.5"),
     ):
         monkeypatch.setenv(key, value)
 
@@ -127,9 +127,9 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     with pytest.raises(ToolExecutionError) as exc_info:
         asyncio.run(
             server.handle_call_tool(
-                "chat",
+                "brainstorm",
                 {
-                    "model": "gpt5mini",
+                    "model": "nonexistent-model-xyz",
                     "prompt": "Tell me about your strengths",
                 },
             )
@@ -139,7 +139,13 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     assert payload["status"] == "error"
 
     available_models = _extract_available_models(payload["content"])
-    assert set(available_models) == {"gemini-2.5-pro", "gpt-5", "gpt5nano", "openai/gpt-5-nano"}
+    assert set(available_models) == {
+        "gemini-3.1-pro-preview",
+        "gpt-5.6-terra",
+        "grok-4.5",
+        "gpt5nano",
+        "openai/gpt-5-nano",
+    }
 
 
 @pytest.mark.no_mock_provider
@@ -212,9 +218,9 @@ def test_error_listing_without_restrictions_shows_full_catalog(monkeypatch, rese
     with pytest.raises(ToolExecutionError) as exc_info:
         asyncio.run(
             server.handle_call_tool(
-                "chat",
+                "brainstorm",
                 {
-                    "model": "dummymodel",
+                    "model": "nonexistent-model-xyz",
                     "prompt": "Hi there",
                 },
             )
@@ -224,7 +230,7 @@ def test_error_listing_without_restrictions_shows_full_catalog(monkeypatch, rese
     assert payload["status"] == "error"
 
     available_models = _extract_available_models(payload["content"])
-    assert "gemini-2.5-pro" in available_models
-    assert "gpt-5" in available_models
-    assert "grok-4" in available_models
+    assert "gemini-3.1-pro-preview" in available_models
+    assert "gpt-5.6-terra" in available_models
+    assert "grok-4.5" in available_models
     assert len(available_models) >= 5

@@ -7,13 +7,16 @@ This script is called by GitHub Actions after semantic-release updates the versi
 import re
 from datetime import datetime
 
-import toml
+try:
+    import tomllib
+except ImportError:
+    import toml as tomllib
 
 
 def update_config_version():
     # Read version from pyproject.toml
-    with open("pyproject.toml") as f:
-        data = toml.load(f)
+    with open("pyproject.toml", "rb") as f:
+        data = tomllib.load(f)
         version = data["project"]["version"]
 
     # Read current config.py

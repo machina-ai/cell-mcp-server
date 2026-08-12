@@ -44,10 +44,9 @@ class GeminiModelProvider(RegistryBackedProviderMixin, ModelProvider):
 
     # Model-specific thinking token limits
     MAX_THINKING_TOKENS = {
-        "gemini-2.0-flash": 24576,  # Same as 2.5 flash for consistency
-        "gemini-2.0-flash-lite": 0,  # No thinking support
-        "gemini-2.5-flash": 24576,  # Flash 2.5 thinking budget limit
-        "gemini-2.5-pro": 32768,  # Pro 2.5 thinking budget limit
+        "gemini-3.6-flash": 32768,
+        "gemini-3-flash-preview": 24576,
+        "gemini-3.1-pro-preview": 32768,
     }
 
     def __init__(self, api_key: str, **kwargs):

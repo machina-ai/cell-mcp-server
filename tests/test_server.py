@@ -51,7 +51,7 @@ class TestServerTools:
 
             # Test with real provider resolution
             try:
-                result = await handle_call_tool("chat", {"prompt": "Hello Gemini", "model": "o3-mini"})
+                result = await handle_call_tool("brainstorm", {"prompt": "Hello Gemini", "model": "gpt-5.5-mini"})
 
                 # If we get here, check the response format
                 assert len(result) == 1
@@ -87,9 +87,9 @@ class TestServerTools:
             ModelProviderRegistry._instance = None
 
     @pytest.mark.asyncio
-    async def test_handle_version(self):
-        """Test getting version info"""
-        result = await handle_call_tool("version", {})
+    async def test_handle_listmodels(self):
+        """Test getting listmodels info"""
+        result = await handle_call_tool("listmodels", {})
         assert len(result) == 1
 
         response = result[0].text
@@ -100,8 +100,4 @@ class TestServerTools:
         assert data["status"] == "success"
         content = data["content"]
 
-        # Check for expected content in the markdown output
-        assert "# Zen MCP Server Version" in content
-        assert "## Server Information" in content
-        assert "## Configuration" in content
-        assert "Current Version" in content
+        assert "Available AI Models" in content

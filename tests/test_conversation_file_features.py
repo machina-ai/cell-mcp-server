@@ -300,7 +300,7 @@ class TestCrossToolFileContext:
                 timestamp="2023-01-01T00:00:00Z",  # First turn
                 files=[src_file],
                 tool_name="analyze",
-                model_name="gemini-2.5-flash",
+                model_name="gemini-3.6-flash",
                 model_provider="google",
             ),
             ConversationTurn(
@@ -315,7 +315,7 @@ class TestCrossToolFileContext:
                 timestamp="2023-01-01T00:02:00Z",  # Third turn (2 minutes later)
                 files=[src_file, test_file],  # References both files
                 tool_name="testgen",
-                model_name="gpt-5",
+                model_name="gpt-5.6-terra",
                 model_provider="openai",
             ),
         ]
@@ -332,9 +332,9 @@ class TestCrossToolFileContext:
         history, tokens = build_conversation_history(context)
 
         # Verify cross-tool context
-        assert "--- Turn 1 (gemini-2.5-flash using analyze via google) ---" in history
+        assert "--- Turn 1 (gemini-3.6-flash using analyze via google) ---" in history
         assert "--- Turn 2 (Agent) ---" in history
-        assert "--- Turn 3 (gpt-5 using testgen via openai) ---" in history
+        assert "--- Turn 3 (gpt-5.6-terra using testgen via openai) ---" in history
 
         # Verify file context preservation
         assert "Files used in this turn: " + src_file in history

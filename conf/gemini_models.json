@@ -3,38 +3,19 @@
     "description": "Model metadata for Google's Gemini API access.",
     "documentation": "https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/docs/custom_models.md",
     "usage": "Models listed here are exposed directly through the Gemini provider. Aliases are case-insensitive.",
-    "field_notes": "Matches providers/shared/model_capabilities.py.",
-    "field_descriptions": {
-      "model_name": "The model identifier (e.g., 'gemini-2.5-pro', 'gemini-2.0-flash')",
-      "aliases": "Array of short names users can type instead of the full model name",
-      "context_window": "Total number of tokens the model can process (input + output combined)",
-      "max_output_tokens": "Maximum number of tokens the model can generate in a single response",
-      "max_thinking_tokens": "Maximum reasoning/thinking tokens the model will allocate when extended thinking is requested",
-      "supports_extended_thinking": "Whether the model supports extended reasoning tokens (currently none do via OpenRouter or custom APIs)",
-      "supports_json_mode": "Whether the model can guarantee valid JSON output",
-      "supports_function_calling": "Whether the model supports function/tool calling",
-      "supports_images": "Whether the model can process images/visual input",
-      "max_image_size_mb": "Maximum total size in MB for all images combined (capped at 40MB max for custom models)",
-      "supports_temperature": "Whether the model accepts temperature parameter in API calls (set to false for O3/O4 reasoning models)",
-      "temperature_constraint": "Type of temperature constraint: 'fixed' (fixed value), 'range' (continuous range), 'discrete' (specific values), or omit for default range",
-      "use_openai_response_api": "Set to true when the model must use the /responses endpoint (reasoning models like GPT-5 Pro). Leave false/omit for standard chat completions.",
-      "default_reasoning_effort": "Default reasoning effort level for models that support it (e.g., 'low', 'medium', 'high'). Omit if not applicable.",
-      "description": "Human-readable description of the model",
-      "intelligence_score": "1-20 human rating used as the primary signal for auto-mode model ordering",
-      "allow_code_generation": "Whether this model can generate and suggest fully working code - complete with functions, files, and detailed implementation instructions - for your AI tool to use right away. Only set this to 'true' for a model more capable than the AI model / CLI you're currently using."
-    }
+    "field_notes": "Matches providers/shared/model_capabilities.py."
   },
   "models": [
     {
-      "model_name": "gemini-3.1-pro-preview",
-      "friendly_name": "Gemini (Pro 3.1 Preview)",
+      "model_name": "gemini-3.6-flash",
+      "friendly_name": "Gemini (Flash 3.6)",
       "aliases": [
-        "gem3.1p",
-        "gemini-3.1-pro",
-        "pro"
+        "flash3.6",
+        "gem3.6f",
+        "gemini-3.6-flash"
       ],
-      "intelligence_score": 20,
-      "description": "Deep reasoning + thinking mode (1M context) - Complex problems, architecture, deep analysis",
+      "intelligence_score": 18,
+      "description": "Next-gen ultra-fast reasoning model (1M context) - Rapid iterations and visual comprehension",
       "context_window": 1048576,
       "max_output_tokens": 65536,
       "max_thinking_tokens": 32768,
@@ -45,16 +26,16 @@
       "supports_json_mode": true,
       "supports_images": true,
       "supports_temperature": true,
-      "allow_code_generation": true,
       "max_image_size_mb": 32.0
     },
     {
       "model_name": "gemini-3-flash-preview",
       "friendly_name": "Gemini (Flash 3 Preview)",
       "aliases": [
+        "flash",
         "gem3f",
         "gemini-3-flash",
-        "flash"
+        "gemini-3-flash-preview"
       ],
       "intelligence_score": 16,
       "description": "Ultra-fast (1M context) - Quick analysis, simple queries, rapid iterations",
@@ -71,24 +52,27 @@
       "max_image_size_mb": 20.0
     },
     {
-      "model_name": "gemini-2.5-flash-lite",
-      "friendly_name": "Gemini (Flash Lite 2.5)",
+      "model_name": "gemini-3.1-pro-preview",
+      "friendly_name": "Gemini (Pro 3.1 Preview)",
       "aliases": [
-        "gem2.5l",
-        "flashlite",
-        "flash-lite"
+        "pro",
+        "gem3.1p",
+        "gemini-3.1-pro"
       ],
-      "intelligence_score": 10,
-      "description": "Gemini 2.5 Flash Lite (1M context) - Lightweight fast model, text-only",
+      "intelligence_score": 20,
+      "description": "Deep reasoning + thinking mode (1M context) - Complex problems, architecture, deep analysis",
       "context_window": 1048576,
-      "max_output_tokens": 8192,
-      "supports_extended_thinking": false,
+      "max_output_tokens": 65536,
+      "max_thinking_tokens": 32768,
+      "supports_extended_thinking": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
       "supports_function_calling": true,
       "supports_json_mode": true,
-      "supports_images": false,
-      "supports_temperature": true
+      "supports_images": true,
+      "supports_temperature": true,
+      "allow_code_generation": true,
+      "max_image_size_mb": 32.0
     }
   ]
 }

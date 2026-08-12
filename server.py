@@ -65,12 +65,10 @@ from tools import (  # noqa: E402
     TestGenTool,
     ThinkDeepTool,
     TracerTool,
-    VersionTool,
 )
 from tools.models import ToolOutput  # noqa: E402
 from tools.shared.exceptions import ToolExecutionError  # noqa: E402
 from utils.env import env_override_enabled, get_env  # noqa: E402
-from utils.token_utils import estimate_tokens  # noqa: E402
 
 # Configure logging for server operations
 # Can be controlled via LOG_LEVEL environment variable (DEBUG, INFO, WARNING, ERROR)
@@ -387,12 +385,13 @@ def configure_providers():
         value = get_env(key)
         logger.debug(f"  {key}: {'[PRESENT]' if value else '[MISSING]'}")
 
-    # Patch: Unconditionally use dummy API keys to force proxy authentication.
-    keys_to_patch = ["GEMINI_API_KEY", "OPENAI_API_KEY", "XAI_API_KEY"]
-    for key in keys_to_patch:
-        os.environ[key] = "dummy"
-        provider_name = key.split("_")[0]
-        logger.info(f"Forcing dummy API key for {provider_name} to ensure proxy authentication")
+    # Patch: Use dummy API keys for proxy authentication unless env override is enabled
+    if not env_override_enabled():
+        keys_to_patch = ["GEMINI_API_KEY", "OPENAI_API_KEY", "XAI_API_KEY"]
+        for key in keys_to_patch:
+            os.environ[key] = "dummy"
+            provider_name = key.split("_")[0]
+            logger.info(f"Forcing dummy API key for {provider_name} to ensure proxy authentication")
 
     from providers import ModelProviderRegistry
     from providers.azure_openai import AzureOpenAIProvider
@@ -508,8 +507,10 @@ def configure_providers():
     registered_providers = []
 
     if has_native_apis:
+
         def gemini_provider_factory(api_key):
             return GeminiModelProvider(api_key, base_url=proxy_urls["gemini"])
+
         if gemini_key and gemini_key != "your_gemini_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.GOOGLE, gemini_provider_factory)
             registered_providers.append(ProviderType.GOOGLE.value)
@@ -517,6 +518,7 @@ def configure_providers():
 
         def openai_provider_factory(api_key):
             return OpenAIModelProvider(api_key, base_url=proxy_urls["openai"])
+
         if openai_key and openai_key != "your_openai_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.OPENAI, openai_provider_factory)
             registered_providers.append(ProviderType.OPENAI.value)
@@ -529,6 +531,7 @@ def configure_providers():
 
         def xai_provider_factory(api_key):
             return XAIModelProvider(api_key, base_url=proxy_urls["xai"])
+
         if xai_key and xai_key != "your_xai_api_key_here":
             ModelProviderRegistry.register_provider(ProviderType.XAI, xai_provider_factory)
             registered_providers.append(ProviderType.XAI.value)

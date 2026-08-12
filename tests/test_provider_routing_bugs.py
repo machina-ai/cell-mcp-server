@@ -206,10 +206,10 @@ class TestProviderRoutingBugs:
             ), "When both Google and OpenRouter API keys are available, 'flash' should prefer Google provider"
 
             # OpenAI models should use OpenAI provider
-            o3_provider = tool.get_model_provider("o3")
+            terra_provider = tool.get_model_provider("terra")
             assert (
-                o3_provider.get_provider_type() == ProviderType.OPENAI
-            ), "When both OpenAI and OpenRouter API keys are available, 'o3' should prefer OpenAI provider"
+                terra_provider.get_provider_type() == ProviderType.OPENAI
+            ), "When both OpenAI and OpenRouter API keys are available, 'terra' should prefer OpenAI provider"
 
         finally:
             # Restore original environment

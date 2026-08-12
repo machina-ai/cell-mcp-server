@@ -576,14 +576,26 @@ class OpenAICompatibleProvider(ModelProvider):
             # Text + images, use content array format
             messages.append({"role": "user", "content": user_content})
 
+        # Determine actual API model name (override if capabilities specifies an api_model_name)
+        target_api_model = resolved_model
+        if capabilities and getattr(capabilities, "api_model_name", None):
+            target_api_model = capabilities.api_model_name
+
         # Prepare completion parameters
-        # Always disable streaming for OpenRouter
-        # MCP doesn't use streaming, and this avoids issues with O3 model access
+        # Always disable streaming for OpenRouter / MCP
         completion_params = {
-            "model": resolved_model,
+            "model": target_api_model,
             "messages": messages,
             "stream": False,
         }
+
+        # Pass reasoning_effort if defined on capabilities and not explicitly provided in kwargs
+        if (
+            capabilities
+            and getattr(capabilities, "default_reasoning_effort", None)
+            and "reasoning_effort" not in kwargs
+        ):
+            completion_params["reasoning_effort"] = capabilities.default_reasoning_effort
 
         # Use the effective temperature we calculated earlier
         supports_sampling = effective_temperature is not None

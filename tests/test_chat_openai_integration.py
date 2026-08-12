@@ -35,7 +35,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
 
     with monkeypatch.context() as m:
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
-        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra")
         if env_updates["OPENAI_API_KEY"]:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
         for key in keys_to_clear:
@@ -66,7 +66,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
         working_directory = str(tmp_path)
         arguments = {
             "prompt": "Use chat with gpt5 and ask how far the moon is from earth.",
-            "model": "gpt-5",
+            "model": "gpt-5.6-terra",
             "temperature": 1.0,
             "working_directory_absolute_path": working_directory,
         }
@@ -80,7 +80,7 @@ async def test_chat_auto_mode_with_openai(monkeypatch, tmp_path):
     assert response_data["status"] in {"success", "continuation_available"}
     metadata = response_data.get("metadata", {})
     assert metadata.get("provider_used") == "openai"
-    assert metadata.get("model_used") in {"gpt-5", "gpt5"}
+    assert metadata.get("model_used") in {"gpt-5.6-terra", "terra", "gpt5.6t"}
     assert "moon" in response_data["content"].lower()
 
     # Ensure cassette recorded for future replays
@@ -108,7 +108,7 @@ async def test_chat_openai_continuation(monkeypatch, tmp_path):
 
     with monkeypatch.context() as m:
         m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
-        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5")
+        m.setenv("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra")
         if recording_mode:
             m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
         else:
@@ -153,7 +153,7 @@ async def test_chat_openai_continuation(monkeypatch, tmp_path):
         # Second message using continuation_id (reuse same tool instance for clarity)
         second_args = {
             "prompt": "In one word then, SwiftUI or ReactNative?",
-            "model": "gpt-5",
+            "model": "gpt-5.6-terra",
             "continuation_id": continuation_id,
             "temperature": 1.0,
             "working_directory_absolute_path": working_directory,
@@ -166,7 +166,7 @@ async def test_chat_openai_continuation(monkeypatch, tmp_path):
         assert second_data["status"] in {"success", "continuation_available"}
         second_metadata = second_data.get("metadata", {})
         assert second_metadata.get("provider_used") == "openai"
-        assert second_metadata.get("model_used") in {"gpt-5", "gpt5"}
+        assert second_metadata.get("model_used") in {"gpt-5.6-terra", "terra", "gpt5.6t"}
         assert second_metadata.get("conversation_ready") is True
         assert second_data.get("continuation_offer") is not None
 

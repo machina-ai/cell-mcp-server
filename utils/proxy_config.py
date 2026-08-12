@@ -1,10 +1,8 @@
 """Handles the creation of proxy URLs for API providers."""
 
 import logging
-import os
 from pathlib import Path
-from typing import Dict, Optional
-from urllib.parse import urljoin, urlparse
+from typing import Optional
 
 import yaml
 
@@ -14,7 +12,7 @@ _proxy_config = None
 _config_checked = False
 
 
-def get_proxy_config() -> Optional[Dict]:
+def get_proxy_config() -> Optional[dict]:
     """
     Parses the cell-cli config file to get the proxy configuration.
 
@@ -33,13 +31,13 @@ def get_proxy_config() -> Optional[Dict]:
         return None
 
     try:
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_path, encoding="utf-8") as f:
             config = yaml.safe_load(f)
             if "port" in config:
                 _proxy_config = {"port": config["port"]}
                 logger.info("Loaded proxy port %s from cell-cli config", config["port"])
                 return _proxy_config
-    except (yaml.YAMLError, IOError) as e:
+    except (OSError, yaml.YAMLError) as e:
         logger.error("Error reading or parsing cell-cli config file: %s", e)
 
     return None
@@ -47,7 +45,7 @@ def get_proxy_config() -> Optional[Dict]:
 
 def configure_proxy_for_providers(
     xai_base_url: str, openai_base_url: str, gemini_base_url: Optional[str]
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Configures the proxy for the X.AI, OpenAI, and Gemini providers.
 

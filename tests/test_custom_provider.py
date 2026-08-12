@@ -311,11 +311,23 @@ class TestConfigureProvidersFunction:
     def test_configure_providers_no_valid_keys(self):
         """Test configure_providers raises error when no valid API keys."""
         from server import configure_providers
+        from utils.env import reload_env
 
-        with patch.dict(
-            os.environ,
-            {"GEMINI_API_KEY": "", "OPENAI_API_KEY": "", "OPENROUTER_API_KEY": "", "CUSTOM_API_URL": ""},
-            clear=True,
-        ):
-            with pytest.raises(ValueError, match="At least one API configuration is required"):
-                configure_providers()
+        reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "true"})
+        try:
+            with patch.dict(
+                os.environ,
+                {
+                    "GEMINI_API_KEY": "",
+                    "OPENAI_API_KEY": "",
+                    "OPENROUTER_API_KEY": "",
+                    "CUSTOM_API_URL": "",
+                    "XAI_API_KEY": "",
+                    "ZEN_MCP_FORCE_ENV_OVERRIDE": "true",
+                },
+                clear=True,
+            ):
+                with pytest.raises(ValueError, match="At least one API configuration is required"):
+                    configure_providers()
+        finally:
+            reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})

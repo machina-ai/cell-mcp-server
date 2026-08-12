@@ -3,38 +3,20 @@
     "description": "Model metadata for X.AI (GROK) API access.",
     "documentation": "https://github.com/BeehiveInnovations/zen-mcp-server/blob/main/docs/custom_models.md",
     "usage": "Models listed here are exposed directly through the X.AI provider. Aliases are case-insensitive.",
-    "field_notes": "Matches providers/shared/model_capabilities.py.",
-    "field_descriptions": {
-      "model_name": "The model identifier (e.g., 'grok-4', 'grok-3-fast')",
-      "aliases": "Array of short names users can type instead of the full model name",
-      "context_window": "Total number of tokens the model can process (input + output combined)",
-      "max_output_tokens": "Maximum number of tokens the model can generate in a single response",
-      "max_thinking_tokens": "Maximum reasoning/thinking tokens the model will allocate when extended thinking is requested",
-      "supports_extended_thinking": "Whether the model supports extended reasoning tokens (currently none do via OpenRouter or custom APIs)",
-      "supports_json_mode": "Whether the model can guarantee valid JSON output",
-      "supports_function_calling": "Whether the model supports function/tool calling",
-      "supports_images": "Whether the model can process images/visual input",
-      "max_image_size_mb": "Maximum total size in MB for all images combined (capped at 40MB max for custom models)",
-      "supports_temperature": "Whether the model accepts temperature parameter in API calls (set to false for O3/O4 reasoning models)",
-      "temperature_constraint": "Type of temperature constraint: 'fixed' (fixed value), 'range' (continuous range), 'discrete' (specific values), or omit for default range",
-      "use_openai_response_api": "Set to true when the model must use the /responses endpoint (reasoning models like GPT-5 Pro). Leave false/omit for standard chat completions.",
-      "default_reasoning_effort": "Default reasoning effort level for models that support it (e.g., 'low', 'medium', 'high'). Omit if not applicable.",
-      "description": "Human-readable description of the model",
-      "intelligence_score": "1-20 human rating used as the primary signal for auto-mode model ordering"
-    }
+    "field_notes": "Matches providers/shared/model_capabilities.py."
   },
   "models": [
     {
-      "model_name": "grok-4.20-reasoning",
-      "friendly_name": "X.AI (Grok 4.20 Reasoning)",
+      "model_name": "grok-4.5",
+      "friendly_name": "X.AI (Grok 4.5)",
       "aliases": [
-        "grok4.20",
-        "grok-4.20"
+        "grok4.5",
+        "grok-4.5"
       ],
       "intelligence_score": 20,
-      "description": "GROK-4.20 Reasoning (2M context) - Flagship reasoning model with massive 2M token context",
-      "context_window": 2000000,
-      "max_output_tokens": 2000000,
+      "description": "GROK-4.5 Flagship Reasoning (500K context) - Top-tier reasoning model with 500K token context window",
+      "context_window": 500000,
+      "max_output_tokens": 128000,
       "supports_extended_thinking": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
@@ -45,17 +27,43 @@
       "max_image_size_mb": 20.0
     },
     {
-      "model_name": "grok-4-1-fast-reasoning",
-      "friendly_name": "X.AI (Grok 4.1 Fast Reasoning)",
+      "model_name": "grok-4.3",
+      "friendly_name": "X.AI (Grok 4.3)",
       "aliases": [
+        "grok",
+        "grok4.3",
+        "grok-4.3"
+      ],
+      "intelligence_score": 20,
+      "description": "GROK-4.3 Flagship Standard (1M context) - Flagship Grok model with 1M token context window",
+      "context_window": 1000000,
+      "max_output_tokens": 128000,
+      "supports_extended_thinking": true,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": true,
+      "supports_temperature": true,
+      "max_image_size_mb": 20.0
+    },
+    {
+      "model_name": "grok-4.3-low",
+      "api_model_name": "grok-4.3",
+      "friendly_name": "X.AI (Grok 4.3 Low Reasoning)",
+      "aliases": [
+        "fast",
         "grok4.1f",
-        "grok4.1-fast",
-        "fast"
+        "grok-4.1-fast",
+        "grok-4-1-fast-reasoning",
+        "grok-4.3-low",
+        "grok4.3-low"
       ],
       "intelligence_score": 18,
-      "description": "GROK-4.1 Fast Reasoning (2M context) - High performance, cost-efficient reasoning model",
-      "context_window": 2000000,
-      "max_output_tokens": 2000000,
+      "description": "GROK-4.3 Low Reasoning (1M context) - High performance, cost-efficient fast reasoning model",
+      "context_window": 1000000,
+      "max_output_tokens": 128000,
+      "default_reasoning_effort": "low",
       "supports_extended_thinking": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
@@ -66,24 +74,28 @@
       "max_image_size_mb": 20.0
     },
     {
-      "model_name": "grok-code-fast-1",
-      "friendly_name": "X.AI (Grok Code Fast 1)",
+      "model_name": "grok-4.3-none",
+      "api_model_name": "grok-4.3",
+      "friendly_name": "X.AI (Grok 4.3 Non-Reasoning)",
       "aliases": [
-        "grokcode",
-        "grok-code",
-        "code"
+        "non-reasoning",
+        "grok-4-1-fast-non-reasoning",
+        "grok-4.3-none",
+        "grok4.3-none"
       ],
-      "intelligence_score": 14,
-      "description": "Grok Code Fast 1 (256K context) - Optimized for agentive coding and repo analysis",
-      "context_window": 256000,
-      "max_output_tokens": 256000,
-      "supports_extended_thinking": true,
+      "intelligence_score": 16,
+      "description": "GROK-4.3 Non-Reasoning (1M context) - Direct generation without extended reasoning",
+      "context_window": 1000000,
+      "max_output_tokens": 128000,
+      "default_reasoning_effort": "none",
+      "supports_extended_thinking": false,
       "supports_system_prompts": true,
       "supports_streaming": true,
       "supports_function_calling": true,
       "supports_json_mode": true,
-      "supports_images": false,
-      "supports_temperature": true
+      "supports_images": true,
+      "supports_temperature": true,
+      "max_image_size_mb": 20.0
     }
   ]
 }

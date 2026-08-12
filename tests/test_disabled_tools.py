@@ -85,12 +85,11 @@ class TestDisabledTools:
         assert "listmodels" in enabled_tools
 
         # Test case 3: Attempt to disable essential tools
-        disabled_tools = {"version", "chat"}
+        disabled_tools = {"listmodels", "chat"}
         enabled_tools = apply_tool_filter(ALL_TOOLS, disabled_tools)
 
-        assert "version" in enabled_tools  # Essential tool not disabled
+        assert "listmodels" in enabled_tools  # Essential tool not disabled
         assert "chat" not in enabled_tools  # Regular tool disabled
-        assert "listmodels" in enabled_tools  # Essential tool included
 
     def test_unknown_tools_warning(self, caplog):
         """Test that unknown tool names generate appropriate warnings."""
@@ -98,7 +97,6 @@ class TestDisabledTools:
             "chat": MockTool("chat"),
             "debug": MockTool("debug"),
             "analyze": MockTool("analyze"),
-            "version": MockTool("version"),
             "listmodels": MockTool("listmodels"),
         }
         disabled_tools = {"chat", "unknown_tool", "another_unknown"}
@@ -113,14 +111,13 @@ class TestDisabledTools:
             "chat": MockTool("chat"),
             "debug": MockTool("debug"),
             "analyze": MockTool("analyze"),
-            "version": MockTool("version"),
             "listmodels": MockTool("listmodels"),
         }
-        disabled_tools = {"version", "chat", "debug"}
+        disabled_tools = {"listmodels", "chat", "debug"}
 
         with caplog.at_level(logging.WARNING):
             validate_disabled_tools(disabled_tools, ALL_TOOLS)
-            assert "Cannot disable essential tools: ['version']" in caplog.text
+            assert "Cannot disable essential tools: ['listmodels']" in caplog.text
 
     @pytest.mark.parametrize(
         "env_value,expected",

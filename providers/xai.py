@@ -54,31 +54,26 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
             return None
 
         if category == ToolModelCategory.EXTENDED_REASONING:
-            # Prefer GROK-4 for advanced reasoning with thinking mode
-            if "grok-4" in allowed_models:
-                return "grok-4"
-            elif "grok-3" in allowed_models:
-                return "grok-3"
+            # Prefer grok-4.5 or grok-4.3 for advanced reasoning with thinking mode
+            for candidate in ["grok-4.5", "grok-4.3", "grok-4.3-low"]:
+                if candidate in allowed_models:
+                    return candidate
             # Fall back to any available model
             return allowed_models[0]
 
         elif category == ToolModelCategory.FAST_RESPONSE:
-            # Prefer GROK-3-Fast for speed, then GROK-4
-            if "grok-3-fast" in allowed_models:
-                return "grok-3-fast"
-            elif "grok-4" in allowed_models:
-                return "grok-4"
+            # Prefer grok-4.3-low or grok-4.3-none for speed, then grok-4.3, grok-4.5
+            for candidate in ["grok-4.3-low", "grok-4.3-none", "grok-4.3", "grok-4.5"]:
+                if candidate in allowed_models:
+                    return candidate
             # Fall back to any available model
             return allowed_models[0]
 
         else:  # BALANCED or default
-            # Prefer GROK-4 for balanced use (best overall capabilities)
-            if "grok-4" in allowed_models:
-                return "grok-4"
-            elif "grok-3" in allowed_models:
-                return "grok-3"
-            elif "grok-3-fast" in allowed_models:
-                return "grok-3-fast"
+            # Prefer grok-4.3 or grok-4.5 for balanced use (best overall capabilities)
+            for candidate in ["grok-4.3", "grok-4.5", "grok-4.3-low"]:
+                if candidate in allowed_models:
+                    return candidate
             # Fall back to any available model
             return allowed_models[0]
 
