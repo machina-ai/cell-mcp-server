@@ -29,7 +29,7 @@ You need at least one API key. Choose based on your needs:
 
 **OpenAI:**
 - Visit [OpenAI Platform](https://platform.openai.com/api-keys)
-- Generate an API key for O3, gpt-5.6-terra access
+- Generate an API key for gpt-5.6-terra, gpt-5.6-luna access
 
 **X.AI (Grok):**
 - Visit [X.AI Console](https://console.x.ai/)
@@ -286,16 +286,16 @@ nano .env
 Add your API keys (at least one required):
 ```env
 # Choose your providers (at least one required)
-GEMINI_API_KEY=your-gemini-api-key-here      # For Gemini models  
-OPENAI_API_KEY=your-openai-api-key-here      # For O3, gpt-5.6-terra
+GEMINI_API_KEY=your-gemini-api-key-here      # For Gemini models
+OPENAI_API_KEY=your-openai-api-key-here      # For gpt-5.6-terra, gpt-5.6-luna
 XAI_API_KEY=your-xai-api-key-here            # For Grok models
 OPENROUTER_API_KEY=your-openrouter-key       # For multiple models
 
 # DIAL Platform (optional)
 DIAL_API_KEY=your-dial-api-key-here
 DIAL_API_HOST=https://core.dialx.ai          # Default host (optional)
-DIAL_API_VERSION=2024-12-01-preview          # API version (optional) 
-DIAL_ALLOWED_MODELS=o3,gemini-2.5-pro       # Restrict models (optional)
+DIAL_API_VERSION=2024-12-01-preview          # API version (optional)
+DIAL_ALLOWED_MODELS=gpt-5.6-terra,gemini-3.7-flash       # Restrict models (optional)
 
 # Custom/Local models (Ollama, vLLM, etc.)
 CUSTOM_API_URL=http://localhost:11434/v1     # Ollama example
@@ -394,7 +394,7 @@ Versions 0.2.1 and newer currently ignore values above ~60 seconds for some tran
 "Use zen to list available models"
 "Chat with zen about the best approach for API design"
 "Use zen thinkdeep with gemini pro about scaling strategies"  
-"Debug this error with o3: [paste error]"
+"Debug this error with gpt-5.6-terra: [paste error]"
 ```
 
 **Note**: Codex CLI provides excellent MCP integration with automatic environment variable configuration when using the setup script.
@@ -413,14 +413,14 @@ Versions 0.2.1 and newer currently ignore values above ~60 seconds for some tran
 **Specify the model:**
 ```  
 "Use zen with gemini pro to review this complex algorithm"
-"Debug with o3 using zen for logical analysis"
+"Debug with gpt-5.6-terra using zen for logical analysis"
 "Get flash to quickly format this code via zen"
 ```
 
 **Multi-model workflows:**
 ```
-"Use zen to get consensus from pro and o3 on this architecture"
-"Code review with gemini, then precommit validation with o3"  
+"Use zen to get consensus from pro and gpt-5.6-terra on this architecture"
+"Code review with gemini, then precommit validation with gpt-5.6-terra"  
 "Analyze with flash, then deep dive with pro if issues found"
 ```
 
@@ -498,7 +498,7 @@ DEFAULT_MODEL=auto
 GEMINI_API_KEY=your-key
 OPENAI_API_KEY=your-key
 GOOGLE_ALLOWED_MODELS=flash,pro
-OPENAI_ALLOWED_MODELS=o4-mini,o3-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra,gpt-5.6-luna
 ```
 
 ### Cost-Optimized Setup
@@ -514,7 +514,7 @@ DEFAULT_MODEL=auto
 GEMINI_API_KEY=your-key
 OPENAI_API_KEY=your-key
 GOOGLE_ALLOWED_MODELS=pro
-OPENAI_ALLOWED_MODELS=o3
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra
 ```
 
 ### Local-First Setup

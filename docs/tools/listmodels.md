@@ -46,13 +46,15 @@ The tool displays:
 📋 Available Models by Provider
 
 🔹 Google (Gemini) - ✅ Configured
-  • pro (gemini-2.5-pro) - 1M context, thinking modes
-  • flash (gemini-2.0-flash-experimental) - 1M context, ultra-fast
+  • pro (gemini-3.1-pro-preview) - 1M context, thinking modes
+  • flash (gemini-3.7-flash) - 1M context, ultra-fast
 
 🔹 OpenAI - ✅ Configured  
-  • o3 (o3) - 200K context, strong reasoning
-  • o3-mini (o3-mini) - 200K context, balanced
-  • o4-mini (o4-mini) - 200K context, latest reasoning
+  • terra (gpt-5.6-terra) - 1.05M context, flagship reasoning & multimodal
+  • luna (gpt-5.6-luna) - 1.05M context, specialized fast reasoning
+
+🔹 X.AI (Grok) - ✅ Configured
+  • grok (grok-4.6) - 500K context, deep reasoning
 
 🔹 Custom/Local - ✅ Configured
   • local-llama (llama3.2) - 128K context, local inference
@@ -76,7 +78,8 @@ The available models depend on your configuration:
 
 **API Keys Required:**
 - `GEMINI_API_KEY` - Enables Gemini Pro and Flash models
-- `OPENAI_API_KEY` - Enables OpenAI O3, O4-mini, and GPT models
+- `OPENAI_API_KEY` - Enables OpenAI gpt-5.6-terra and gpt-5.6-luna models
+- `XAI_API_KEY` - Enables X.AI Grok models
 - `OPENROUTER_API_KEY` - Enables access to multiple providers through OpenRouter
 - `CUSTOM_API_URL` - Enables local/custom models (Ollama, vLLM, etc.)
 

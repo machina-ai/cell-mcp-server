@@ -60,8 +60,8 @@ class TestAutoModeProviderSelection:
 
             # Should select appropriate Gemini models
             assert extended_reasoning in ["gemini-3.1-pro-preview", "pro"]
-            assert fast_response in ["gemini-3.6-flash", "flash3.6", "gemini-3-flash", "flash"]
-            assert balanced in ["gemini-3.6-flash", "flash3.6", "gemini-3-flash", "flash"]
+            assert fast_response in ["gemini-3.7-flash", "flash3.7", "gemini-3-flash", "flash"]
+            assert balanced in ["gemini-3.7-flash", "flash3.7", "gemini-3-flash", "flash"]
 
         finally:
             # Restore original environment
@@ -142,7 +142,7 @@ class TestAutoModeProviderSelection:
             assert extended_reasoning == "gemini-3.1-pro-preview"
 
             # Should prefer Gemini for fast response
-            assert fast_response == "gemini-3.6-flash"
+            assert fast_response == "gemini-3.7-flash"
 
         finally:
             # Restore original environment
@@ -229,8 +229,8 @@ class TestAutoModeProviderSelection:
             assert "gpt-5.6-terra" not in available_models
 
             # Should include all Gemini models (no restrictions)
-            assert "gemini-3.6-flash" in available_models
-            assert available_models["gemini-3.6-flash"] == ProviderType.GOOGLE
+            assert "gemini-3.7-flash" in available_models
+            assert available_models["gemini-3.7-flash"] == ProviderType.GOOGLE
 
         finally:
             # Restore original environment
@@ -320,8 +320,8 @@ class TestAutoModeProviderSelection:
                 ("pro", ProviderType.GOOGLE, "gemini-3.1-pro-preview"),
                 ("luna", ProviderType.OPENAI, "gpt-5.6-luna"),
                 ("terra", ProviderType.OPENAI, "gpt-5.6-terra"),
-                ("grok", ProviderType.XAI, "grok-4.3"),
-                ("fast", ProviderType.XAI, "grok-4.3-low"),
+                ("grok", ProviderType.XAI, "grok-4.6"),
+                ("fast", ProviderType.XAI, "grok-4.6"),
             ]
 
             for alias, expected_provider_type, expected_resolved_name in test_cases:

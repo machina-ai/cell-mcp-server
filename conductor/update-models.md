@@ -18,7 +18,7 @@ Update model configurations and provider implementations in Zen MCP Server to su
 * **`grok-4-1-fast-reasoning`**: High-performance fast reasoning model (2M context, 2M output, intelligence: 18).
 
 ### 3. Google Gemini Direct (`conf/gemini_models.json`)
-* **`gemini-3.6-flash`**: High-speed next-gen model (1.05M context, 65.5K output, 32.7K max thinking tokens, intelligence: 18).
+* **`gemini-3.7-flash`**: High-speed next-gen model (1.05M context, 65.5K output, 32.7K max thinking tokens, intelligence: 18).
 * **`gemini-3-flash`**: Ultra-fast iteration model (1.05M context, 65.5K output, 24.5K max thinking tokens, intelligence: 16).
 * **`gemini-3.1-pro-preview`**: Deep reasoning Pro model (1.05M context, 65.5K output, 32.7K max thinking tokens, intelligence: 20).
 
@@ -41,13 +41,13 @@ Update model configurations and provider implementations in Zen MCP Server to su
 ### Phase 1: JSON Configurations Update
 - Overwrite `conf/openai_models.json` with the updated JSON specs for `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-terra-mini`.
 - Overwrite `conf/xai_models.json` with the updated JSON specs for `grok-4.5` and `grok-4-1-fast-reasoning`.
-- Overwrite `conf/gemini_models.json` with the updated JSON specs for `gemini-3.6-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.
+- Overwrite `conf/gemini_models.json` with the updated JSON specs for `gemini-3.7-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.
 
 ### Phase 2: Provider Logic Adjustments
 - In `providers/openai.py`: Update `get_preferred_model()` lists for `EXTENDED_REASONING`, `FAST_RESPONSE`, and `BALANCED` categories to prioritize `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-5.6-terra-mini`.
 - In `providers/xai.py`: Update `get_preferred_model()` to prioritize `grok-4.5` and `grok-4-1-fast-reasoning`.
 - In `providers/gemini.py`:
-  - Update `MAX_THINKING_TOKENS` mapping for `gemini-3.6-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.
+  - Update `MAX_THINKING_TOKENS` mapping for `gemini-3.7-flash`, `gemini-3-flash`, and `gemini-3.1-pro-preview`.
   - Update `get_preferred_model()` preference list.
 
 ### Phase 3: Environment Documentation

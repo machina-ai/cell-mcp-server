@@ -87,7 +87,7 @@ async def test_consensus_multi_model_consultations(monkeypatch):
 
         models_to_consult = [
             {"model": "gpt-5.6-terra", "stance": "for"},
-            {"model": "gemini-3.6-flash", "stance": "against"},
+            {"model": "gemini-3.7-flash", "stance": "against"},
         ]
 
         # Step 1: CLI agent analysis followed by first model consultation
@@ -134,12 +134,12 @@ async def test_consensus_multi_model_consultations(monkeypatch):
     step2_data = json.loads(step2_response[0].text)
 
     assert step2_data["status"] == "consensus_workflow_complete"
-    assert step2_data["model_consulted"] == "gemini-3.6-flash"
+    assert step2_data["model_consulted"] == "gemini-3.7-flash"
     assert step2_data["model_response"]["metadata"]["provider"] == "google"
     assert step2_data["model_response"]["verdict"]
     assert step2_data["complete_consensus"]["models_consulted"] == [
         "gpt-5.6-terra:for",
-        "gemini-3.6-flash:against",
+        "gemini-3.7-flash:against",
     ]
     assert step2_data["consensus_complete"] is True
 
@@ -148,7 +148,7 @@ async def test_consensus_multi_model_consultations(monkeypatch):
     assert continuation_offer_final["continuation_id"] == continuation_id
 
     # Ensure Gemini replay session is flushed to disk before verification
-    gemini_provider = ModelProviderRegistry.get_provider_for_model("gemini-3.6-flash")
+    gemini_provider = ModelProviderRegistry.get_provider_for_model("gemini-3.7-flash")
     if gemini_provider is not None:
         try:
             client = gemini_provider.client

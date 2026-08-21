@@ -293,7 +293,7 @@ class ChatSimpleValidationTest(ConversationBaseTest):
                 "chat",
                 {
                     "prompt": "Please use low thinking mode. Analyze these images",
-                    "model": "gemini-3.6-flash",  # Supports max 16 images
+                    "model": "gemini-3.7-flash",  # Supports max 16 images
                     "images": many_images,
                     "thinking_mode": "low",
                 },
@@ -308,7 +308,7 @@ class ChatSimpleValidationTest(ConversationBaseTest):
                 "chat",
                 {
                     "prompt": "Please use low thinking mode. This is a test with one image",
-                    "model": "gemini-3.6-flash",
+                    "model": "gemini-3.7-flash",
                     "images": [small_image],
                     "thinking_mode": "low",
                 },
@@ -386,7 +386,7 @@ class ChatSimpleValidationTest(ConversationBaseTest):
                 {
                     "prompt": "Please use low thinking mode. I'm sharing an image with you. Can you acknowledge that you received it?",
                     "images": [small_image],
-                    "model": "gemini-3.6-flash",  # Model that supports images
+                    "model": "gemini-3.7-flash",  # Model that supports images
                     "thinking_mode": "low",
                 },
             )
@@ -405,7 +405,7 @@ class ChatSimpleValidationTest(ConversationBaseTest):
                 {
                     "prompt": "Please use low thinking mode. What did you see in that image I shared earlier?",
                     "continuation_id": continuation_id,
-                    "model": "gemini-3.6-flash",
+                    "model": "gemini-3.7-flash",
                     "thinking_mode": "low",
                 },
             )
@@ -421,7 +421,7 @@ class ChatSimpleValidationTest(ConversationBaseTest):
                 {
                     "prompt": "Please use low thinking mode. Here are two images for comparison",
                     "images": multiple_images,
-                    "model": "gemini-3.6-flash",
+                    "model": "gemini-3.7-flash",
                     "thinking_mode": "low",
                 },
             )

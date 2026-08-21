@@ -66,7 +66,7 @@ class TestDIALProvider:
         assert provider._resolve_model_name("opus-4.1") == "anthropic.claude-opus-4.1-20250805-v1:0"
         assert provider._resolve_model_name("sonnet-4.1") == "anthropic.claude-sonnet-4.1-20250805-v1:0"
         assert provider._resolve_model_name("gemini-2.5-pro") == "gemini-2.5-pro-preview-05-06"
-        assert provider._resolve_model_name("gemini-3.6-flash") == "gemini-3.6-flash-preview-05-20"
+        assert provider._resolve_model_name("gemini-3.7-flash") == "gemini-3.7-flash-preview-05-20"
 
         # Test full name passthrough
         assert provider._resolve_model_name("o3-2025-04-16") == "o3-2025-04-16"

@@ -41,7 +41,7 @@ we should migrate from REST to GraphQL for our API
 
 **Multi-Model Technical Decision:**
 ```
-Get consensus from o3, flash, and pro on our new authentication architecture. Have o3 focus on 
+Get consensus from gpt-5.6-terra, flash, and pro on our new authentication architecture. Have gpt-5.6-terra focus on 
 security implications, flash on implementation speed, and pro stay neutral for overall assessment
 ```
 
@@ -94,7 +94,7 @@ Get a consensus from gemini supporting the idea for implementing X, grok opposin
 **Custom Stance Instructions:**
 ```json
 [
-    {"model": "o3", "stance": "for", "stance_prompt": "Focus on implementation benefits and user value"},
+    {"model": "gpt-5.6-terra", "stance": "for", "stance_prompt": "Focus on implementation benefits and user value"},
     {"model": "flash", "stance": "against", "stance_prompt": "Identify potential risks and technical challenges"}
 ]
 ```
@@ -103,7 +103,7 @@ Get a consensus from gemini supporting the idea for implementing X, grok opposin
 ```json
 [
     {"model": "pro", "stance": "neutral"},
-    {"model": "o3", "stance": "neutral"}
+    {"model": "gpt-5.6-terra", "stance": "neutral"}
 ]
 ```
 
@@ -111,7 +111,7 @@ Get a consensus from gemini supporting the idea for implementing X, grok opposin
 
 **Architecture Decision:**
 ```
-"Get consensus from pro and o3 on whether to use microservices vs monolith for our e-commerce platform"
+"Get consensus from pro and gpt-5.6-terra on whether to use microservices vs monolith for our e-commerce platform"
 ```
 
 **Technology Migration:**

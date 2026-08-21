@@ -26,7 +26,7 @@ This workflow ensures methodical analysis before documentation generation, resul
 
 ## Model Recommendation
 
-Documentation generation excels with analytical models like Gemini Pro or O3, which can understand complex code relationships, identify non-obvious behaviors, and generate thorough documentation that covers gotchas and edge cases. The combination of large context windows and analytical reasoning enables generation of documentation that helps prevent integration issues and developer confusion.
+Documentation generation excels with analytical models like Gemini Pro or gpt-5.6-terra, which can understand complex code relationships, identify non-obvious behaviors, and generate thorough documentation that covers gotchas and edge cases. The combination of large context windows and analytical reasoning enables generation of documentation that helps prevent integration issues and developer confusion.
 
 ## Example Prompts
 

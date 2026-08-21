@@ -21,12 +21,12 @@ class TestSupportedModelsAliases:
         # Test specific aliases
         assert "flash" in provider.MODEL_CAPABILITIES["gemini-3-flash-preview"].aliases
         assert "pro" in provider.MODEL_CAPABILITIES["gemini-3.1-pro-preview"].aliases
-        assert "flash3.6" in provider.MODEL_CAPABILITIES["gemini-3.6-flash"].aliases
+        assert "flash3.7" in provider.MODEL_CAPABILITIES["gemini-3.7-flash"].aliases
 
         # Test alias resolution
         assert provider._resolve_model_name("flash") == "gemini-3-flash-preview"
         assert provider._resolve_model_name("pro") == "gemini-3.1-pro-preview"
-        assert provider._resolve_model_name("flash3.6") == "gemini-3.6-flash"
+        assert provider._resolve_model_name("flash3.7") == "gemini-3.7-flash"
 
         # Test case insensitive resolution
         assert provider._resolve_model_name("Flash") == "gemini-3-flash-preview"
@@ -63,18 +63,20 @@ class TestSupportedModelsAliases:
             assert isinstance(config.aliases, list), f"{model_name} aliases must be a list"
 
         # Test specific aliases
-        assert "grok" in provider.MODEL_CAPABILITIES["grok-4.3"].aliases
-        assert "grok4.5" in provider.MODEL_CAPABILITIES["grok-4.5"].aliases
-        assert "fast" in provider.MODEL_CAPABILITIES["grok-4.3-low"].aliases
+        assert "grok" in provider.MODEL_CAPABILITIES["grok-4.6"].aliases
+        assert "grok-latest" in provider.MODEL_CAPABILITIES["grok-4.6"].aliases
+        assert "grok4.6" in provider.MODEL_CAPABILITIES["grok-4.6"].aliases
+        assert "fast" in provider.MODEL_CAPABILITIES["grok-4.6"].aliases
 
         # Test alias resolution
-        assert provider._resolve_model_name("grok") == "grok-4.3"
-        assert provider._resolve_model_name("grok4.5") == "grok-4.5"
-        assert provider._resolve_model_name("fast") == "grok-4.3-low"
+        assert provider._resolve_model_name("grok") == "grok-4.6"
+        assert provider._resolve_model_name("grok-latest") == "grok-4.6"
+        assert provider._resolve_model_name("grok4.6") == "grok-4.6"
+        assert provider._resolve_model_name("fast") == "grok-4.6"
 
         # Test case insensitive resolution
-        assert provider._resolve_model_name("Grok") == "grok-4.3"
-        assert provider._resolve_model_name("FAST") == "grok-4.3-low"
+        assert provider._resolve_model_name("Grok") == "grok-4.6"
+        assert provider._resolve_model_name("FAST") == "grok-4.6"
 
     def test_dial_provider_aliases(self):
         """Test DIAL provider's alias structure."""
@@ -123,9 +125,9 @@ class TestSupportedModelsAliases:
         # Test XAI
         xai_provider = XAIModelProvider("test-key")
         xai_models = xai_provider.list_models(respect_restrictions=False)
-        assert "grok-4.5" in xai_models
+        assert "grok-4.6" in xai_models
         assert "grok" in xai_models
-        assert "grok-4-1-fast-reasoning" in xai_models
+        assert "grok-latest" in xai_models
         assert "fast" in xai_models
 
         # Test DIAL

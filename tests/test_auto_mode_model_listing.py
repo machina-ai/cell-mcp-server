@@ -85,7 +85,7 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     monkeypatch.setenv("GOOGLE_ALLOWED_MODELS", "gemini-3.1-pro-preview")
     monkeypatch.setenv("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra")
     monkeypatch.setenv("OPENROUTER_ALLOWED_MODELS", "gpt5nano")
-    monkeypatch.setenv("XAI_ALLOWED_MODELS", "grok-4.5")
+    monkeypatch.setenv("XAI_ALLOWED_MODELS", "grok-4.6")
 
     import config
 
@@ -106,7 +106,7 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
         ("GOOGLE_ALLOWED_MODELS", "gemini-3.1-pro-preview"),
         ("OPENAI_ALLOWED_MODELS", "gpt-5.6-terra"),
         ("OPENROUTER_ALLOWED_MODELS", "gpt5nano"),
-        ("XAI_ALLOWED_MODELS", "grok-4.5"),
+        ("XAI_ALLOWED_MODELS", "grok-4.6"),
     ):
         monkeypatch.setenv(key, value)
 
@@ -142,7 +142,7 @@ def test_error_listing_respects_env_restrictions(monkeypatch, reset_registry):
     assert set(available_models) == {
         "gemini-3.1-pro-preview",
         "gpt-5.6-terra",
-        "grok-4.5",
+        "grok-4.6",
         "gpt5nano",
         "openai/gpt-5.6-terra-nano",
     }
@@ -232,5 +232,5 @@ def test_error_listing_without_restrictions_shows_full_catalog(monkeypatch, rese
     available_models = _extract_available_models(payload["content"])
     assert "gemini-3.1-pro-preview" in available_models
     assert "gpt-5.6-terra" in available_models
-    assert "grok-4.5" in available_models
+    assert "grok-4.6" in available_models
     assert len(available_models) >= 5

@@ -26,7 +26,7 @@ in one-go without the wait!
 ```
 Create two separate sub-tasks: in one, using planner tool show me how to add natural language support 
 to my cooking app. In the other sub-task, use planner to plan how to add support for voice notes to my cooking app. 
-Once done, start a consensus by sharing both plans to o3 and flash to give me the final verdict. Which one do 
+Once done, start a consensus by sharing both plans to gpt-5.6-terra and flash to give me the final verdict. Which one do 
 I implement first?
 ```
 
@@ -76,7 +76,7 @@ Develop a plan using zen for implementing CI/CD pipelines across our development
 Like all other tools in Zen, you can `continue` with a new plan using the output from a previous plan by simply saying
 
 ```
-Continue with zen's consensus tool and find out what o3:for and flash:against think of the plan 
+Continue with zen's consensus tool and find out what gpt-5.6-terra:for and flash:against think of the plan 
 ```
 
 You can mix and match and take one output and feed it into another, continuing from where you left off using a different 

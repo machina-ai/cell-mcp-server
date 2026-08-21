@@ -43,7 +43,7 @@ I need an actionable plan but break it down into smaller quick-wins that we can 
 **You can start more than one codereview session with Claude:**
 
 ```
-Start separate sub-tasks for codereview one with o3 finding critical issues and one with flash finding low priority issues
+Start separate sub-tasks for codereview one with gpt-5.6-terra finding critical issues and one with flash finding low priority issues
 and quick-wins and give me the final single combined review highlighting only the critical issues 
 ```
 
@@ -79,7 +79,7 @@ The above prompt will simultaneously run two separate `codereview` tools with tw
 
 **Initial Review Configuration (used in step 1):**
 - `prompt`: User's summary of what the code does, expected behavior, constraints, and review objectives (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `review_type`: full|security|performance|quick (default: full)
 - `focus_on`: Specific aspects to focus on (e.g., "security vulnerabilities", "performance bottlenecks")
 - `standards`: Coding standards to enforce (e.g., "PEP8", "ESLint", "Google Style Guide")
@@ -128,7 +128,7 @@ Issues are categorized and prioritized:
 
 **Performance-Focused Review:**
 ```
-"Use o3 to review backend/api.py for performance issues, focus on database queries and caching"
+"Use gpt-5.6-terra to review backend/api.py for performance issues, focus on database queries and caching"
 ```
 
 **Quick Style Check:**

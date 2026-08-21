@@ -7,12 +7,12 @@
   },
   "models": [
     {
-      "model_name": "gemini-3.6-flash",
-      "friendly_name": "Gemini (Flash 3.6)",
+      "model_name": "gemini-3.7-flash",
+      "friendly_name": "Gemini (Flash 3.7)",
       "aliases": [
-        "flash3.6",
-        "gem3.6f",
-        "gemini-3.6-flash"
+        "flash3.7",
+        "gem3.7f",
+        "gemini-3.7-flash"
       ],
       "intelligence_score": 18,
       "description": "Next-gen ultra-fast reasoning model (1M context) - Rapid iterations and visual comprehension",

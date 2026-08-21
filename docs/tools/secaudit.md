@@ -32,12 +32,12 @@ After Claude completes the investigation (unless confidence is **certain**):
 
 ## Model Recommendation
 
-This tool particularly benefits from Gemini Pro or O3 models due to their advanced reasoning capabilities and large context windows, which allow comprehensive security analysis across complex codebases. Security audits require understanding subtle attack vectors and cross-component interactions that benefit from deeper analytical capabilities.
+This tool particularly benefits from Gemini Pro or gpt-5.6-terra models due to their advanced reasoning capabilities and large context windows, which allow comprehensive security analysis across complex codebases. Security audits require understanding subtle attack vectors and cross-component interactions that benefit from deeper analytical capabilities.
 
 ## Example Prompts
 
 ```
-Perform a secaudit with o3 on this e-commerce web application focusing on payment processing security and PCI DSS compliance
+Perform a secaudit with gpt-5.6-terra on this e-commerce web application focusing on payment processing security and PCI DSS compliance
 ```
 
 ```
@@ -51,7 +51,7 @@ security patterns and HIPAA compliance
 
 ```
 Start separate sub-tasks, in one start a secaudit for critical payment processing components focusing on PCI DSS with gemini pro, 
-and in the other for user management focusing on OWASP authentication vulnerabilities with o4-mini, then combine into a unified 
+and in the other for user management focusing on OWASP authentication vulnerabilities with gpt-5.6-luna, then combine into a unified 
 security remediation plan using planner 
 ```
 
@@ -85,7 +85,7 @@ security remediation plan using planner
 - `images`: Architecture diagrams, security documentation, or visual references
 
 **Initial Security Configuration (used in step 1):**
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `security_scope`: Application context, technology stack, and security boundary definition (required)
 - `threat_level`: low|medium|high|critical (default: medium) - determines assessment depth and urgency
 - `compliance_requirements`: List of compliance frameworks to assess against (e.g., ["PCI DSS", "SOC2"])
@@ -169,7 +169,7 @@ compliance requirements PCI DSS and SOC2, focus on payment processing security"
 
 **Authentication System Security Review:**
 ```
-"Use o3 to perform secaudit on authentication microservice, focus on authentication, 
+"Use gpt-5.6-terra to perform secaudit on authentication microservice, focus on authentication, 
 threat level critical, check for OWASP A07 and multi-factor authentication implementation"
 ```
 
@@ -181,7 +181,7 @@ compliance requirements GDPR, threat level medium"
 
 **Infrastructure Security Review:**
 ```
-"Perform secaudit on Kubernetes deployment manifests with o3, focus infrastructure, 
+"Perform secaudit on Kubernetes deployment manifests with gpt-5.6-terra, focus infrastructure, 
 threat level high, include container security and network policies"
 ```
 

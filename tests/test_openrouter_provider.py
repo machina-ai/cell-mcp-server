@@ -163,7 +163,7 @@ class TestOpenRouterAutoMode:
 
         mock_registry = Mock()
         model_names = [
-            "google/gemini-3.6-flash",
+            "google/gemini-3.7-flash",
             "google/gemini-2.5-pro",
             "openai/o3",
             "openai/o3-mini",
@@ -205,7 +205,7 @@ class TestOpenRouterAutoMode:
         os.environ.pop("OPENAI_API_KEY", None)
         os.environ["OPENROUTER_API_KEY"] = "test-openrouter-key"
         os.environ.pop("OPENROUTER_ALLOWED_MODELS", None)
-        os.environ["OPENROUTER_ALLOWED_MODELS"] = "anthropic/claude-opus-4.1,google/gemini-3.6-flash"
+        os.environ["OPENROUTER_ALLOWED_MODELS"] = "anthropic/claude-opus-4.1,google/gemini-3.7-flash"
         os.environ["DEFAULT_MODEL"] = "auto"
 
         # Force reload to pick up new environment variable
@@ -215,7 +215,7 @@ class TestOpenRouterAutoMode:
 
         mock_registry = Mock()
         mock_models = [
-            "google/gemini-3.6-flash",
+            "google/gemini-3.7-flash",
             "google/gemini-2.5-pro",
             "anthropic/claude-opus-4.1",
             "anthropic/claude-sonnet-4.1",
@@ -237,7 +237,7 @@ class TestOpenRouterAutoMode:
 
         assert len(available_models) > 0, "Should have some allowed models"
 
-        expected_allowed = {"google/gemini-3.6-flash", "anthropic/claude-opus-4.1"}
+        expected_allowed = {"google/gemini-3.7-flash", "anthropic/claude-opus-4.1"}
 
         assert (
             set(available_models.keys()) == expected_allowed

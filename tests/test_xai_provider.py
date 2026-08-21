@@ -45,16 +45,17 @@ class TestXAIProvider:
         provider = XAIModelProvider("test-key")
 
         # Test valid models
-        assert provider.validate_model_name("grok-4.5") is True
-        assert provider.validate_model_name("grok4.5") is True
-        assert provider.validate_model_name("grok-4.3") is True
-        assert provider.validate_model_name("grok-4.3-low") is True
-        assert provider.validate_model_name("grok-4.3-none") is True
+        assert provider.validate_model_name("grok-4.6") is True
+        assert provider.validate_model_name("grok4.6") is True
         assert provider.validate_model_name("grok") is True
+        assert provider.validate_model_name("grok-latest") is True
         assert provider.validate_model_name("fast") is True
-        assert provider.validate_model_name("non-reasoning") is True
 
-        # Test invalid model
+        # Test invalid/removed models
+        assert provider.validate_model_name("grok-4.3") is False
+        assert provider.validate_model_name("grok-4.3-low") is False
+        assert provider.validate_model_name("grok-4.3-none") is False
+        assert provider.validate_model_name("non-reasoning") is False
         assert provider.validate_model_name("invalid-model") is False
         assert provider.validate_model_name("gpt-4") is False
         assert provider.validate_model_name("gemini-pro") is False
@@ -64,24 +65,21 @@ class TestXAIProvider:
         provider = XAIModelProvider("test-key")
 
         # Test shorthand resolution
-        assert provider._resolve_model_name("grok") == "grok-4.3"
-        assert provider._resolve_model_name("grok4.5") == "grok-4.5"
-        assert provider._resolve_model_name("fast") == "grok-4.3-low"
-        assert provider._resolve_model_name("grok4.1f") == "grok-4.3-low"
-        assert provider._resolve_model_name("non-reasoning") == "grok-4.3-none"
+        assert provider._resolve_model_name("grok") == "grok-4.6"
+        assert provider._resolve_model_name("grok-latest") == "grok-4.6"
+        assert provider._resolve_model_name("grok4.6") == "grok-4.6"
+        assert provider._resolve_model_name("fast") == "grok-4.6"
 
         # Test full name passthrough
-        assert provider._resolve_model_name("grok-4.5") == "grok-4.5"
-        assert provider._resolve_model_name("grok-4.3") == "grok-4.3"
-        assert provider._resolve_model_name("grok-4.3-low") == "grok-4.3-low"
+        assert provider._resolve_model_name("grok-4.6") == "grok-4.6"
 
-    def test_get_capabilities_grok45(self):
-        """Test getting model capabilities for GROK-4.5."""
+    def test_get_capabilities_grok46(self):
+        """Test getting model capabilities for GROK-4.6."""
         provider = XAIModelProvider("test-key")
 
-        capabilities = provider.get_capabilities("grok-4.5")
-        assert capabilities.model_name == "grok-4.5"
-        assert capabilities.friendly_name == "X.AI (Grok 4.5)"
+        capabilities = provider.get_capabilities("grok-4.6")
+        assert capabilities.model_name == "grok-4.6"
+        assert capabilities.friendly_name == "X.AI (Grok 4.6)"
         assert capabilities.context_window == 500_000
         assert capabilities.provider == ProviderType.XAI
         assert capabilities.supports_extended_thinking is True
@@ -93,30 +91,21 @@ class TestXAIProvider:
         assert capabilities.temperature_constraint.min_temp == 0.0
         assert capabilities.temperature_constraint.max_temp == 2.0
 
-    def test_get_capabilities_fast(self):
-        """Test getting model capabilities for Grok 4.3 Low Reasoning."""
-        provider = XAIModelProvider("test-key")
-
-        capabilities = provider.get_capabilities("grok-4.3-low")
-        assert capabilities.model_name == "grok-4.3-low"
-        assert capabilities.api_model_name == "grok-4.3"
-        assert capabilities.default_reasoning_effort == "low"
-        assert capabilities.friendly_name == "X.AI (Grok 4.3 Low Reasoning)"
-        assert capabilities.context_window == 1_000_000
-        assert capabilities.provider == ProviderType.XAI
-        assert capabilities.supports_extended_thinking is True
-
     def test_get_capabilities_with_shorthand(self):
         """Test getting model capabilities with shorthand."""
         provider = XAIModelProvider("test-key")
 
         capabilities = provider.get_capabilities("grok")
-        assert capabilities.model_name == "grok-4.3"  # Should resolve to grok-4.3
-        assert capabilities.context_window == 1_000_000
+        assert capabilities.model_name == "grok-4.6"  # Should resolve to grok-4.6
+        assert capabilities.context_window == 500_000
+
+        capabilities_latest = provider.get_capabilities("grok-latest")
+        assert capabilities_latest.model_name == "grok-4.6"
+        assert capabilities_latest.context_window == 500_000
 
         capabilities_fast = provider.get_capabilities("fast")
-        assert capabilities_fast.model_name == "grok-4.3-low"  # Should resolve to grok-4.3-low
-        assert capabilities_fast.context_window == 1_000_000
+        assert capabilities_fast.model_name == "grok-4.6"  # Should resolve to grok-4.6
+        assert capabilities_fast.context_window == 500_000
 
     def test_unsupported_model_capabilities(self):
         """Test error handling for unsupported models."""
@@ -125,24 +114,23 @@ class TestXAIProvider:
         with pytest.raises(ValueError, match="Unsupported model 'invalid-model' for provider xai"):
             provider.get_capabilities("invalid-model")
 
+        with pytest.raises(ValueError, match="Unsupported model 'grok-4.3' for provider xai"):
+            provider.get_capabilities("grok-4.3")
+
     def test_extended_thinking_flags(self):
         """X.AI capabilities should expose extended thinking support correctly."""
         provider = XAIModelProvider("test-key")
 
-        thinking_aliases = ["grok-4.5", "grok", "grok4.5", "fast", "grok-4.3", "grok-4.3-low"]
+        thinking_aliases = ["grok-4.6", "grok", "grok4.6", "fast"]
         for alias in thinking_aliases:
             assert provider.get_capabilities(alias).supports_extended_thinking is True
-
-        non_thinking_aliases = ["grok-4.3-none", "non-reasoning"]
-        for alias in non_thinking_aliases:
-            assert provider.get_capabilities(alias).supports_extended_thinking is False
 
     def test_provider_type(self):
         """Test provider type identification."""
         provider = XAIModelProvider("test-key")
         assert provider.get_provider_type() == ProviderType.XAI
 
-    @patch.dict(os.environ, {"XAI_ALLOWED_MODELS": "grok-4.5"})
+    @patch.dict(os.environ, {"XAI_ALLOWED_MODELS": "grok-4.6"})
     def test_model_restrictions(self):
         """Test model restrictions functionality."""
         # Clear cached restriction service
@@ -154,12 +142,9 @@ class TestXAIProvider:
 
         provider = XAIModelProvider("test-key")
 
-        # grok-4.5 should be allowed
-        assert provider.validate_model_name("grok-4.5") is True
-
-        # fast should be blocked
-        assert provider.validate_model_name("fast") is False
-        assert provider.validate_model_name("grok-4.3-low") is False
+        # grok-4.6 should be allowed
+        assert provider.validate_model_name("grok-4.6") is True
+        assert provider.validate_model_name("grok") is True
 
     @patch.dict(os.environ, {"XAI_ALLOWED_MODELS": "grok,fast"})
     def test_multiple_model_restrictions(self):
@@ -186,10 +171,7 @@ class TestXAIProvider:
 
         provider = XAIModelProvider("test-key")
 
-        assert provider.validate_model_name("grok-4.5") is True
-        assert provider.validate_model_name("grok-4.3") is True
-        assert provider.validate_model_name("grok-4.3-low") is True
-        assert provider.validate_model_name("grok-4.3-none") is True
+        assert provider.validate_model_name("grok-4.6") is True
         assert provider.validate_model_name("grok") is True
         assert provider.validate_model_name("fast") is True
 
@@ -198,31 +180,29 @@ class TestXAIProvider:
         provider = XAIModelProvider("test-key")
         assert provider.FRIENDLY_NAME == "X.AI"
 
-        capabilities = provider.get_capabilities("grok-4.5")
-        assert capabilities.friendly_name == "X.AI (Grok 4.5)"
+        capabilities = provider.get_capabilities("grok-4.6")
+        assert capabilities.friendly_name == "X.AI (Grok 4.6)"
 
     def test_supported_models_structure(self):
         """Test that MODEL_CAPABILITIES has the correct structure."""
         provider = XAIModelProvider("test-key")
 
         # Check that all expected base models are present
-        assert "grok-4.5" in provider.MODEL_CAPABILITIES
-        assert "grok-4.3" in provider.MODEL_CAPABILITIES
-        assert "grok-4.3-low" in provider.MODEL_CAPABILITIES
+        assert "grok-4.6" in provider.MODEL_CAPABILITIES
+        assert "grok-4.3" not in provider.MODEL_CAPABILITIES
+        assert "grok-4.3-low" not in provider.MODEL_CAPABILITIES
 
         # Check model configs have required fields
         from providers.shared import ModelCapabilities
 
-        grok45_config = provider.MODEL_CAPABILITIES["grok-4.5"]
-        assert isinstance(grok45_config, ModelCapabilities)
-        assert grok45_config.context_window == 500_000
-        assert grok45_config.supports_extended_thinking is True
-        assert "grok4.5" in grok45_config.aliases
-
-        grok43_config = provider.MODEL_CAPABILITIES["grok-4.3"]
-        assert isinstance(grok43_config, ModelCapabilities)
-        assert grok43_config.context_window == 1_000_000
-        assert "grok" in grok43_config.aliases
+        grok46_config = provider.MODEL_CAPABILITIES["grok-4.6"]
+        assert isinstance(grok46_config, ModelCapabilities)
+        assert grok46_config.context_window == 500_000
+        assert grok46_config.supports_extended_thinking is True
+        assert "grok" in grok46_config.aliases
+        assert "grok-latest" in grok46_config.aliases
+        assert "grok4.6" in grok46_config.aliases
+        assert "fast" in grok46_config.aliases
 
     @patch("providers.openai_compatible.OpenAI")
     def test_generate_content_resolves_alias_before_api_call(self, mock_openai_class):
@@ -236,7 +216,7 @@ class TestXAIProvider:
         mock_response.choices = [MagicMock()]
         mock_response.choices[0].message.content = "Test response"
         mock_response.choices[0].finish_reason = "stop"
-        mock_response.model = "grok-4.5"
+        mock_response.model = "grok-4.6"
         mock_response.id = "test-id"
         mock_response.created = 1234567890
         mock_response.usage = MagicMock()
@@ -254,15 +234,13 @@ class TestXAIProvider:
         mock_client.chat.completions.create.assert_called_once()
         call_kwargs = mock_client.chat.completions.create.call_args[1]
 
-        assert call_kwargs["model"] == "grok-4.3"
+        assert call_kwargs["model"] == "grok-4.6"
         assert result.content == "Test response"
-        assert result.model_name == "grok-4.3"
+        assert result.model_name == "grok-4.6"
 
     @patch("providers.openai_compatible.OpenAI")
     def test_generate_content_other_aliases(self, mock_openai_class):
         """Test other alias resolutions in generate_content."""
-        from unittest.mock import MagicMock
-
         # Set up mock
         mock_client = MagicMock()
         mock_openai_class.return_value = mock_client
@@ -278,21 +256,13 @@ class TestXAIProvider:
 
         provider = XAIModelProvider("test-key")
 
-        # Test grok -> grok-4.3
-        mock_response.model = "grok-4.3"
+        # Test grok -> grok-4.6
+        mock_response.model = "grok-4.6"
         provider.generate_content(prompt="Test", model_name="grok", temperature=0.7)
         call_kwargs = mock_client.chat.completions.create.call_args[1]
-        assert call_kwargs["model"] == "grok-4.3"
+        assert call_kwargs["model"] == "grok-4.6"
 
-        # Test fast -> grok-4.3 (mapped from grok-4.3-low) with reasoning_effort=low
-        mock_response.model = "grok-4.3"
+        # Test fast -> grok-4.6
         provider.generate_content(prompt="Test", model_name="fast", temperature=0.7)
         call_kwargs = mock_client.chat.completions.create.call_args[1]
-        assert call_kwargs["model"] == "grok-4.3"
-        assert call_kwargs["reasoning_effort"] == "low"
-
-        # Test non-reasoning -> grok-4.3 with reasoning_effort=none
-        provider.generate_content(prompt="Test", model_name="non-reasoning", temperature=0.7)
-        call_kwargs = mock_client.chat.completions.create.call_args[1]
-        assert call_kwargs["model"] == "grok-4.3"
-        assert call_kwargs["reasoning_effort"] == "none"
+        assert call_kwargs["model"] == "grok-4.6"

@@ -150,9 +150,9 @@
       "temperature_constraint": "range"
     },
     {
-      "model_name": "gemini-3.6-flash-preview-05-20",
+      "model_name": "gemini-3.7-flash-preview-05-20",
       "friendly_name": "DIAL (Gemini Flash 2.5)",
-      "aliases": ["gemini-3.6-flash"],
+      "aliases": ["gemini-3.7-flash"],
       "intelligence_score": 10,
       "description": "Gemini 2.5 Flash via DIAL - Ultra-fast",
       "context_window": 1000000,

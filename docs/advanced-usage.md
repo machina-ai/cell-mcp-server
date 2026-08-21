@@ -25,28 +25,21 @@ This section focuses on **advanced model usage patterns** for power users:
 Regardless of your default configuration, you can specify models per request:
 - "Use **pro** for deep security analysis of auth.py"
 - "Use **flash** to quickly format this code"
-- "Use **o3** to debug this logic error"
-- "Review with **o4-mini** for balanced analysis"
-- "Use **gpt4.1** for comprehensive codebase analysis"
+- "Use **gpt-5.6-terra** to debug this logic error"
+- "Review with **gpt-5.6-luna** for fast reasoning analysis"
+- "Use **grok** for comprehensive codebase analysis"
 
 **Claude's Auto Mode Decision Matrix:**
 
 | Model | Provider | Context | Strengths | Auto Mode Usage |
 |-------|----------|---------|-----------|------------------|
-| **`pro`** (Gemini 2.5 Pro) | Google | 1M tokens | Extended thinking (up to 32K tokens), deep analysis | Complex architecture, security reviews, deep debugging |
-| **`flash`** (Gemini 2.5 Flash) | Google | 1M tokens | Ultra-fast responses with thinking | Quick checks, formatting, simple analysis |
-| **`flash-2.0`** (Gemini 2.0 Flash) | Google | 1M tokens | Latest fast model with audio/video support | Quick analysis with multimodal input |
+| **`pro`** (Gemini 3.1 Pro Preview) | Google | 1M tokens | Extended thinking (up to 32K tokens), deep analysis | Complex architecture, security reviews, deep debugging |
+| **`flash`** (Gemini 3.7 Flash) | Google | 1M tokens | Ultra-fast responses with thinking | Quick checks, formatting, simple analysis |
+| **`flash-2.0`** (Gemini 2.0 Flash) | Google | 1M tokens | Fast model with audio/video support | Quick analysis with multimodal input |
 | **`flashlite`** (Gemini 2.0 Flash Lite) | Google | 1M tokens | Lightweight text-only model | Fast text processing without vision |
-| **`o3`** | OpenAI | 200K tokens | Strong logical reasoning | Debugging logic errors, systematic analysis |
-| **`o3-mini`** | OpenAI | 200K tokens | Balanced speed/quality | Moderate complexity tasks |
-| **`o4-mini`** | OpenAI | 200K tokens | Latest reasoning model | Optimized for shorter contexts |
-| **`gpt4.1`** | OpenAI | 1M tokens | Latest GPT-4 with extended context | Large codebase analysis, comprehensive reviews |
-| **`gpt5`** (gpt-5.6-terra) | OpenAI | 400K tokens | Advanced model with reasoning support | Complex problems requiring advanced reasoning |
-| **`gpt5-mini`** (gpt-5.6-terra Mini) | OpenAI | 400K tokens | Efficient variant with reasoning | Balanced performance and capability |
-| **`gpt5-nano`** (gpt-5.6-terra Nano) | OpenAI | 400K tokens | Fastest, cheapest gpt-5.6-terra variant | Summarization and classification tasks |
-| **`grok-4`** | X.AI | 256K tokens | Latest flagship Grok model with reasoning, vision | Complex analysis, reasoning tasks |
-| **`grok-3`** | X.AI | 131K tokens | Advanced reasoning model | Deep analysis, complex problems |
-| **`grok-3-fast`** | X.AI | 131K tokens | Higher performance variant | Fast responses with reasoning |
+| **`gpt-5.6-terra`** (Flagship Omni) | OpenAI | 1.05M tokens | Flagship multimodal model with extended thinking | Complex problems requiring advanced omni reasoning |
+| **`gpt-5.6-luna`** (Fast Reasoning) | OpenAI | 1.05M tokens | Specialized reasoning with test-time compute | Fast reasoning, systematic logic analysis |
+| **`grok`** (grok-4.6) | X.AI | 500K tokens | Flagship Grok model with deep reasoning, vision, tools | Complex analysis, coding, agentic reasoning tasks |
 | **`llama`** (Llama 3.2) | Custom/Local | 128K tokens | Local inference, privacy | On-device analysis, cost-free processing |
 | **Any model** | OpenRouter | Varies | Access to GPT-4, Claude, Llama, etc. | User-specified or based on task requirements |
 
@@ -55,18 +48,15 @@ cloud models (expensive/powerful) AND local models (free/private) in the same co
 
 **Model Capabilities:**
 - **Gemini Models**: Support thinking modes (minimal to max), web search, 1M context
-  - **Pro 2.5**: Deep analysis with max 32K thinking tokens
-  - **Flash 2.5**: Ultra-fast with thinking support (24K thinking tokens)
-  - **Flash 2.0**: Latest fast model with audio/video input (24K thinking tokens)
+  - **Pro 3.1 Preview**: Deep analysis with max 32K thinking tokens
+  - **Flash 3.7**: Ultra-fast with thinking support (32K thinking tokens)
+  - **Flash 2.0**: Fast model with audio/video input (24K thinking tokens)
   - **Flash Lite 2.0**: Text-only lightweight model (no thinking support)
-- **O3/O4 Models**: Excellent reasoning, systematic analysis, 200K context
-- **GPT-4.1**: Extended context window (1M tokens), general capabilities
-- **gpt-5.6-terra Series**: Advanced reasoning models, 400K context
-  - **gpt-5.6-terra**: Full-featured with reasoning support and vision
-  - **gpt-5.6-terra Mini**: Balanced efficiency and capability
-  - **gpt-5.6-terra Nano**: Optimized for fast, low-cost tasks
-- **Grok-4**: Extended thinking support, vision capabilities, 256K context
-- **Grok-3 Models**: Advanced reasoning, 131K context
+- **OpenAI Models**:
+  - **gpt-5.6-terra**: Advanced flagship omni/multimodal with 1.05M context, 128K output
+  - **gpt-5.6-luna**: Specialized fast reasoning with 1.05M context, 128K output
+- **Grok Models**:
+  - **Grok-4.6**: Flagship reasoning and coding with 500K context, vision, tool calling
 
 ## Model Usage Restrictions
 
@@ -78,15 +68,15 @@ cloud models (expensive/powerful) AND local models (free/private) in the same co
 ```env
 # Development: Allow experimentation
 GOOGLE_ALLOWED_MODELS=flash,pro
-OPENAI_ALLOWED_MODELS=o4-mini,o3-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra,gpt-5.6-luna
 
 # Production: Cost-optimized  
 GOOGLE_ALLOWED_MODELS=flash
-OPENAI_ALLOWED_MODELS=o4-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-luna
 
 # High-performance: Quality over cost
 GOOGLE_ALLOWED_MODELS=pro
-OPENAI_ALLOWED_MODELS=o3,o4-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra
 ```
 
 **Important Notes:**
@@ -139,16 +129,16 @@ These only apply to models that support customizing token usage for extended thi
 
 **Examples by scenario:**
 ```
-# Quick style check with o3
+# Quick style check with flash
 "Use flash to review formatting in utils.py"
 
-# Security audit with o3
-"Get o3 to do a security review of auth/ with thinking mode high"
+# Security audit with gpt-5.6-terra
+"Get gpt-5.6-terra to do a security review of auth/ with thinking mode high"
 
 # Complex debugging, letting claude pick the best model
 "Use zen to debug this race condition with max thinking mode"
 
-# Architecture analysis with Gemini 2.5 Pro
+# Architecture analysis with Gemini Pro
 "Analyze the entire src/ directory architecture with high thinking using pro"
 ```
 
@@ -161,7 +151,7 @@ All tools that work with files support **both individual files and entire direct
 **`analyze`** - Analyze files or directories
 - `files`: List of file paths or directories (required)
 - `question`: What to analyze (required)  
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `analysis_type`: architecture|performance|security|quality|general
 - `output_format`: summary|detailed|actionable
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
@@ -170,13 +160,13 @@ All tools that work with files support **both individual files and entire direct
 ```
 "Analyze the src/ directory for architectural patterns" (auto mode picks best model)
 "Use flash to quickly analyze main.py and tests/ to understand test coverage" 
-"Use o3 for logical analysis of the algorithm in backend/core.py"
+"Use gpt-5.6-terra for logical analysis of the algorithm in backend/core.py"
 "Use pro for deep analysis of the entire backend/ directory structure"
 ```
 
 **`codereview`** - Review code files or directories
 - `files`: List of file paths or directories (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `review_type`: full|security|performance|quick
 - `focus_on`: Specific aspects to focus on
 - `standards`: Coding standards to enforce
@@ -186,13 +176,13 @@ All tools that work with files support **both individual files and entire direct
 ```
 "Review the entire api/ directory for security issues" (auto mode picks best model)
 "Use pro to review auth/ for deep security analysis"
-"Use o3 to review logic in algorithms/ for correctness"
+"Use gpt-5.6-terra to review logic in algorithms/ for correctness"
 "Use flash to quickly review src/ with focus on performance, only show critical issues"
 ```
 
 **`debug`** - Debug with file context
 - `error_description`: Description of the issue (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `error_context`: Stack trace or logs
 - `files`: Files or directories related to the issue
 - `runtime_info`: Environment details
@@ -202,13 +192,13 @@ All tools that work with files support **both individual files and entire direct
 
 ```
 "Debug this logic error with context from backend/" (auto mode picks best model)
-"Use o3 to debug this algorithm correctness issue"
+"Use gpt-5.6-terra to debug this algorithm correctness issue"
 "Use pro to debug this complex architecture problem"
 ```
 
 **`thinkdeep`** - Extended analysis with file context
 - `current_analysis`: Your current thinking (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `problem_context`: Additional context
 - `focus_areas`: Specific aspects to focus on
 - `files`: Files or directories for context
@@ -218,20 +208,20 @@ All tools that work with files support **both individual files and entire direct
 ```
 "Think deeper about my design with reference to src/models/" (auto mode picks best model)
 "Use pro to think deeper about this architecture with extended thinking"
-"Use o3 to think deeper about the logical flow in this algorithm"
+"Use gpt-5.6-terra to think deeper about the logical flow in this algorithm"
 ```
 
 **`testgen`** - Comprehensive test generation with edge case coverage
 - `files`: Code files or directories to generate tests for (required)
 - `prompt`: Description of what to test, testing objectives, and scope (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `test_examples`: Optional existing test files as style/pattern reference
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
 
 ```
 "Generate tests for User.login() method with edge cases" (auto mode picks best model)
 "Use pro to generate comprehensive tests for src/payment.py with max thinking mode"
-"Use o3 to generate tests for algorithm correctness in sort_functions.py"
+"Use gpt-5.6-terra to generate tests for algorithm correctness in sort_functions.py"
 "Generate tests following patterns from tests/unit/ for new auth module"
 ```
 
@@ -239,7 +229,7 @@ All tools that work with files support **both individual files and entire direct
 - `files`: Code files or directories to analyze for refactoring opportunities (required)
 - `prompt`: Description of refactoring goals, context, and specific areas of focus (required)
 - `refactor_type`: codesmells|decompose|modernize|organization (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `focus_areas`: Specific areas to focus on (e.g., 'performance', 'readability', 'maintainability', 'security')
 - `style_guide_examples`: Optional existing code files to use as style/pattern reference
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
@@ -258,7 +248,7 @@ All tools that work with files support **both individual files and entire direct
 
 ### **The Breakthrough**
 
-Even when Claude's context resets or compacts, conversations can continue seamlessly because other models (O3, Gemini) have access to the complete conversation history stored in memory and can "remind" Claude of everything that was discussed.
+Even when Claude's context resets or compacts, conversations can continue seamlessly because other models (gpt-5.6-terra, Gemini) have access to the complete conversation history stored in memory and can "remind" Claude of everything that was discussed.
 
 ### Key Benefits
 
@@ -273,8 +263,8 @@ Even when Claude's context resets or compacts, conversations can continue seamle
 ```
 Session 1: "Design a RAG system with gemini pro"
 [Claude's context resets]
-Session 2: "Continue our RAG discussion with o3"
-→ O3 receives the full history and reminds Claude of everything discussed
+Session 2: "Continue our RAG discussion with gpt-5.6-terra"
+→ gpt-5.6-terra receives the full history and reminds Claude of everything discussed
 ```
 
 **📖 [Read the complete Context Revival guide](context-revival.md)** for detailed examples, technical architecture, configuration options, and best practices.
@@ -285,7 +275,7 @@ Session 2: "Continue our RAG discussion with o3"
 
 ### Design → Review → Implement
 ```
-Think hard about designing and developing a fun calculator app in swift. Review your design plans with o3, taking in
+Think hard about designing and developing a fun calculator app in swift. Review your design plans with gpt-5.6-terra, taking in
 their suggestions but keep the feature-set realistic and doable without adding bloat. Begin implementing and in between
 implementation, get a codereview done by Gemini Pro and chat with Flash if you need to for creative directions.   
 ```
@@ -293,7 +283,7 @@ implementation, get a codereview done by Gemini Pro and chat with Flash if you n
 ### Code → Review → Fix
 ```
 Implement a new screen where the locations taken from the database display on a map, with pins falling from
-the top and landing with animation. Once done, codereview with gemini pro and o3 both and ask them to critique your
+the top and landing with animation. Once done, codereview with gemini pro and gpt-5.6-terra both and ask them to critique your
 work. Fix medium to critical bugs / concerns / issues and show me the final product
 ```
 
@@ -339,8 +329,8 @@ To help choose the right tool for your needs:
 The Zen MCP server supports vision-capable models for analyzing images, diagrams, screenshots, and visual content. Vision support works seamlessly with all tools and conversation threading.
 
 **Supported Models:**
-- **Gemini 2.5 Pro & Flash**: Excellent for diagrams, architecture analysis, UI mockups (up to 20MB total)
-- **OpenAI O3/O4 series**: Strong for visual debugging, error screenshots (up to 20MB total)
+- **Gemini 3.1 Pro & Flash 3.7**: Excellent for diagrams, architecture analysis, UI mockups (up to 20MB total)
+- **OpenAI gpt-5.6-terra series**: Strong for visual debugging, error screenshots (up to 20MB total)
 - **Claude models via OpenRouter**: Good for code screenshots, visual analysis (up to 5MB total)
 - **Custom models**: Support varies by model, with 40MB maximum enforced for abuse prevention
 
@@ -372,7 +362,7 @@ The Zen MCP server supports vision-capable models for analyzing images, diagrams
 
 **Best Practices:**
 - Describe images when including them: "screenshot of login error", "system architecture diagram"
-- Use appropriate models: Gemini for complex diagrams, O3 for debugging visuals
+- Use appropriate models: Gemini for complex diagrams, gpt-5.6-terra for debugging visuals
 - Consider image sizes: Larger images consume more of the model's capacity
 
 ## Working with Large Prompts

@@ -23,7 +23,7 @@ class TestModelRestrictionService:
             assert service.is_allowed(ProviderType.OPENAI, "o3")
             assert service.is_allowed(ProviderType.OPENAI, "o3-mini")
             assert service.is_allowed(ProviderType.GOOGLE, "gemini-2.5-pro")
-            assert service.is_allowed(ProviderType.GOOGLE, "gemini-3.6-flash")
+            assert service.is_allowed(ProviderType.GOOGLE, "gemini-3.7-flash")
             assert service.is_allowed(ProviderType.OPENROUTER, "anthropic/claude-opus-4")
             assert service.is_allowed(ProviderType.OPENROUTER, "openai/o3")
 
@@ -492,7 +492,7 @@ class TestRegistryIntegration:
         mock_gemini = MagicMock()
         mock_gemini.MODEL_CAPABILITIES = {
             "gemini-2.5-pro": {"context_window": 1048576},
-            "gemini-3.6-flash": {"context_window": 1048576},
+            "gemini-3.7-flash": {"context_window": 1048576},
         }
         mock_gemini.get_provider_type.return_value = ProviderType.GOOGLE
 
@@ -549,7 +549,7 @@ class TestRegistryIntegration:
             ProviderType.GOOGLE: type(mock_gemini),
         }
 
-        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "o3-mini", "GOOGLE_ALLOWED_MODELS": "gemini-3.6-flash"}):
+        with patch.dict(os.environ, {"OPENAI_ALLOWED_MODELS": "o3-mini", "GOOGLE_ALLOWED_MODELS": "gemini-3.7-flash"}):
             # Clear cached restriction service
             import utils.model_restrictions
 
@@ -560,7 +560,7 @@ class TestRegistryIntegration:
             # Should only include allowed models
             assert "o3-mini" in available
             assert "o3" not in available
-            assert "gemini-3.6-flash" in available
+            assert "gemini-3.7-flash" in available
             assert "gemini-2.5-pro" not in available
 
 
@@ -589,9 +589,7 @@ class TestShorthandRestrictions:
             return mapping.get(provider_type)
 
         with patch.object(ModelProviderRegistry, "get_provider", side_effect=registry_side_effect):
-            assert openai_provider.validate_model_name(
-                "luna"
-            )  # Should work with shorthand (maps to gpt-5.6-luna)
+            assert openai_provider.validate_model_name("luna")  # Should work with shorthand (maps to gpt-5.6-luna)
             assert openai_provider.validate_model_name("gpt-5.6-luna")  # Canonical resolved from shorthand
             assert not openai_provider.validate_model_name("gpt-5.6-terra")  # Unrelated model still blocked
 
@@ -751,7 +749,7 @@ class TestAutoModeWithRestrictions:
 
             model = ModelProviderRegistry.get_preferred_fallback_model(ToolModelCategory.FAST_RESPONSE)
 
-            assert model in ["luna", "gpt-5.6-luna", "gemini-3.6-flash"]
+            assert model in ["luna", "gpt-5.6-luna", "gemini-3.7-flash"]
         finally:
             # Restore original registry state
             registry = ModelProviderRegistry()
@@ -759,3 +757,4 @@ class TestAutoModeWithRestrictions:
             registry._initialized_providers.clear()
             registry._providers.update(original_providers)
             registry._initialized_providers.update(original_initialized)
+            utils.model_restrictions._restriction_service = None

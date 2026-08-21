@@ -63,7 +63,7 @@ CUSTOM_MODEL_NAME=llama3.2                          # Default model
 
 **Default Model Selection:**
 ```env
-# Options: 'auto', 'pro', 'flash', 'o3', 'o3-mini', 'o4-mini', etc.
+# Options: 'auto', 'pro', 'flash', 'gpt-5.6-terra', 'gpt-5.6-luna', 'grok', etc.
 DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
 ```
 
@@ -81,9 +81,9 @@ DEFAULT_MODEL=auto  # Claude picks best model for each task (recommended)
 
   | Provider | Canonical Models | Notable Aliases |
   |----------|-----------------|-----------------|
-  | OpenAI | `gpt-5.6-terra`, `gpt-5.6-terra-pro`, `gpt-5.6-terra-mini`, `gpt-5.6-terra-nano`, `gpt-5.6-terra-codex`, `gpt-4.1`, `o3`, `o3-mini`, `o3-pro`, `o4-mini` | `gpt5`, `gpt5pro`, `mini`, `nano`, `codex`, `o3mini`, `o3pro`, `o4mini` |
-  | Gemini | `gemini-2.5-pro`, `gemini-3.6-flash`, `gemini-2.0-flash`, `gemini-2.0-flash-lite` | `pro`, `gemini-pro`, `flash`, `flash-2.0`, `flashlite` |
-  | X.AI | `grok-4`, `grok-3`, `grok-3-fast` | `grok`, `grok4`, `grok3`, `grok3fast`, `grokfast` |
+  | OpenAI | `gpt-5.6-terra`, `gpt-5.6-luna` | `terra`, `luna`, `gpt5.6t`, `gpt5.6l` |
+  | Gemini | `gemini-3.1-pro-preview`, `gemini-3.7-flash`, `gemini-3-flash-preview` | `pro`, `gemini-pro`, `flash`, `flash3.7`, `flash3` |
+  | X.AI | `grok-4.6` | `grok`, `grok-latest`, `grok4.6`, `fast` |
   | OpenRouter | See `conf/openrouter_models.json` for the continually evolving catalogue | e.g., `opus`, `sonnet`, `flash`, `pro`, `mistral` |
   | Custom | User-managed entries such as `llama3.2` | Define your own aliases per entry |
 
@@ -169,13 +169,13 @@ Control which models can be used from each provider for cost control, compliance
 # Empty or unset = all models allowed (default)
 
 # OpenAI model restrictions
-OPENAI_ALLOWED_MODELS=o3-mini,o4-mini,mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra,gpt-5.6-luna
 
 # Gemini model restrictions  
 GOOGLE_ALLOWED_MODELS=flash,pro
 
 # X.AI GROK model restrictions
-XAI_ALLOWED_MODELS=grok-3,grok-3-fast,grok-4
+XAI_ALLOWED_MODELS=grok-4.6,grok
 
 # OpenRouter model restrictions (affects models via custom provider)
 OPENROUTER_ALLOWED_MODELS=opus,sonnet,mistral
@@ -183,23 +183,23 @@ OPENROUTER_ALLOWED_MODELS=opus,sonnet,mistral
 
 **Supported Model Names:** The names/aliases listed in the JSON manifests above are the authoritative source. Keep in mind:
 
-- Aliases are case-insensitive and defined per entry (for example, `mini` maps to `gpt-5.6-terra-mini` by default, while `flash` maps to `gemini-3.6-flash`).
+- Aliases are case-insensitive and defined per entry (for example, `luna` maps to `gpt-5.6-luna` by default, while `flash3.7` maps to `gemini-3.7-flash`).
 - When you override the manifest files you can add or remove aliases as needed; restriction policies (`*_ALLOWED_MODELS`) automatically pick up those changes.
 - Models omitted from a manifest fall back to generic capability detection (where supported) and may have limited feature metadata.
 
 **Example Configurations:**
 ```env
-# Cost control - only cheap models
-OPENAI_ALLOWED_MODELS=o4-mini
+# Cost control - only fast models
+OPENAI_ALLOWED_MODELS=gpt-5.6-luna
 GOOGLE_ALLOWED_MODELS=flash
 
 # Single model standardization
-OPENAI_ALLOWED_MODELS=o4-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-terra
 GOOGLE_ALLOWED_MODELS=pro
 
 # Balanced selection
 GOOGLE_ALLOWED_MODELS=flash,pro
-XAI_ALLOWED_MODELS=grok,grok-3-fast
+XAI_ALLOWED_MODELS=grok,fast
 ```
 
 ### Advanced Configuration
@@ -252,7 +252,7 @@ DEFAULT_MODEL=auto
 GEMINI_API_KEY=your-gemini-key
 OPENAI_API_KEY=your-openai-key
 GOOGLE_ALLOWED_MODELS=flash
-OPENAI_ALLOWED_MODELS=o4-mini
+OPENAI_ALLOWED_MODELS=gpt-5.6-luna
 LOG_LEVEL=INFO
 CONVERSATION_TIMEOUT_HOURS=3
 ```

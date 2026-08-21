@@ -106,7 +106,7 @@
       "intelligence_score": 18
     },
     {
-      "model_name": "google/gemini-3.6-flash",
+      "model_name": "google/gemini-3.7-flash",
       "aliases": [
         "flash",
         "gemini-flash"

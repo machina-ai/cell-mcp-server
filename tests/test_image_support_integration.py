@@ -210,33 +210,34 @@ class TestImageSupportIntegration:
         small_image_path = None
         large_image_path = None
 
-        try:
-            # Create 15MB image
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-                temp_file.write(b"\x00" * (15 * 1024 * 1024))  # 15MB
-                small_image_path = temp_file.name
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}, clear=False):
+            try:
+                # Create 15MB image
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+                    temp_file.write(b"\x00" * (15 * 1024 * 1024))  # 15MB
+                    small_image_path = temp_file.name
 
-            # Test with the default model from test environment (gemini-3.6-flash)
-            result = tool._validate_image_limits([small_image_path], ModelContext("gemini-3.6-flash"))
-            assert result is None  # Should pass for Gemini models
+                # Test with the default model from test environment (gemini-3.7-flash)
+                result = tool._validate_image_limits([small_image_path], ModelContext("gemini-3.7-flash"))
+                assert result is None  # Should pass for Gemini models
 
-            # Create 150MB image (over typical limits)
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-                temp_file.write(b"\x00" * (150 * 1024 * 1024))  # 150MB
-                large_image_path = temp_file.name
+                # Create 150MB image (over typical limits)
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+                    temp_file.write(b"\x00" * (150 * 1024 * 1024))  # 150MB
+                    large_image_path = temp_file.name
 
-            result = tool._validate_image_limits([large_image_path], ModelContext("gemini-3.6-flash"))
-            # Large images should fail validation
-            assert result is not None
-            assert result["status"] == "error"
-            assert "Image size limit exceeded" in result["content"]
+                result = tool._validate_image_limits([large_image_path], ModelContext("gemini-3.7-flash"))
+                # Large images should fail validation
+                assert result is not None
+                assert result["status"] == "error"
+                assert "Image size limit exceeded" in result["content"]
 
-        finally:
-            # Clean up temp files
-            if small_image_path and os.path.exists(small_image_path):
-                os.unlink(small_image_path)
-            if large_image_path and os.path.exists(large_image_path):
-                os.unlink(large_image_path)
+            finally:
+                # Clean up temp files
+                if small_image_path and os.path.exists(small_image_path):
+                    os.unlink(small_image_path)
+                if large_image_path and os.path.exists(large_image_path):
+                    os.unlink(large_image_path)
 
     @pytest.mark.asyncio
     async def test_chat_tool_execution_with_images(self):

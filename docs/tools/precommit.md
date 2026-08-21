@@ -140,7 +140,7 @@ Use zen and perform a thorough precommit ensuring there aren't any new regressio
 **Initial Configuration (used in step 1):**
 - `path`: Starting directory to search for repos (REQUIRED for step 1, must be absolute path)
 - `prompt`: The original user request description for the changes (required for context)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `compare_to`: Compare against a branch/tag instead of local changes (optional)
 - `severity_filter`: critical|high|medium|low|all (default: all)
 - `include_staged`: Include staged changes in the review (default: true)
@@ -165,7 +165,7 @@ Use zen and perform a thorough precommit ensuring there aren't any new regressio
 
 **Multi-Repository Validation:**
 ```
-"Validate changes across all repositories in this workspace with o3"
+"Validate changes across all repositories in this workspace with gpt-5.6-terra"
 ```
 
 **Against Specific Branch:**

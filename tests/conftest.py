@@ -22,7 +22,7 @@ env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
 
 # Set default model to a specific value for tests to avoid auto mode
 # This prevents all tests from failing due to missing model parameter
-os.environ["DEFAULT_MODEL"] = "gemini-3.6-flash"
+os.environ["DEFAULT_MODEL"] = "gemini-3.7-flash"
 
 # Force reload of config module to pick up the env var
 import config  # noqa: E402
@@ -106,12 +106,6 @@ def mock_provider_availability(request, monkeypatch):
     This fixture ensures that when tests run with dummy API keys,
     the tools don't require model selection unless explicitly testing auto mode.
     """
-    # Skip this fixture for tests that need real providers
-    if hasattr(request, "node"):
-        marker = request.node.get_closest_marker("no_mock_provider")
-        if marker:
-            return
-
     # Ensure providers are registered (in case other tests cleared the registry)
     from providers.shared import ProviderType
 
@@ -123,6 +117,12 @@ def mock_provider_availability(request, monkeypatch):
         ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
     if ProviderType.XAI not in registry._providers:
         ModelProviderRegistry.register_provider(ProviderType.XAI, XAIModelProvider)
+
+    # Skip this fixture mocking for tests that need real providers
+    if hasattr(request, "node"):
+        marker = request.node.get_closest_marker("no_mock_provider")
+        if marker:
+            return
 
     # Ensure CUSTOM provider is registered if needed for integration tests
     if (
@@ -189,7 +189,7 @@ def disable_force_env_override(monkeypatch):
 
     monkeypatch.setenv("ZEN_MCP_FORCE_ENV_OVERRIDE", "false")
     env_config.reload_env({"ZEN_MCP_FORCE_ENV_OVERRIDE": "false"})
-    monkeypatch.setenv("DEFAULT_MODEL", "gemini-3.6-flash")
+    monkeypatch.setenv("DEFAULT_MODEL", "gemini-3.7-flash")
     monkeypatch.setenv("MAX_CONVERSATION_TURNS", "50")
 
     import importlib

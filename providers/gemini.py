@@ -44,7 +44,7 @@ class GeminiModelProvider(RegistryBackedProviderMixin, ModelProvider):
 
     # Model-specific thinking token limits
     MAX_THINKING_TOKENS = {
-        "gemini-3.6-flash": 32768,
+        "gemini-3.7-flash": 32768,
         "gemini-3-flash-preview": 24576,
         "gemini-3.1-pro-preview": 32768,
     }

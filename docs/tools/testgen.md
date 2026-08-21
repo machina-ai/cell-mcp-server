@@ -29,14 +29,14 @@ This workflow ensures methodical analysis before test generation, resulting in m
 
 ## Model Recommendation
 
-Test generation excels with extended reasoning models like Gemini Pro or O3, which can analyze complex code paths, understand intricate dependencies, and identify comprehensive edge cases. The combination of large context windows and advanced reasoning enables generation of thorough test suites that cover realistic failure scenarios and integration points that shorter-context models might overlook.
+Test generation excels with extended reasoning models like Gemini Pro or gpt-5.6-terra, which can analyze complex code paths, understand intricate dependencies, and identify comprehensive edge cases. The combination of large context windows and advanced reasoning enables generation of thorough test suites that cover realistic failure scenarios and integration points that shorter-context models might overlook.
 
 ## Example Prompts
 
 **Basic Usage:**
 ```
 "Use zen to generate tests for User.login() method"
-"Generate comprehensive tests for the sorting method in src/new_sort.py using o3"
+"Generate comprehensive tests for the sorting method in src/new_sort.py using gpt-5.6-terra"
 "Create tests for edge cases not already covered in our tests using gemini pro"
 ```
 
@@ -69,7 +69,7 @@ Test generation excels with extended reasoning models like Gemini Pro or O3, whi
 
 **Initial Configuration (used in step 1):**
 - `prompt`: Description of what to test, testing objectives, and specific scope/focus areas (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5|gpt5-mini|gpt5-nano (default: server default)
+- `model`: auto|pro|flash|gpt-5.6-terra|gpt-5.6-luna|grok (default: server default)
 - `test_examples`: Optional existing test files or directories to use as style/pattern reference (absolute paths)
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
 - `use_assistant_model`: Whether to use expert test generation phase (default: true, set to false to use Claude only)
